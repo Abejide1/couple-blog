@@ -2,12 +2,12 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
-import models
-import schemas
-from database import engine, get_db, init_db
-from books import router as books_router
-from movies import router as movies_router
-from blog import router as blog_router
+from backend import models
+from backend import schemas
+from backend.database import engine, get_db, init_db
+from backend.books import router as books_router
+from backend.movies import router as movies_router
+from backend.blog import router as blog_router
 
 app = FastAPI()
 
