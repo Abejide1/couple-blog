@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Link as LinkIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 interface CoupleLinkProps {
     onLinkSuccess: () => void;

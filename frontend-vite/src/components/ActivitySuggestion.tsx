@@ -15,6 +15,15 @@ import {
 import { Refresh as RefreshIcon } from '@mui/icons-material';
 import { Activity } from '../types';
 
+declare global {
+    interface ImportMeta {
+        env: {
+            VITE_API_URL: string;
+            [key: string]: any;
+        };
+    }
+}
+
 interface ActivitySuggestionProps {
     onAccept: (activity: Activity) => void;
 }
@@ -47,10 +56,10 @@ const ActivitySuggestion: React.FC<ActivitySuggestionProps> = ({ onAccept }) => 
         const fetchOptions = async () => {
             try {
                 const [categories, difficulties, costs, seasons] = await Promise.all([
-                    fetch('http://localhost:8000/activities/categories').then(res => res.json()),
-                    fetch('http://localhost:8000/activities/difficulties').then(res => res.json()),
-                    fetch('http://localhost:8000/activities/costs').then(res => res.json()),
-                    fetch('http://localhost:8000/activities/seasons').then(res => res.json()),
+                    fetch(`${import.meta.env.VITE_API_URL}/activities/categories`).then(res => res.json()),
+                    fetch(`${import.meta.env.VITE_API_URL}/activities/difficulties`).then(res => res.json()),
+                    fetch(`${import.meta.env.VITE_API_URL}/activities/costs`).then(res => res.json()),
+                    fetch(`${import.meta.env.VITE_API_URL}/activities/seasons`).then(res => res.json()),
                 ]);
 
                 setOptions({
@@ -76,7 +85,7 @@ const ActivitySuggestion: React.FC<ActivitySuggestionProps> = ({ onAccept }) => 
             if (filters.cost) queryParams.append('cost', filters.cost);
             if (filters.season) queryParams.append('season', filters.season);
 
-            const response = await fetch(`http://localhost:8000/activities/suggest?${queryParams}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/activities/suggest?${queryParams}`);
             if (!response.ok) {
                 throw new Error('Failed to get suggestion');
             }
