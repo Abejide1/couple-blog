@@ -40,6 +40,7 @@ class ActivityBase(BaseModel):
     duration: int  # in minutes
     cost: Cost
     season: Optional[Season] = None
+    mood: Optional[str] = None  # emoji or text
 
 class ActivityCreate(ActivityBase):
     pass
@@ -49,10 +50,12 @@ class ActivityUpdate(BaseModel):
     completed_at: Optional[datetime] = None
     rating: Optional[int] = None
     notes: Optional[str] = None
+    mood: Optional[str] = None
 
 class Activity(ActivityBase):
     id: int
     created_at: datetime
+    mood: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -104,17 +107,31 @@ class Movie(MovieBase):
 class BlogEntryBase(BaseModel):
     title: str
     content: str
+    mood: Optional[str] = None
 
 class BlogEntryCreate(BlogEntryBase):
     pass
 
+class Photo(BaseModel):
+    id: int
+    file_path: str
+    activity_id: Optional[int] = None
+    blog_entry_id: Optional[int] = None
+    couple_code: str
+    uploaded_at: datetime
+
+    class Config:
+        orm_mode = True
+
 class BlogEntryUpdate(BlogEntryBase):
     title: Optional[str] = None
     content: Optional[str] = None
+    mood: Optional[str] = None
 
 class BlogEntry(BlogEntryBase):
     id: int
     created_at: datetime
+    mood: Optional[str] = None
 
     class Config:
         orm_mode = True

@@ -8,6 +8,7 @@ from backend.database import engine, get_db, init_db
 from backend.books import router as books_router
 from backend.movies import router as movies_router
 from backend.blog import router as blog_router
+from backend.photos import router as photos_router
 
 app = FastAPI()
 
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(books_router)
 app.include_router(movies_router)
 app.include_router(blog_router)
+app.include_router(photos_router)
 
 @app.get("/")
 async def root():
@@ -102,6 +104,10 @@ async def get_costs():
 @app.get("/activities/seasons", response_model=List[str])
 async def get_seasons():
     return [season.value for season in schemas.Season]
+
+@app.get("/badges/", response_model=List[str])
+async def get_badges(code: str, db: AsyncSession = Depends(get_db)):
+    return models.calculate_badges(db, code)
 
 @app.on_event("startup")
 async def startup():

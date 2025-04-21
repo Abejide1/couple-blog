@@ -22,6 +22,7 @@ class Activity(Base):
     duration = Column(Integer)  # Duration in minutes
     cost = Column(String)  # "free", "low", "medium", "high"
     season = Column(String, nullable=True)  # "spring", "summer", "fall", "winter", null for any season
+    mood = Column(String, nullable=True)  # Emoji or text mood
     created_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
     rating = Column(Integer, nullable=True)  # Rating after completion (1-5)
@@ -59,10 +60,26 @@ class BlogEntry(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     content = Column(Text)
+    mood = Column(String, nullable=True)  # Emoji or text mood
     created_at = Column(DateTime, default=datetime.utcnow)
     couple_code = Column(String, index=True)
 
 
+
+class Photo(Base):
+    __tablename__ = "photos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    file_path = Column(String, nullable=False)
+    activity_id = Column(Integer, nullable=True)
+    blog_entry_id = Column(Integer, nullable=True)
+    couple_code = Column(String, index=True)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+
+# --- Badge Logic Placeholder ---
+def calculate_badges(db: AsyncSession, couple_code: str):
+    # Example: return list of badge names/ids based on activity counts, streaks, etc.
+    return []
 
 # Database operations
 async def get_activities(

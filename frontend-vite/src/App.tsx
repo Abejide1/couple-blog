@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { CssBaseline } from '@mui/material';
+import { CustomThemeProvider, useThemeMode } from './contexts/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
 import Layout from './components/Layout';
 import Activities from './pages/Activities';
 import Books from './pages/Books';
@@ -24,8 +26,8 @@ const theme = createTheme({
 function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <CustomThemeProvider>
+        <ThemeToggle />
         <CoupleProvider>
           <Routes>
             <Route path="/code" element={<CodeEntry />} />
