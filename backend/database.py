@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from models import Base
+from backend.models import Base
 
 DATABASE_URL = "sqlite+aiosqlite:///./couple_activities.db"
 
