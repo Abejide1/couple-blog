@@ -1,6 +1,7 @@
 # Couple Activities Blog
 
 A full-stack web application for couples to track and share their activities, books, movies, and memories together.
+Created by David Abejide
 
 ## Features
 
