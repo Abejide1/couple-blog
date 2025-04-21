@@ -47,7 +47,7 @@ const Activities = () => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const fetchActivities = React.useCallback(async () => {
-        if (!loading) setLoading(true);
+        setLoading(true);
         try {
             const response = await activitiesApi.getAll();
             setActivities(response.data);
@@ -56,7 +56,7 @@ const Activities = () => {
         } finally {
             setLoading(false);
         }
-    }, [loading]);
+    }, []);
 
     useEffect(() => {
         fetchActivities();
