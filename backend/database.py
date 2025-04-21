@@ -20,9 +20,7 @@ AsyncSessionLocal = sessionmaker(
 
 async def init_db():
     async with engine.begin() as conn:
-        # Drop all tables to start fresh
-        await conn.run_sync(Base.metadata.drop_all)
-        # Create all tables
+        # Only create tables if they do not exist
         await conn.run_sync(Base.metadata.create_all)
 
 async def get_db():
