@@ -26,6 +26,10 @@ app.include_router(books_router)
 app.include_router(movies_router)
 app.include_router(blog_router)
 
+@app.get("/")
+async def root():
+    return {"message": "Couple Activities Blog API is running!"}
+
 @app.get("/activities/", response_model=List[schemas.Activity])
 async def get_activities(
     db: AsyncSession = Depends(get_db),
