@@ -25,7 +25,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import SettingsMenu from './SettingsMenu';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
-import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks, FaPalette, FaMoon, FaSun } from 'react-icons/fa';
+import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks, FaPalette, FaMoon, FaSun, FaCog } from 'react-icons/fa';
 import { MdMenu, MdContentCopy } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
