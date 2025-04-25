@@ -17,10 +17,12 @@ import {
     Snackbar
 } from '@mui/material';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
-import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks } from 'react-icons/fa';
+import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks, FaPalette, FaMoon, FaSun } from 'react-icons/fa';
 import { MdMenu, MdContentCopy } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Popover, Box as MuiBox } from '@mui/material';
+import { CirclePicker } from 'react-color';
 import { useCouple } from '../contexts/CoupleContext';
 
 const DRAWER_WIDTH = 320;
@@ -29,9 +31,17 @@ interface LayoutProps {
     children: React.ReactNode;
 }
 
+const defaultAppBarColor = '#FF7EB9';
+const paletteColors = [
+  '#FF7EB9', '#7AF5FF', '#FFD36E', '#B388FF', '#C3F6C7', '#FFB86B', '#FFEBF7', '#FFF6FB', '#FFB6B9', '#B5EAD7', '#FFDAC1', '#E2F0CB', '#C7CEEA', '#F6A6B2', '#B5B2C2'
+];
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [appBarColor, setAppBarColor] = useState(() => localStorage.getItem('appBarColor') || defaultAppBarColor);
+    const [paletteAnchor, setPaletteAnchor] = useState<null | HTMLElement>(null);
+    const [darkMode, setDarkMode] = useState(false);
     const { coupleCode, clearCode } = useCouple();
     const navigate = useNavigate();
 
@@ -67,10 +77,62 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Box>
     );
 
+    // Persist color to localStorage
+    useEffect(() => {
+      localStorage.setItem('appBarColor', appBarColor);
+    }, [appBarColor]);
+
+    // Palette icon click handler
+    const handlePaletteClick = (event: React.MouseEvent<HTMLElement>) => {
+      setPaletteAnchor(event.currentTarget);
+    };
+    const handlePaletteClose = () => setPaletteAnchor(null);
+    const handleColorChange = (color: any) => {
+      setAppBarColor(color.hex);
+      setPaletteAnchor(null);
+    };
+
+    // Dark mode toggle handler (move to top right, visible)
+    const handleDarkModeToggle = () => setDarkMode((d) => !d);
+
     return (
         <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, background: '#FF7EB9', boxShadow: '0 2px 16px #FFD6E8' }}>
-                <Toolbar sx={{ minHeight: 80, px: 3 }}>
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, background: appBarColor, boxShadow: '0 2px 16px #FFD6E8', transition: 'background 0.3s' }}>
+                <Toolbar sx={{ minHeight: 80, px: 3, position: 'relative' }}>
+                    {/* Dark mode toggle at top right */}
+                    <IconButton
+                        onClick={handleDarkModeToggle}
+                        sx={{ position: 'absolute', top: 18, right: 20, zIndex: 2, background: 'rgba(255,255,255,0.25)', '&:hover': { background: 'rgba(255,255,255,0.5)' }, boxShadow: '0 2px 8px #FFD6E8' }}
+                        size="large"
+                        aria-label="toggle dark mode"
+                    >
+                        {darkMode ? <FaSun size={22} color="#FFD36E" /> : <FaMoon size={22} color="#B388FF" />}
+                    </IconButton>
+
+                    {/* Palette icon at bottom center of AppBar */}
+                    <MuiBox sx={{ position: 'absolute', left: '50%', bottom: -26, transform: 'translateX(-50%)', zIndex: 2 }}>
+                        <IconButton
+                            onClick={handlePaletteClick}
+                            sx={{ background: '#fff', borderRadius: '50%', boxShadow: '0 2px 8px #FFD6E8', width: 52, height: 52, border: '2px solid #FF7EB9', '&:hover': { background: '#FFEBF7' } }}
+                            aria-label="Choose color palette"
+                        >
+                            <FaPalette size={28} color={appBarColor} />
+                        </IconButton>
+                    </MuiBox>
+                    <Popover
+                        open={Boolean(paletteAnchor)}
+                        anchorEl={paletteAnchor}
+                        onClose={handlePaletteClose}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                        PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 2px 16px #FFD6E8', p: 2 } }}
+                    >
+                        <CirclePicker
+                            colors={paletteColors}
+                            color={appBarColor}
+                            onChange={handleColorChange}
+                        />
+                    </Popover>
                     <IconButton
                         color="primary"
                         aria-label="open drawer"
