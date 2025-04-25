@@ -128,13 +128,15 @@ const Activities = () => {
     return (
         <Box>
             <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
-                <Typography variant="h4" sx={{ flexGrow: 1 }}>Activities</Typography>
+                <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: 'Grotesco, Arial, sans-serif' }}>
+                    🎉 Activities
+                </Typography>
                 <Button
                     variant="contained"
                     color="primary"
                     startIcon={<MdAdd size={22} />}
                     onClick={() => setOpen(true)}
-                    sx={{ mb: 2, fontWeight: 700, borderRadius: 8, fontSize: '1.13rem', boxShadow: '0 2px 8px #FFD6E8' }}
+                    sx={{ mb: 2, fontWeight: 700, borderRadius: 8, fontSize: '1.13rem', boxShadow: '0 2px 8px #FFD6E8', animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } }}
                 >
                     Add Activity
                 </Button>

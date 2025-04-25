@@ -32,6 +32,7 @@ import { MdAdd, MdCelebration } from 'react-icons/md';
 import { format } from 'date-fns';
 import { goalsApi, Goal, GoalCreate, GoalUpdate } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ConfettiBurst from '../components/ConfettiBurst';
 
 // Priority colors
 const priorityColors: Record<string, string> = {
@@ -41,6 +42,7 @@ const priorityColors: Record<string, string> = {
 };
 
 const Goals = () => {
+    const [showConfetti, setShowConfetti] = useState(false);
     const [goals, setGoals] = useState<Goal[]>([]);
     const [loading, setLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -160,16 +162,19 @@ const Goals = () => {
     };
 
     const handleCompleteGoal = async (goal: Goal) => {
+        setSubmitLoading(true);
         try {
-            const response = await goalsApi.update(goal.id, { completed: true } as GoalUpdate);
-            setGoals(goals.map(g => g.id === goal.id ? response.data : g));
-            setCompletedGoal(response.data);
-            setCompleteAlertOpen(true);
-        } catch (error) {
-            console.error('Error completing goal:', error);
-            setSnackbarMessage('Failed to complete goal. Please try again.');
-            setSnackbarSeverity('error');
+            await goalsApi.update(goal.id, { ...goal, completed: true });
+            setSnackbarMessage('Goal marked as complete!');
             setSnackbarOpen(true);
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 1800);
+            fetchGoals();
+        } catch (err) {
+            setSnackbarMessage('Failed to complete goal.');
+            setSnackbarOpen(true);
+        } finally {
+            setSubmitLoading(false);
         }
     };
 
@@ -210,6 +215,11 @@ const Goals = () => {
         return a.title.localeCompare(b.title);
     });
 
+    // Section heading style
+    const headingSx = { fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: 'Grotesco, Arial, sans-serif' };
+    // Add button pulse style
+    const addPulseSx = { animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } };
+
     return (
         <Box>
             <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
@@ -219,7 +229,7 @@ const Goals = () => {
                     color="primary"
                     startIcon={<MdAdd size={24} />}
                     onClick={() => handleOpen()}
-                    sx={{ minWidth: 180, fontWeight: 700, borderRadius: 8, fontSize: '1.2rem', boxShadow: '0 2px 8px #FFD6E8' }}
+                    sx={{ minWidth: 180, fontWeight: 700, borderRadius: 8, fontSize: '1.2rem', boxShadow: '0 2px 8px #FFD6E8', ...addPulseSx }}
                 >
                     Add Goal
                 </Button>
@@ -228,7 +238,9 @@ const Goals = () => {
             <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
                 <Box sx={{ mb: 3 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                        <Typography variant="h6">Progress</Typography>
+                        <Typography variant="h4" gutterBottom sx={headingSx}>
+                            🎯 Goals
+                        </Typography>
                         <Typography variant="body2">
                             {goals.filter(goal => goal.completed).length} of {goals.length} completed
                         </Typography>

@@ -42,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [appBarColor, setAppBarColor] = useState(() => localStorage.getItem('appBarColor') || defaultAppBarColor);
     const [paletteAnchor, setPaletteAnchor] = useState<null | HTMLElement>(null);
-    const { mode, toggleTheme } = useThemeMode();
+    const { mode, toggleTheme, setAccent } = useThemeMode();
     const { coupleCode, clearCode } = useCouple();
     const navigate = useNavigate();
 
@@ -90,6 +90,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const handlePaletteClose = () => setPaletteAnchor(null);
     const handleColorChange = (color: any) => {
       setAppBarColor(color.hex);
+      setAccent(color.hex); // update global accent color
       setPaletteAnchor(null);
     };
 
@@ -171,7 +172,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                         setSnackbarOpen(true);
                                     }
                                 }}
-                                sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', background: 'rgba(255,255,255,0.15)', borderRadius: 6 }}
+                                sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', background: 'rgba(255,255,255,0.15)', borderRadius: 6, '&:hover': { background: '#FFEBF7', color: '#FF7EB9', boxShadow: '0 8px 24px #FFD6E8', transform: 'scale(1.07)' }, transition: 'all 0.18s cubic-bezier(.4,2,.6,1)' }}
                             >
                                 {coupleCode}
                             </Button>
@@ -182,7 +183,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 clearCode();
                                 navigate('/code');
                             }}
-                            sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', borderRadius: 6 }}
+                            sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', borderRadius: 6, '&:hover': { background: '#FFEBF7', color: '#FF7EB9', boxShadow: '0 8px 24px #FFD6E8', transform: 'scale(1.07)' }, transition: 'all 0.18s cubic-bezier(.4,2,.6,1)' }}
                         >
                             Change Code
                         </Button>

@@ -23,6 +23,7 @@ import { GiPartyPopper, GiLoveMystery, GiCutDiamond, GiRibbonMedal } from 'react
 import { format } from 'date-fns';
 import { challengesApi, ChallengeWithProgress } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ConfettiBurst from '../components/ConfettiBurst';
 
 // Cute react-icons for different challenge categories
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -34,6 +35,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const Challenges = () => {
+    const [showConfetti, setShowConfetti] = useState(false);
     const [challenges, setChallenges] = useState<ChallengeWithProgress[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedChallenge, setSelectedChallenge] = useState<ChallengeWithProgress | null>(null);
@@ -123,6 +125,25 @@ const Challenges = () => {
         }
     };
 
+    const handleCompleteDialog = async () => {
+        if (!selectedChallenge) return;
+        setActionInProgress(true);
+        try {
+            await challengesApi.complete(selectedChallenge.id);
+            setSnackbarMessage('Challenge completed!');
+            setSnackbarOpen(true);
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 1800);
+            setCompleteDialogOpen(false);
+            fetchChallenges();
+        } catch (err) {
+            setSnackbarMessage('Failed to complete challenge.');
+            setSnackbarOpen(true);
+        } finally {
+            setActionInProgress(false);
+        }
+    };
+
     const openDetailDialog = (challenge: ChallengeWithProgress) => {
         setSelectedChallenge(challenge);
         setDetailDialogOpen(true);
@@ -133,6 +154,11 @@ const Challenges = () => {
         setCompleteDialogOpen(true);
     };
 
+    // Section heading style
+    const headingSx = { fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: 'Grotesco, Arial, sans-serif' };
+    // Add button pulse style
+    const addPulseSx = { animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } };
+
     if (loading) return <LoadingSpinner />;
 
     return (
@@ -142,7 +168,9 @@ const Challenges = () => {
             </Box>
 
             <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom>Complete challenges together to strengthen your relationship!</Typography>
+                <Typography variant="h6" gutterBottom sx={headingSx}>
+                    💖 Challenges
+                </Typography>
                 <Typography variant="body1" paragraph>Choose from our curated list of activities designed to help couples connect, communicate, and create memories.</Typography>
                 <Divider sx={{ mb: 2 }} />
                 
@@ -254,7 +282,7 @@ const Challenges = () => {
                                         size="medium" 
                                         startIcon={<FaInfoCircle size={20} />}
                                         onClick={() => openDetailDialog(challenge)}
-                                        sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 8 }}
+                                        sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 8, background: '#F3E8FF', '&:hover': { background: '#E1CFFF', color: '#7C3AED' } }}
                                     >
                                         Details
                                     </Button>
@@ -267,7 +295,7 @@ const Challenges = () => {
                                             startIcon={<FaMagic size={20} />}
                                             onClick={() => handleStartChallenge(challenge)}
                                             disabled={actionInProgress}
-                                            sx={{ fontWeight: 700, borderRadius: 8 }}
+                                            sx={{ fontWeight: 700, borderRadius: 8, ...addPulseSx }}
                                         >
                                             Start
                                         </Button>
@@ -281,7 +309,7 @@ const Challenges = () => {
                                             startIcon={<FaRegCheckCircle size={20} />}
                                             onClick={() => openCompleteDialog(challenge)}
                                             disabled={actionInProgress}
-                                            sx={{ fontWeight: 700, borderRadius: 8 }}
+                                            sx={{ fontWeight: 700, borderRadius: 8, background: '#C3F6C7', color: '#2E7D32', '&:hover': { background: '#A8E6A1', color: '#145C1E' } }}
                                         >
                                             Complete
                                         </Button>
@@ -312,7 +340,7 @@ const Challenges = () => {
                                 <Chip 
                                     label={`${selectedChallenge.points} points`} 
                                     color="primary" 
-                                    icon={<TrophyIcon />} 
+                                    icon={<FaTrophy size={20} />} 
                                 />
                                 
                                 {selectedChallenge.category && (
@@ -326,13 +354,13 @@ const Challenges = () => {
                                     <Chip 
                                         label="Completed" 
                                         color="success" 
-                                        icon={<CompleteIcon />} 
+                                        icon={<FaRegCheckCircle size={20} />} 
                                     />
                                 ) : selectedChallenge.started ? (
                                     <Chip 
                                         label="In Progress" 
                                         color="warning" 
-                                        icon={<ClockIcon />} 
+                                        icon={<FaRegClock size={20} />} 
                                     />
                                 ) : null}
                             </Box>
@@ -344,7 +372,7 @@ const Challenges = () => {
                             )}
                             
                             {selectedChallenge.completed_at && (
-                                <Typography variant="body2">
+                                <Typography variant="h4" gutterBottom sx={headingSx}>
                                     Completed: {format(new Date(selectedChallenge.completed_at), 'PP')}
                                 </Typography>
                             )}
