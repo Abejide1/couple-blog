@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Grotesco';
+  src: url('https://fonts.cdnfonts.com/s/18676/Grotesco-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Grotesco';
+  src: url('https://fonts.cdnfonts.com/s/18676/Grotesco-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}

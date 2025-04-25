@@ -27,16 +27,8 @@ import {
     LinearProgress,
     Tooltip
 } from '@mui/material';
-import {
-    Add as AddIcon,
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-    Flag as FlagIcon,
-    Today as CalendarIcon,
-    Category as CategoryIcon,
-    Check as CheckIcon,
-    Celebration as CelebrationIcon
-} from '@mui/icons-material';
+import { FaFlag, FaEdit, FaTrash, FaRegCheckCircle, FaCalendarAlt, FaListAlt, FaCheck, FaRegSmileBeam, FaHeart, FaStar, FaBirthdayCake } from 'react-icons/fa';
+import { MdAdd, MdCelebration } from 'react-icons/md';
 import { format } from 'date-fns';
 import { goalsApi, Goal, GoalCreate, GoalUpdate } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -225,9 +217,9 @@ const Goals = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<AddIcon />}
+                    startIcon={<MdAdd size={24} />}
                     onClick={() => handleOpen()}
-                    sx={{ minWidth: 160, fontWeight: 600 }}
+                    sx={{ minWidth: 180, fontWeight: 700, borderRadius: 8, fontSize: '1.2rem', boxShadow: '0 2px 8px #FFD6E8' }}
                 >
                     Add Goal
                 </Button>
@@ -261,8 +253,9 @@ const Goals = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            startIcon={<AddIcon />}
+                            startIcon={<MdAdd size={24} />}
                             onClick={() => handleOpen()}
+                            sx={{ fontWeight: 700, borderRadius: 8, fontSize: '1.15rem', boxShadow: '0 2px 8px #FFD6E8' }}
                         >
                             Add Your First Goal
                         </Button>
@@ -291,19 +284,19 @@ const Goals = () => {
                                             <>
                                                 <Tooltip title="Mark as complete">
                                                     <IconButton edge="end" onClick={() => handleCompleteGoal(goal)}>
-                                                        <CheckIcon color="success" />
+                                                        <FaCheck color="#2E7D32" size={22} />
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title="Edit goal">
                                                     <IconButton edge="end" onClick={() => handleOpen(goal)}>
-                                                        <EditIcon />
+                                                        <FaEdit color="#B388FF" size={22} />
                                                     </IconButton>
                                                 </Tooltip>
                                             </>
                                         )}
                                         <Tooltip title="Delete goal">
                                             <IconButton edge="end" onClick={() => handleDeleteGoal(goal.id)}>
-                                                <DeleteIcon color="error" />
+                                                <FaTrash color="#FF7EB9" size={22} />
                                             </IconButton>
                                         </Tooltip>
                                     </Box>
@@ -336,19 +329,20 @@ const Goals = () => {
                                             {goal.priority && (
                                                 <Chip 
                                                     label={goal.priority} 
-                                                    size="small"
+                                                    size="medium"
                                                     color={priorityColors[goal.priority] as any || 'default'} 
-                                                    icon={<FlagIcon />}
-                                                    sx={{ mr: 1 }}
+                                                    icon={<FaFlag size={18} />}
+                                                    sx={{ mr: 1, fontWeight: 700, background: '#FFF8E1', color: '#FFA000', fontSize: '1.05rem', borderRadius: 8 }}
                                                 />
                                             )}
                                             
                                             {goal.category && (
                                                 <Chip 
                                                     label={goal.category} 
-                                                    size="small"
+                                                    size="medium"
                                                     variant="outlined"
-                                                    icon={<CategoryIcon />}
+                                                    icon={<FaListAlt size={18} />}
+                                                    sx={{ fontWeight: 700, borderRadius: 8 }}
                                                 />
                                             )}
                                         </Box>
@@ -380,7 +374,7 @@ const Goals = () => {
                                                             color: 'text.secondary'
                                                         }}
                                                     >
-                                                        <CalendarIcon fontSize="small" sx={{ mr: 0.5 }} />
+                                                        <FaCalendarAlt size={15} style={{ marginRight: 4 }} />
                                                         Target: {format(new Date(goal.target_date), 'PP')}
                                                     </Typography>
                                                 )}
@@ -394,7 +388,7 @@ const Goals = () => {
                                                             color: 'success.main'
                                                         }}
                                                     >
-                                                        <CheckIcon fontSize="small" sx={{ mr: 0.5 }} />
+                                                        <FaRegCheckCircle size={15} style={{ marginRight: 4 }} />
                                                         Completed: {format(new Date(goal.completed_at), 'PP')}
                                                     </Typography>
                                                 )}
@@ -496,7 +490,7 @@ const Goals = () => {
                 }}
             >
                 <DialogTitle sx={{ textAlign: 'center', pb: 0 }}>
-                    <CelebrationIcon color="success" sx={{ fontSize: 60 }} />
+                    <MdCelebration color="#FF7EB9" size={60} />
                 </DialogTitle>
                 <DialogContent sx={{ textAlign: 'center', pt: 2 }}>
                     <Typography variant="h5" color="success.main" gutterBottom>
@@ -545,10 +539,10 @@ const Goals = () => {
                 <Fab
                     color="primary"
                     aria-label="add"
-                    sx={{ position: 'fixed', bottom: 16, right: 16 }}
+                    sx={{ position: 'fixed', bottom: 16, right: 16, fontSize: 28, background: '#FF7EB9' }}
                     onClick={() => handleOpen()}
                 >
-                    <AddIcon />
+                    <MdAdd size={28} />
                 </Fab>
             </Box>
         </Box>

@@ -18,24 +18,19 @@ import {
     Divider,
     Paper
 } from '@mui/material';
-import { 
-    EmojiEvents as TrophyIcon, 
-    PlayArrow as StartIcon, 
-    CheckCircle as CompleteIcon,
-    AccessTime as ClockIcon,
-    Info as InfoIcon
-} from '@mui/icons-material';
+import { FaTrophy, FaRegSmileBeam, FaRegCheckCircle, FaRegClock, FaInfoCircle, FaHeart, FaStar, FaMagic, FaBirthdayCake } from 'react-icons/fa';
+import { GiPartyPopper, GiLoveMystery, GiCutDiamond, GiRibbonMedal } from 'react-icons/gi';
 import { format } from 'date-fns';
 import { challengesApi, ChallengeWithProgress } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-// Icons for different challenge categories
-const categoryIcons: Record<string, string> = {
-    'daily': '📅',
-    'weekly': '📆',
-    'one-time': '🎯',
-    'beginner': '🌱',
-    'advanced': '🔥',
+// Cute react-icons for different challenge categories
+const categoryIcons: Record<string, React.ReactNode> = {
+  'daily': <FaRegSmileBeam size={28} color="#FFB86B" />,
+  'weekly': <FaStar size={28} color="#B388FF" />,
+  'one-time': <GiPartyPopper size={30} color="#FF7EB9" />,
+  'beginner': <GiLoveMystery size={28} color="#7AF5FF" />,
+  'advanced': <GiCutDiamond size={30} color="#FFD36E" />,
 };
 
 const Challenges = () => {
@@ -172,12 +167,15 @@ const Challenges = () => {
                                     <Chip 
                                         label="Completed" 
                                         color="success" 
-                                        icon={<CompleteIcon />} 
+                                        icon={<FaRegCheckCircle size={22} />} 
                                         sx={{ 
                                             position: 'absolute', 
                                             top: 10, 
                                             right: 10,
-                                            fontWeight: 'bold'
+                                            fontWeight: 'bold',
+                                            background: '#C3F6C7',
+                                            color: '#2E7D32',
+                                            fontSize: '1.1rem',
                                         }} 
                                     />
                                 )}
@@ -186,12 +184,20 @@ const Challenges = () => {
                                     <Box display="flex" alignItems="center" mb={2}>
                                         <Box 
                                             sx={{ 
-                                                fontSize: '2rem', 
-                                                mr: 1,
-                                                lineHeight: 1 
+                                                fontSize: '2.5rem', 
+                                                mr: 1.5,
+                                                lineHeight: 1,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                borderRadius: '50%',
+                                                background: '#FFF0F6',
+                                                width: 56,
+                                                height: 56,
+                                                boxShadow: '0 2px 8px #FFD6E8',
                                             }}
                                         >
-                                            {challenge.icon || categoryIcons[challenge.category || ''] || '🎯'}
+                                            {challenge.icon ? <span style={{fontSize: '2.2rem'}}>{challenge.icon}</span> : (categoryIcons[challenge.category || ''] || <FaMagic size={30} color="#FF7EB9" />)}
                                         </Box>
                                         <Typography variant="h6" component="div">
                                             {challenge.title}
@@ -217,16 +223,18 @@ const Challenges = () => {
                                         <Chip 
                                             label={`${challenge.points} pts`} 
                                             color="primary" 
-                                            size="small" 
-                                            icon={<TrophyIcon />} 
+                                            size="medium" 
+                                            icon={<FaTrophy size={20} />} 
+                                            sx={{ fontWeight: 700, background: '#FFF0F6', color: '#FF7EB9', fontSize: '1.1rem' }}
                                         />
                                         
                                         {challenge.started && !challenge.completed && (
                                             <Chip 
                                                 label="In Progress" 
                                                 color="warning" 
-                                                size="small" 
-                                                icon={<ClockIcon />} 
+                                                size="medium" 
+                                                icon={<FaRegClock size={20} />} 
+                                                sx={{ fontWeight: 700, background: '#FFF8E1', color: '#FFA000', fontSize: '1.1rem' }}
                                             />
                                         )}
                                         
@@ -243,21 +251,23 @@ const Challenges = () => {
                                 
                                 <CardActions sx={{ p: 2, pt: 0 }}>
                                     <Button 
-                                        size="small" 
-                                        startIcon={<InfoIcon />}
+                                        size="medium" 
+                                        startIcon={<FaInfoCircle size={20} />}
                                         onClick={() => openDetailDialog(challenge)}
+                                        sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 8 }}
                                     >
                                         Details
                                     </Button>
                                     
                                     {!challenge.started && (
                                         <Button
-                                            size="small"
+                                            size="medium"
                                             variant="outlined"
                                             color="primary"
-                                            startIcon={<StartIcon />}
+                                            startIcon={<FaMagic size={20} />}
                                             onClick={() => handleStartChallenge(challenge)}
                                             disabled={actionInProgress}
+                                            sx={{ fontWeight: 700, borderRadius: 8 }}
                                         >
                                             Start
                                         </Button>
@@ -265,12 +275,13 @@ const Challenges = () => {
                                     
                                     {challenge.started && !challenge.completed && (
                                         <Button
-                                            size="small"
+                                            size="medium"
                                             variant="contained"
                                             color="success"
-                                            startIcon={<CompleteIcon />}
+                                            startIcon={<FaRegCheckCircle size={20} />}
                                             onClick={() => openCompleteDialog(challenge)}
                                             disabled={actionInProgress}
+                                            sx={{ fontWeight: 700, borderRadius: 8 }}
                                         >
                                             Complete
                                         </Button>

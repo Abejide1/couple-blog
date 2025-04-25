@@ -16,22 +16,14 @@ import {
     Tooltip,
     Snackbar
 } from '@mui/material';
-import { 
-    Menu as MenuIcon,
-    LocalActivity,
-    Book,
-    Movie,
-    Create,
-    Share,
-    ContentCopy,
-    EmojiEvents as TrophyIcon,
-    Flag as GoalIcon
-} from '@mui/icons-material';
+import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
+import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks } from 'react-icons/fa';
+import { MdMenu, MdContentCopy } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useCouple } from '../contexts/CoupleContext';
 
-const DRAWER_WIDTH = 240;
+const DRAWER_WIDTH = 320;
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -44,12 +36,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const navigate = useNavigate();
 
     const menuItems = [
-        { text: 'Activities', icon: <LocalActivity />, path: '/activities' },
-        { text: 'Books', icon: <Book />, path: '/books' },
-        { text: 'Movies', icon: <Movie />, path: '/movies' },
-        { text: 'Blog', icon: <Create />, path: '/blog' },
-        { text: 'Calendar', icon: <Share />, path: '/calendar' },
-        { text: 'Goals', icon: <GoalIcon />, path: '/goals' },
+        { text: 'Activities', icon: <FaRegSmileBeam size={36} color="#FF7EB9" />, path: '/activities' },
+        { text: 'Books', icon: <BsFillBookmarkHeartFill size={34} color="#7AF5FF" />, path: '/books' },
+        { text: 'Movies', icon: <FaFilm size={34} color="#FFD36E" />, path: '/movies' },
+        { text: 'Blog', icon: <FaBlog size={34} color="#B388FF" />, path: '/blog' },
+        { text: 'Calendar', icon: <BsFillCalendarHeartFill size={36} color="#FF7EB9" />, path: '/calendar' },
+        { text: 'Goals', icon: <FaTasks size={36} color="#FFB86B" />, path: '/goals' },
     ];
 
     const drawer = (
@@ -77,39 +69,41 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <Toolbar>
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, background: '#FF7EB9', boxShadow: '0 2px 16px #FFD6E8' }}>
+                <Toolbar sx={{ minHeight: 80, px: 3 }}>
                     <IconButton
-                        color="inherit"
+                        color="primary"
+                        aria-label="open drawer"
                         edge="start"
                         onClick={() => setMobileOpen(!mobileOpen)}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
+                        sx={{ mr: 3, display: { sm: 'none' }, fontSize: 36 }}
                     >
-                        <MenuIcon />
+                        <MdMenu size={36} />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h4" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 700, color: '#fff', letterSpacing: '0.05em', fontFamily: 'Grotesco, Arial, sans-serif' }}>
                         Couple Activities Blog
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Button
-                            color="inherit"
-                            startIcon={<TrophyIcon />}
+                            color="secondary"
+                            startIcon={<FaTrophy size={32} />}
                             component={RouterLink}
                             to="/challenges"
-                            sx={{ fontWeight: 'bold' }}
+                            sx={{ fontWeight: 'bold', fontSize: '1.2rem', px: 3, py: 1.5, borderRadius: 8, boxShadow: '0 2px 8px #FFD6E8', background: '#fff', color: '#FF7EB9', '&:hover': { background: '#FF7EB9', color: '#fff' } }}
                         >
                             Challenges
                         </Button>
                         <Tooltip title="Copy couple code">
                             <Button
                                 color="inherit"
-                                startIcon={<ContentCopy />}
+                                startIcon={<MdContentCopy size={26} />}
                                 onClick={() => {
                                     if (coupleCode) {
                                         navigator.clipboard.writeText(coupleCode);
                                         setSnackbarOpen(true);
                                     }
                                 }}
+                                sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', background: 'rgba(255,255,255,0.15)', borderRadius: 6 }}
                             >
                                 {coupleCode}
                             </Button>
@@ -120,6 +114,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 clearCode();
                                 navigate('/code');
                             }}
+                            sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', borderRadius: 6 }}
                         >
                             Change Code
                         </Button>

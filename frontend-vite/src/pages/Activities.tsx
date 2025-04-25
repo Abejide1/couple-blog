@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
+    Box,
     Typography,
-    Card,
-    CardContent,
+    Paper,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemIcon,
+    IconButton,
     Button,
     Dialog,
     DialogTitle,
@@ -10,12 +15,18 @@ import {
     DialogActions,
     TextField,
     MenuItem,
-    Box,
-    Paper,
+    Snackbar,
+    Alert,
     Chip,
+    Tooltip,
     Divider,
+    CircularProgress,
+    Card,
+    CardContent,
     Grid
 } from '@mui/material';
+import { FaHeart, FaStar, FaRegSmileBeam, FaRegCheckCircle, FaEdit, FaTrash, FaMagic, FaHiking, FaMusic, FaUtensils, FaCamera, FaGamepad, FaPlane, FaBook, FaFilm, FaCampground, FaGift, FaUmbrellaBeach } from 'react-icons/fa';
+import { MdAdd } from 'react-icons/md';
 import { TrendingUp, CheckCircle, Schedule, Category as CategoryIcon, Timer, Add as AddIcon } from '@mui/icons-material';
 import { Activity, Category, Difficulty, Cost, Season } from '../types';
 import { activitiesApi } from '../services/api';
@@ -121,20 +132,20 @@ const Activities = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<AddIcon />}
+                    startIcon={<MdAdd size={22} />}
                     onClick={() => setOpen(true)}
-                    sx={{ minWidth: 160, fontWeight: 600 }}
+                    sx={{ mb: 2, fontWeight: 700, borderRadius: 8, fontSize: '1.13rem', boxShadow: '0 2px 8px #FFD6E8' }}
                 >
                     Add Activity
                 </Button>
             </Box>
             {/* --- STATISTICS SECTION --- */}
             <Grid container spacing={2} sx={{ marginBottom: 4 }}>
-                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.50' }}><TrendingUp color="primary" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Total</Typography><Typography variant="h5" fontWeight={700}>{stats.total}</Typography></Paper></Grid>
-                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'success.50' }}><CheckCircle color="success" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Completed</Typography><Typography variant="h5" fontWeight={700}>{stats.completed}</Typography></Paper></Grid>
-                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'warning.50' }}><Schedule color="warning" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Planned</Typography><Typography variant="h5" fontWeight={700}>{stats.planned}</Typography></Paper></Grid>
-                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'info.50' }}><CategoryIcon color="info" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Popular Category</Typography><Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600 }} /></Paper></Grid>
-                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'secondary.50' }}><Timer color="secondary" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Avg. Duration</Typography><Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.50' }}><FaMagic color="#B388FF" size={32} /><Typography variant="h6">Total</Typography><Typography variant="h5" fontWeight={700}>{stats.total}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'success.50' }}><FaRegCheckCircle color="#34C759" size={32} /><Typography variant="h6">Completed</Typography><Typography variant="h5" fontWeight={700}>{stats.completed}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'warning.50' }}><FaRegSmileBeam color="#FFC107" size={32} /><Typography variant="h6">Planned</Typography><Typography variant="h5" fontWeight={700}>{stats.planned}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'info.50' }}><FaHiking color="#2196F3" size={32} /><Typography variant="h6">Popular Category</Typography><Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600 }} /></Paper></Grid>
+                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'secondary.50' }}><FaMusic color="#9C27B0" size={32} /><Typography variant="h6">Avg. Duration</Typography><Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography></Paper></Grid>
             </Grid>
             <Divider sx={{ mb: 4 }} />
             <Grid container spacing={3}>
