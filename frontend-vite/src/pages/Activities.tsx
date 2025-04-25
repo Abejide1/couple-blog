@@ -309,64 +309,6 @@ const Activities = () => {
 };
 
 export default Activities;
-                </Grid>
-                <Grid item xs={12} sm={6} md={2}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'success.50' }}>
-                        <CheckCircle color="success" sx={{ mb: 1 }} />
-                        <Typography variant="h6">Completed</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.completed}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={2}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'warning.50' }}>
-                        <Schedule color="warning" sx={{ mb: 1 }} />
-                        <Typography variant="h6">Planned</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.planned}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'info.50' }}>
-                        <CategoryIcon color="info" sx={{ mb: 1 }} />
-                        <Typography variant="h6">Most Popular Category</Typography>
-                        <Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600 }} />
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'secondary.50' }}>
-                        <Timer color="secondary" sx={{ mb: 1 }} />
-                        <Typography variant="h6">Avg. Duration</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography>
-                    </Paper>
-                </Grid>
-            </Grid>
-
-            <Divider sx={{ mb: 4 }} />
-
-            <Grid container spacing={4}>
-                {activities.map((activity) => (
-                    <Grid item xs={12} sm={6} md={4} key={activity.id}>
-                        <Card
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                bgcolor: activity.status === 'completed' ? 'success.light' : 'background.paper',
-                                border: activity.status === 'completed' ? '2px solid #66bb6a' : '1px solid #e0e0e0',
-                                boxShadow: 3,
-                                transition: 'box-shadow 0.2s',
-                                '&:hover': { boxShadow: 8 }
-                            }}
-                        >
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                    <Typography variant="h6" fontWeight={700} gutterBottom>
-                                        {activity.title}
-                                    </Typography>
-                                    {activity.status === 'completed' && (
-                                        <Chip label="Completed" color="success" size="small" sx={{ ml: 1 }} />
-                                    )}
-                                </Box>
                                 <Typography variant="body2" color="text.secondary" gutterBottom>
                                     {activity.description}
                                 </Typography>
