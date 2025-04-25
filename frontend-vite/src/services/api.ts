@@ -1,13 +1,16 @@
 import axios from 'axios';
+
+// Utility to get the couple code from localStorage
+function getCoupleCode() {
+  return localStorage.getItem('coupleCode');
+}
+
 import { Activity, Book, Movie, BlogEntry } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
     baseURL: API_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    }
 });
 
 // Add request interceptor to include couple code
