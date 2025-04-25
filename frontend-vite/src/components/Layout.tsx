@@ -15,9 +15,15 @@ import {
     Button,
     Tooltip,
     Snackbar,
-    Divider
+    Divider,
+    useMediaQuery,
+    useTheme,
+    Menu,
+    MenuItem,
+    Avatar
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
+import SettingsMenu from './SettingsMenu';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
 import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks, FaPalette, FaMoon, FaSun } from 'react-icons/fa';
 import { MdMenu, MdContentCopy } from 'react-icons/md';
@@ -82,6 +88,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         navigate('/login');
         handleUserMenuClose();
     };
+
+    // Settings dropdown state
+    const [settingsAnchor, setSettingsAnchor] = React.useState<null | HTMLElement>(null);
+    const handleSettingsClick = (e: React.MouseEvent<HTMLElement>) => setSettingsAnchor(e.currentTarget);
+    const handleSettingsClose = () => setSettingsAnchor(null);
+    // Customization state
+    const [background, setBackground] = React.useState<string>(localStorage.getItem('bgColor') || '#FFF6FB');
+    const [floatingIcons, setFloatingIcons] = React.useState<string>(localStorage.getItem('floatingIcons') || 'hearts');
+    const [iconStyle, setIconStyle] = React.useState<string>(localStorage.getItem('iconStyle') || 'bubbly');
+    React.useEffect(() => { localStorage.setItem('bgColor', background); }, [background]);
+    React.useEffect(() => { localStorage.setItem('floatingIcons', floatingIcons); }, [floatingIcons]);
+    React.useEffect(() => { localStorage.setItem('iconStyle', iconStyle); }, [iconStyle]);
+    // Apply background color live
+    React.useEffect(() => {
+        document.body.style.background = background;
+    }, [background]);
 
     const drawer = (
         <Box>
