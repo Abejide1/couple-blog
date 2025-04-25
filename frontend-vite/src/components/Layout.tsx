@@ -123,15 +123,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         open={Boolean(paletteAnchor)}
                         anchorEl={paletteAnchor}
                         onClose={handlePaletteClose}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                        PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 2px 16px #FFD6E8', p: 2 } }}
+                        anchorOrigin={{ vertical: 'center', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'center', horizontal: 'right' }}
+                        PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 2px 16px #FFD6E8', p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' } }}
                     >
-                        <CirclePicker
-                            colors={paletteColors}
-                            color={appBarColor}
-                            onChange={handleColorChange}
-                        />
+                        {/* Custom vertical color picker */}
+                        <MuiBox sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            {paletteColors.map((color) => (
+                                <IconButton
+                                    key={color}
+                                    onClick={() => handleColorChange({ hex: color })}
+                                    sx={{ background: color, border: appBarColor === color ? '3px solid #444' : '2px solid #fff', mb: 0.5, width: 36, height: 36, boxShadow: appBarColor === color ? '0 0 8px #FFD6E8' : undefined }}
+                                />
+                            ))}
+                        </MuiBox>
                     </Popover>
                     <IconButton
                         color="primary"
