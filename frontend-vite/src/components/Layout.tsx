@@ -14,8 +14,10 @@ import {
     IconButton,
     Button,
     Tooltip,
-    Snackbar
+    Snackbar,
+    Divider
 } from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
 import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks, FaPalette, FaMoon, FaSun } from 'react-icons/fa';
 import { MdMenu, MdContentCopy } from 'react-icons/md';
@@ -45,6 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const { mode, toggleTheme, setAccent } = useThemeMode();
     const { coupleCode, clearCode } = useCouple();
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
 
     const menuItems = [
         { text: 'Compatibility', path: '/compatibility', icon: <span role="img" aria-label="compatibility">💞</span> },
@@ -56,23 +59,48 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         { text: 'Goals', icon: <FaTasks size={36} color="#FFB86B" />, path: '/goals' },
     ];
 
+    // Auth menu for sidebar footer (only show Login/Register if not logged in)
+    const authMenu = !user ? [
+        { text: 'Login', path: '/login', icon: <span role="img" aria-label="login">🔑</span> },
+        { text: 'Register', path: '/register', icon: <span role="img" aria-label="register">📝</span> }
+    ] : [];
+
+    // AppBar user dropdown state
+    const [userMenuAnchor, setUserMenuAnchor] = React.useState<null | HTMLElement>(null);
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setUserMenuAnchor(event.currentTarget);
+    };
+    const handleUserMenuClose = () => {
+        setUserMenuAnchor(null);
+    };
+    const handleProfile = () => {
+        navigate('/profile');
+        handleUserMenuClose();
+    };
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+        handleUserMenuClose();
+    };
+
     const drawer = (
         <Box>
             <Toolbar />
+            <Divider />
             <List>
-                {menuItems.map((item) => (
-                    <ListItem 
-                        key={item.text}
-                        disablePadding
-                    >
-                        <ListItemButton
-                            component={RouterLink}
-                            to={item.path}
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            <ListItemIcon>{item.icon}</ListItemIcon>
-                            <ListItemText primary={item.text} />
-                        </ListItemButton>
+                {menuItems.map((item, idx) => (
+                    <ListItem button key={item.text} onClick={() => navigate(item.path)}>
+                        <ListItemIcon>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.text} />
+                    </ListItem>
+                ))}
+            </List>
+            <Divider sx={{ mt: 2 }} />
+            <List sx={{ mt: 1 }}>
+                {authMenu.map((item, idx) => (
+                    <ListItem button key={item.text} onClick={() => navigate(item.path)}>
+                        <ListItemIcon>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.text} />
                     </ListItem>
                 ))}
             </List>
