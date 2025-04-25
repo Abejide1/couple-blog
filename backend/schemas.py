@@ -135,3 +135,60 @@ class BlogEntry(BlogEntryBase):
 
     class Config:
         orm_mode = True
+
+# Calendar Event Schemas
+class EventType(str, Enum):
+    BIRTHDAY = "birthday"
+    ANNIVERSARY = "anniversary"
+    DATE = "date"
+    REMINDER = "reminder"
+    APPOINTMENT = "appointment"
+    ACTIVITY = "activity"
+    OTHER = "other"
+
+class RecurrenceType(str, Enum):
+    NONE = "none"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+
+class CalendarEventBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    start_time: datetime
+    end_time: Optional[datetime] = None
+    all_day: bool = False
+    location: Optional[str] = None
+    event_type: Optional[EventType] = None
+    recurrence: Optional[RecurrenceType] = None
+    color: Optional[str] = None
+    reminder: Optional[int] = None  # minutes before event
+    shared: bool = True
+    activity_id: Optional[int] = None
+
+class CalendarEventCreate(CalendarEventBase):
+    pass
+
+class CalendarEventUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    all_day: Optional[bool] = None
+    location: Optional[str] = None
+    event_type: Optional[EventType] = None
+    recurrence: Optional[RecurrenceType] = None
+    color: Optional[str] = None
+    reminder: Optional[int] = None
+    shared: Optional[bool] = None
+    activity_id: Optional[int] = None
+
+class CalendarEventOut(CalendarEventBase):
+    id: int
+    created_at: datetime
+    created_by: Optional[str] = None
+    couple_code: str
+    
+    class Config:
+        orm_mode = True

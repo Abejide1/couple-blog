@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -199,6 +199,91 @@ async def update_movie(db: AsyncSession, movie_id: int, movie: schemas.MovieUpda
     
     for key, value in movie.dict(exclude_unset=True).items():
         setattr(db_movie, key, value)
+
+# Calendar Model
+class CalendarEvent(Base):
+    __tablename__ = "calendar_events"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=True)
+    all_day = Column(Boolean, default=False)
+    location = Column(String, nullable=True)
+    event_type = Column(String, nullable=True)  # 'birthday', 'anniversary', 'date', 'reminder', etc.
+    recurrence = Column(String, nullable=True)  # 'daily', 'weekly', 'monthly', 'yearly', or null for one-time
+    color = Column(String, nullable=True)  # Color code for the calendar event
+    reminder = Column(Integer, nullable=True)  # Minutes before event to remind
+    created_at = Column(DateTime, default=datetime.utcnow)
+    created_by = Column(String, nullable=True)  # Which partner created the event
+    shared = Column(Boolean, default=True)  # If false, only visible to creator
+    couple_code = Column(String, index=True)
+    activity_id = Column(Integer, ForeignKey('activities.id'), nullable=True)  # Optional link to an activity
+    
+    # Relationship to Activity if one exists
+    activity = relationship("Activity", foreign_keys=[activity_id])
+
+# Calendar CRUD operations
+async def get_calendar_events(db: AsyncSession, code: str, start_date: datetime = None, end_date: datetime = None):
+    query = select(CalendarEvent).filter(CalendarEvent.couple_code == code)
+    
+    if start_date:
+        query = query.filter(CalendarEvent.start_time >= start_date)
+    if end_date:
+        query = query.filter(CalendarEvent.start_time <= end_date)
+        
+    result = await db.execute(query)
+    return result.scalars().all()
+
+async def create_calendar_event(db: AsyncSession, event: schemas.CalendarEventCreate, code: str, partner_id: str = None):
+    try:
+        event_data = event.dict()
+        event_data['couple_code'] = code
+        event_data['created_by'] = partner_id
+        db_event = CalendarEvent(**event_data)
+        db.add(db_event)
+        await db.commit()
+        await db.refresh(db_event)
+        return db_event
+    except Exception as e:
+        print(f"Database error in create_calendar_event: {str(e)}")
+        await db.rollback()
+        raise
+
+async def update_calendar_event(db: AsyncSession, event_id: int, event: schemas.CalendarEventUpdate, code: str):
+    result = await db.execute(
+        select(CalendarEvent)
+        .filter(CalendarEvent.id == event_id)
+        .filter(CalendarEvent.couple_code == code)
+    )
+    db_event = result.scalar_one_or_none()
+    
+    if not db_event:
+        raise HTTPException(status_code=404, detail="Calendar event not found")
+    
+    for key, value in event.dict(exclude_unset=True).items():
+        setattr(db_event, key, value)
+    
+    await db.commit()
+    await db.refresh(db_event)
+    return db_event
+
+async def delete_calendar_event(db: AsyncSession, event_id: int, code: str):
+    result = await db.execute(
+        select(CalendarEvent)
+        .filter(CalendarEvent.id == event_id)
+        .filter(CalendarEvent.couple_code == code)
+    )
+    db_event = result.scalar_one_or_none()
+    
+    if not db_event:
+        raise HTTPException(status_code=404, detail="Calendar event not found")
+    
+    await db.delete(db_event)
+    await db.commit()
+    return {"status": "success"}
+
     
     await db.commit()
     await db.refresh(db_movie)

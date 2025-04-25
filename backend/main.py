@@ -9,6 +9,7 @@ from backend.books import router as books_router
 from backend.movies import router as movies_router
 from backend.blog import router as blog_router
 from backend.photos import router as photos_router
+from backend.calendar import router as calendar_router
 
 app = FastAPI()
 
@@ -22,11 +23,12 @@ app.add_middleware(
     expose_headers=["*"]
 )
 
-# Register routers for books, movies, blog
+# Register routers for books, movies, blog, photos, calendar
 app.include_router(books_router)
 app.include_router(movies_router)
 app.include_router(blog_router)
 app.include_router(photos_router)
+app.include_router(calendar_router, prefix="/calendar", tags=["calendar"])
 
 @app.get("/")
 async def root():

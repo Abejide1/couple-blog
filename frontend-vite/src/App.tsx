@@ -6,6 +6,7 @@ import Activities from './pages/Activities';
 import Books from './pages/Books';
 import Movies from './pages/Movies';
 import Blog from './pages/Blog';
+import Calendar from './pages/Calendar';
 import CodeEntry from './pages/CodeEntry';
 import { CoupleProvider } from './contexts/CoupleContext';
 import RequireCode from './components/RequireCode';
@@ -30,6 +31,7 @@ function App() {
                       <Route path="/books" element={<Books />} />
                       <Route path="/movies" element={<Movies />} />
                       <Route path="/blog" element={<Blog />} />
+                      <Route path="/calendar" element={<Calendar />} />
                       <Route path="/" element={<Navigate to="/activities" replace />} />
                     </Routes>
                   </Layout>

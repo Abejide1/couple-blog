@@ -48,3 +48,36 @@ export const blogApi = {
     create: (entry: Omit<BlogEntry, 'id' | 'created_at'>) => 
         api.post<BlogEntry>('/blog-entries/', entry),
 };
+
+export interface CalendarEvent {
+    id?: number;
+    title: string;
+    description?: string;
+    start_time: Date | string;
+    end_time?: Date | string;
+    all_day: boolean;
+    location?: string;
+    event_type?: 'birthday' | 'anniversary' | 'date' | 'reminder' | 'appointment' | 'activity' | 'other';
+    recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+    color?: string;
+    reminder?: number;  // minutes before event
+    shared: boolean;
+    activity_id?: number;
+    created_at?: Date | string;
+    created_by?: string;
+    couple_code?: string;
+}
+
+export const calendarApi = {
+    getAll: (startDate?: Date, endDate?: Date) => {
+        let params = {};
+        if (startDate) params = { ...params, start_date: startDate.toISOString() };
+        if (endDate) params = { ...params, end_date: endDate.toISOString() };
+        return api.get<CalendarEvent[]>('/calendar/', { params });
+    },
+    create: (event: Omit<CalendarEvent, 'id' | 'created_at' | 'couple_code' | 'created_by'>) => 
+        api.post<CalendarEvent>('/calendar/', event),
+    update: (id: number, event: Partial<Omit<CalendarEvent, 'id' | 'created_at' | 'couple_code' | 'created_by'>>) => 
+        api.put<CalendarEvent>(`/calendar/${id}`, event),
+    delete: (id: number) => api.delete(`/calendar/${id}`)
+};

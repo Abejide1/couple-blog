@@ -46,6 +46,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         { text: 'Books', icon: <Book />, path: '/books' },
         { text: 'Movies', icon: <Movie />, path: '/movies' },
         { text: 'Blog', icon: <Create />, path: '/blog' },
+        { text: 'Calendar', icon: <Share />, path: '/calendar' }, // Using 'Share' as a calendar icon alternative
     ];
 
     const drawer = (
