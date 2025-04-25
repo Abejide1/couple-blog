@@ -14,11 +14,14 @@ const api = axios.create({
     baseURL: API_URL,
 });
 
-// Add request interceptor to include couple code
+// Add request interceptor to include couple code as a header
 api.interceptors.request.use((config) => {
     const coupleCode = localStorage.getItem('coupleCode');
     if (coupleCode) {
-        config.params = { ...config.params, code: coupleCode };
+        config.headers = {
+            ...config.headers,
+            'X-Couple-Code': coupleCode
+        };
     }
     return config;
 });
