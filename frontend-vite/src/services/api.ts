@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 // Utility to get the couple code from localStorage
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoupleCode() {
   return localStorage.getItem('coupleCode');
 }
@@ -119,6 +120,7 @@ export const challengesApi = {
     complete: (challengeId: number, progressData?: { data: string }) => 
         api.post<ChallengeProgress>(`/challenges/${challengeId}/complete`, progressData)
 };
+// Make sure NO code query param is sent!
 
 // Goal interfaces and API
 export interface Goal {
@@ -158,3 +160,4 @@ export const goalsApi = {
     update: (id: number, goal: GoalUpdate) => api.put<Goal>(`/goals/${id}`, goal),
     delete: (id: number) => api.delete(`/goals/${id}`)
 };
+// Make sure NO code query param is sent!
