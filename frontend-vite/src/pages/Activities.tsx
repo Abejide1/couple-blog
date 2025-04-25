@@ -309,15 +309,6 @@ const Activities = () => {
 };
 
 export default Activities;
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    {activity.description}
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1, mb: 1 }}>
-                                    <Chip label={activity.category} color="primary" size="small" />
-                                    <Chip label={activity.difficulty} color="secondary" size="small" />
-                                    <Chip label={`${activity.duration} min`} color="info" size="small" />
-                                    <Chip label={activity.cost} color="warning" size="small" />
-                                    <Chip label={activity.season} color="default" size="small" />
                                 </Box>
                                 <Typography variant="caption" color="text.secondary">
                                     Created: {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : '-'}
