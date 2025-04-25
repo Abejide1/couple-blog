@@ -6,6 +6,7 @@ import Activities from './pages/Activities';
 import Books from './pages/Books';
 import Movies from './pages/Movies';
 import Blog from './pages/Blog';
+import Compatibility from './pages/Compatibility';
 import Calendar from './pages/Calendar';
 import Challenges from './pages/Challenges';
 import Goals from './pages/Goals';
@@ -36,6 +37,7 @@ function App() {
                       <Route path="/calendar" element={<Calendar />} />
                       <Route path="/challenges" element={<Challenges />} />
                       <Route path="/goals" element={<Goals />} />
+                      <Route path="/compatibility" element={<Compatibility />} />
                       <Route path="/" element={<Navigate to="/activities" replace />} />
                     </Routes>
                   </Layout>

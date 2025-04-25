@@ -47,6 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const navigate = useNavigate();
 
     const menuItems = [
+        { text: 'Compatibility', path: '/compatibility', icon: <span role="img" aria-label="compatibility">💞</span> },
         { text: 'Activities', icon: <FaRegSmileBeam size={36} color="#FF7EB9" />, path: '/activities' },
         { text: 'Books', icon: <BsFillBookmarkHeartFill size={34} color="#7AF5FF" />, path: '/books' },
         { text: 'Movies', icon: <FaFilm size={34} color="#FFD36E" />, path: '/movies' },
