@@ -123,12 +123,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         open={Boolean(paletteAnchor)}
                         anchorEl={paletteAnchor}
                         onClose={handlePaletteClose}
-                        anchorOrigin={{ vertical: 'center', horizontal: 'left' }}
-                        transformOrigin={{ vertical: 'center', horizontal: 'right' }}
-                        PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 2px 16px #FFD6E8', p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' } }}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        PaperProps={{ sx: { borderRadius: 3, boxShadow: '0 2px 16px #FFD6E8', p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 } }}
                     >
-                        {/* Custom vertical color picker */}
-                        <MuiBox sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        {/* Custom vertical color picker with extra bottom margin */}
+                        <MuiBox sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2, mb: 2 }}>
                             {paletteColors.map((color) => (
                                 <IconButton
                                     key={color}

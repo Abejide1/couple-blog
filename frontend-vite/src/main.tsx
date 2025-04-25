@@ -3,6 +3,17 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
+// Add global gradient background
+const gradientStyle = document.createElement('style');
+gradientStyle.innerHTML = `
+  body {
+    background: linear-gradient(135deg, #FFF6FB 0%, #FFEBF7 40%, #B5EAD7 100%);
+    min-height: 100vh;
+  }
+`;
+document.head.appendChild(gradientStyle);
+
+
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
