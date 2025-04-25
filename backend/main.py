@@ -10,6 +10,11 @@ from backend.movies import router as movies_router
 from backend.blog import router as blog_router
 from backend.photos import router as photos_router
 from backend.calendar import router as calendar_router
+from backend.challenges import router as challenges_router
+from backend.goals import router as goals_router
+
+# Import our custom models to ensure they're included in create_all
+from backend.challenge_models import Challenge, ChallengeProgress, Goal
 
 app = FastAPI()
 
@@ -23,16 +28,32 @@ app.add_middleware(
     expose_headers=["*"]
 )
 
-# Register routers for books, movies, blog, photos, calendar
+# Register routers for books, movies, blog, photos, calendar, challenges, goals
 app.include_router(books_router)
 app.include_router(movies_router)
 app.include_router(blog_router)
 app.include_router(photos_router)
 app.include_router(calendar_router, prefix="/calendar", tags=["calendar"])
+app.include_router(challenges_router, prefix="/challenges", tags=["challenges"])
+app.include_router(goals_router, prefix="/goals", tags=["goals"])
 
 @app.get("/")
 async def root():
-    return {"message": "Couple Activities Blog API is running!"}
+    return {"message": "Welcome to the Couple Activities API"}
+
+# Initialize database and seed data on startup
+@app.on_event("startup")
+async def startup_event():
+    # Create database tables if they don't exist (don't drop existing tables)
+    async with engine.begin() as conn:
+        # Skip the drop_all to preserve existing data
+        # await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+    
+    # Get a DB session
+    async with AsyncSessionLocal() as session:
+        # Seed challenges
+        await seed_challenges(session)
 
 @app.get("/activities/", response_model=List[schemas.Activity])
 async def get_activities(

@@ -192,3 +192,80 @@ class CalendarEventOut(CalendarEventBase):
     
     class Config:
         orm_mode = True
+        
+# Challenge & Goal Schemas
+class ChallengeBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    category: Optional[str] = None  # e.g., 'daily', 'weekly', 'one-time', 'beginner', 'advanced'
+    points: int = 10  # Reward points for completing
+    icon: Optional[str] = None  # Icon or emoji name
+    active: bool = True  # Whether challenge is active in system
+
+class ChallengeCreate(ChallengeBase):
+    pass
+
+class ChallengeUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    points: Optional[int] = None
+    icon: Optional[str] = None
+    active: Optional[bool] = None
+
+class Challenge(ChallengeBase):
+    id: int
+    created_at: datetime
+    
+    class Config:
+        orm_mode = True
+
+class ChallengeWithProgress(Challenge):
+    started: bool = False
+    completed: bool = False
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+class ProgressData(BaseModel):
+    data: Optional[str] = None
+
+class ChallengeProgress(BaseModel):
+    id: int
+    challenge_id: int
+    couple_code: str
+    started_at: datetime
+    completed_at: Optional[datetime] = None
+    progress_data: Optional[str] = None
+    
+    class Config:
+        orm_mode = True
+
+# Goal Schemas
+class GoalBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    target_date: Optional[datetime] = None
+    priority: Optional[str] = None  # 'low', 'medium', 'high'
+    category: Optional[str] = None  # Custom categorization
+
+class GoalCreate(GoalBase):
+    pass
+
+class GoalUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    target_date: Optional[datetime] = None
+    completed: Optional[bool] = None
+    priority: Optional[str] = None
+    category: Optional[str] = None
+
+class Goal(GoalBase):
+    id: int
+    completed: bool
+    created_by: Optional[str] = None
+    created_at: datetime
+    completed_at: Optional[datetime] = None
+    couple_code: str
+    
+    class Config:
+        orm_mode = True

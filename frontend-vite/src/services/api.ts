@@ -81,3 +81,77 @@ export const calendarApi = {
         api.put<CalendarEvent>(`/calendar/${id}`, event),
     delete: (id: number) => api.delete(`/calendar/${id}`)
 };
+
+// Challenge interfaces and API
+export interface Challenge {
+    id: number;
+    title: string;
+    description?: string;
+    category?: string;
+    points: number;
+    icon?: string;
+    active: boolean;
+    created_at: Date | string;
+}
+
+export interface ChallengeWithProgress extends Challenge {
+    started: boolean;
+    completed: boolean;
+    started_at?: Date | string;
+    completed_at?: Date | string;
+}
+
+export interface ChallengeProgress {
+    id: number;
+    challenge_id: number;
+    couple_code: string;
+    started_at: Date | string;
+    completed_at?: Date | string;
+    progress_data?: string;
+}
+
+export const challengesApi = {
+    getAll: () => api.get<ChallengeWithProgress[]>('/challenges/'),
+    start: (challengeId: number) => api.post<ChallengeProgress>(`/challenges/${challengeId}/start`),
+    complete: (challengeId: number, progressData?: { data: string }) => 
+        api.post<ChallengeProgress>(`/challenges/${challengeId}/complete`, progressData)
+};
+
+// Goal interfaces and API
+export interface Goal {
+    id: number;
+    title: string;
+    description?: string;
+    target_date?: Date | string;
+    completed: boolean;
+    priority?: string;
+    category?: string;
+    created_by?: string;
+    created_at: Date | string;
+    completed_at?: Date | string;
+    couple_code: string;
+}
+
+export interface GoalCreate {
+    title: string;
+    description?: string;
+    target_date?: Date | string;
+    priority?: string;
+    category?: string;
+}
+
+export interface GoalUpdate {
+    title?: string;
+    description?: string;
+    target_date?: Date | string;
+    completed?: boolean;
+    priority?: string;
+    category?: string;
+}
+
+export const goalsApi = {
+    getAll: () => api.get<Goal[]>('/goals/'),
+    create: (goal: GoalCreate) => api.post<Goal>('/goals/', goal),
+    update: (id: number, goal: GoalUpdate) => api.put<Goal>(`/goals/${id}`, goal),
+    delete: (id: number) => api.delete(`/goals/${id}`)
+};

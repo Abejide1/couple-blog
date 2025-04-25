@@ -23,7 +23,9 @@ import {
     Movie,
     Create,
     Share,
-    ContentCopy
+    ContentCopy,
+    EmojiEvents as TrophyIcon,
+    Flag as GoalIcon
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -46,7 +48,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         { text: 'Books', icon: <Book />, path: '/books' },
         { text: 'Movies', icon: <Movie />, path: '/movies' },
         { text: 'Blog', icon: <Create />, path: '/blog' },
-        { text: 'Calendar', icon: <Share />, path: '/calendar' }, // Using 'Share' as a calendar icon alternative
+        { text: 'Calendar', icon: <Share />, path: '/calendar' },
+        { text: 'Goals', icon: <GoalIcon />, path: '/goals' },
     ];
 
     const drawer = (
@@ -88,6 +91,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         Couple Activities Blog
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Button
+                            color="inherit"
+                            startIcon={<TrophyIcon />}
+                            component={RouterLink}
+                            to="/challenges"
+                            sx={{ fontWeight: 'bold' }}
+                        >
+                            Challenges
+                        </Button>
                         <Tooltip title="Copy couple code">
                             <Button
                                 color="inherit"
