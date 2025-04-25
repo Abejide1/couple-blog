@@ -309,25 +309,6 @@ const Activities = () => {
 };
 
 export default Activities;
-                    >
-                        <MenuItem value="outdoor">Outdoor</MenuItem>
-                        <MenuItem value="indoor">Indoor</MenuItem>
-                        <MenuItem value="dining">Dining</MenuItem>
-                        <MenuItem value="entertainment">Entertainment</MenuItem>
-                        <MenuItem value="travel">Travel</MenuItem>
-                    </TextField>
-                    <TextField
-                        select
-                        margin="dense"
-                        label="Difficulty"
-                        fullWidth
-                        value={newActivity.difficulty}
-                        onChange={(e) => setNewActivity({ ...newActivity, difficulty: e.target.value as Difficulty })}
-                    >
-                        <MenuItem value="easy">Easy</MenuItem>
-                        <MenuItem value="medium">Medium</MenuItem>
-                        <MenuItem value="hard">Hard</MenuItem>
-                    </TextField>
                     <TextField
                         type="number"
                         margin="dense"
