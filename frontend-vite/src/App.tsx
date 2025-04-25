@@ -19,7 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <CustomThemeProvider>
-        <ThemeToggle />
+
         <CoupleProvider>
           <Routes>
             <Route path="/code" element={<CodeEntry />} />

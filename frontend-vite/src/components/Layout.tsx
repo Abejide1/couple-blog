@@ -21,6 +21,7 @@ import { FaRegSmileBeam, FaBlog, FaTrophy, FaFilm, FaTasks, FaPalette, FaMoon, F
 import { MdMenu, MdContentCopy } from 'react-icons/md';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useThemeMode } from '../contexts/ThemeContext';
 import { Popover, Box as MuiBox } from '@mui/material';
 import { CirclePicker } from 'react-color';
 import { useCouple } from '../contexts/CoupleContext';
@@ -41,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [appBarColor, setAppBarColor] = useState(() => localStorage.getItem('appBarColor') || defaultAppBarColor);
     const [paletteAnchor, setPaletteAnchor] = useState<null | HTMLElement>(null);
-    const [darkMode, setDarkMode] = useState(false);
+    const { mode, toggleTheme } = useThemeMode();
     const { coupleCode, clearCode } = useCouple();
     const navigate = useNavigate();
 
@@ -92,8 +93,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setPaletteAnchor(null);
     };
 
-    // Dark mode toggle handler (move to top right, visible)
-    const handleDarkModeToggle = () => setDarkMode((d) => !d);
+    // Dark mode toggle handler (uses ThemeContext)
+    const handleDarkModeToggle = () => toggleTheme();
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -106,7 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         size="large"
                         aria-label="toggle dark mode"
                     >
-                        {darkMode ? <FaSun size={22} color="#FFD36E" /> : <FaMoon size={22} color="#B388FF" />}
+                        {mode === 'dark' ? <FaSun size={22} color="#FFD36E" /> : <FaMoon size={22} color="#B388FF" />}
                     </IconButton>
 
                     {/* Palette icon at bottom center of AppBar */}
