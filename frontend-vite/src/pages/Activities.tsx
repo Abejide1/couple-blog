@@ -312,7 +312,7 @@ export default Activities;
                                 <Typography variant="body2" color="text.secondary" gutterBottom>
                                     {activity.description}
                                 </Typography>
-                                <Box display="flex" flexWrap="wrap" gap={1} mt={1} mb={1}>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1, mb: 1 }}>
                                     <Chip label={activity.category} color="primary" size="small" />
                                     <Chip label={activity.difficulty} color="secondary" size="small" />
                                     <Chip label={`${activity.duration} min`} color="info" size="small" />
