@@ -3,6 +3,34 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
+# --- User Schemas ---
+from typing import Optional
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+    display_name: Optional[str] = None
+    couple_code: Optional[str] = None
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class UserProfile(BaseModel):
+    display_name: Optional[str] = None
+    profile_pic: Optional[str] = None
+    couple_code: Optional[str] = None
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    display_name: Optional[str]
+    profile_pic: Optional[str]
+    couple_code: Optional[str]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
 class CoupleCode(BaseModel):
     code: str
 

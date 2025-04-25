@@ -12,6 +12,7 @@ from backend.photos import router as photos_router
 from backend.calendar import router as calendar_router
 from backend.challenges import router as challenges_router
 from backend.goals import router as goals_router
+from backend.user_auth import router as user_auth_router
 
 # Import our custom models to ensure they're included in create_all
 from backend.challenge_models import Challenge, ChallengeProgress, Goal
@@ -39,6 +40,7 @@ app.include_router(photos_router)
 app.include_router(calendar_router, prefix="/calendar", tags=["calendar"])
 app.include_router(challenges_router, prefix="/challenges", tags=["challenges"])
 app.include_router(goals_router, prefix="/goals", tags=["goals"])
+app.include_router(user_auth_router)
 
 @app.get("/")
 async def root():
