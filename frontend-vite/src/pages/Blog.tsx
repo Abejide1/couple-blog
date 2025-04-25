@@ -17,6 +17,10 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { BlogEntry } from '../types';
 import { blogApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import MoodPicker from '../components/MoodPicker';
+import ActivityGallery from '../components/ActivityGallery';
+import MoodPicker from '../components/MoodPicker';
+import ActivityGallery from '../components/ActivityGallery';
 
 const Blog = () => {
     const [entries, setEntries] = useState<BlogEntry[]>([]);
@@ -25,7 +29,9 @@ const Blog = () => {
     const [newEntry, setNewEntry] = useState({
         title: '',
         content: '',
-        author: ''
+        author: '',
+        mood: '',
+        photo: null as File | null
     });
 
     const fetchEntries = async () => {
@@ -45,9 +51,24 @@ const Blog = () => {
 
     const handleSubmit = async () => {
         try {
-            await blogApi.create(newEntry);
+            let photoPath = '';
+            if (newEntry.photo) {
+                const formData = new FormData();
+                formData.append('file', newEntry.photo);
+                formData.append('blog_entry_id', ''); // Let backend associate later
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/photos/`, {
+                  method: 'POST',
+                  body: formData,
+                  headers: { 'couple-code': localStorage.getItem('coupleCode') || '' }
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  photoPath = data.file_path;
+                }
+            }
+            await blogApi.create({ ...newEntry, photo: photoPath });
             setOpen(false);
-            setNewEntry({ title: '', content: '', author: '' });
+            setNewEntry({ title: '', content: '', author: '', mood: '', photo: null });
             fetchEntries();
         } catch (error) {
             console.error('Error creating blog entry:', error);
@@ -76,15 +97,20 @@ const Blog = () => {
                         <Paper elevation={3}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant="h5" gutterBottom>
-                                        {entry.title}
-                                    </Typography>
+                                    <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                        {entry.mood && <span style={{ fontSize: 28 }}>{entry.mood}</span>}
+                                        <Typography variant="h5" gutterBottom>
+                                            {entry.title}
+                                        </Typography>
+                                    </Box>
                                     <Typography variant="subtitle2" color="textSecondary" gutterBottom>
                                         Written by {entry.author} on {new Date(entry.created_at).toLocaleDateString()}
                                     </Typography>
                                     <Typography variant="body1" style={{ whiteSpace: 'pre-line' }}>
                                         {entry.content}
                                     </Typography>
+                                    {/* Blog Gallery (reuse ActivityGallery with blogEntryId) */}
+                                    <ActivityGallery blogEntryId={entry.id} />
                                 </CardContent>
                             </Card>
                         </Paper>
@@ -119,6 +145,29 @@ const Blog = () => {
                         value={newEntry.content}
                         onChange={(e) => setNewEntry({ ...newEntry, content: e.target.value })}
                     />
+                    {/* Mood Picker */}
+                    <MoodPicker value={newEntry.mood} onChange={(mood) => setNewEntry({ ...newEntry, mood })} />
+                    {/* Photo Upload */}
+                    <Button
+                        variant="outlined"
+                        component="label"
+                        sx={{ mt: 2, mb: 1 }}
+                    >
+                        Upload Photo
+                        <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={e => {
+                                if (e.target.files && e.target.files[0]) {
+                                    setNewEntry({ ...newEntry, photo: e.target.files[0] });
+                                }
+                            }}
+                        />
+                    </Button>
+                    {newEntry.photo && (
+                        <Typography variant="body2" color="textSecondary">{newEntry.photo.name}</Typography>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpen(false)}>Cancel</Button>

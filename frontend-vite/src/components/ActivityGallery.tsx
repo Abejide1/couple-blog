@@ -8,7 +8,12 @@ interface Photo {
   uploaded_at: string;
 }
 
-export default function ActivityGallery({ activityId }: { activityId: number }) {
+interface ActivityGalleryProps {
+  activityId?: number;
+  blogEntryId?: number;
+}
+
+export default function ActivityGallery({ activityId, blogEntryId }: ActivityGalleryProps) {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -17,16 +22,19 @@ export default function ActivityGallery({ activityId }: { activityId: number }) 
     const fetchPhotos = async () => {
       try {
         const coupleCode = localStorage.getItem('coupleCode');
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/photos/`, {
-          params: { couple_code: coupleCode, activity_id: activityId }
-        });
+        const params: any = { couple_code: coupleCode };
+        if (activityId) params.activity_id = activityId;
+        if (blogEntryId) params.blog_entry_id = blogEntryId;
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/photos/`, { params });
         setPhotos(res.data);
       } catch (e) {
         setPhotos([]);
       }
     };
-    fetchPhotos();
-  }, [activityId]);
+    if (activityId || blogEntryId) {
+      fetchPhotos();
+    }
+  }, [activityId, blogEntryId]);
 
   if (!photos.length) return null;
   return (
