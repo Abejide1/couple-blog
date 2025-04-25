@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from backend.models import Base
+
+# Create Base instance for models
+Base = declarative_base()
 
 DATABASE_URL = "sqlite+aiosqlite:///./couple_activities.db"
 
@@ -20,9 +22,9 @@ AsyncSessionLocal = sessionmaker(
 
 async def init_db():
     async with engine.begin() as conn:
-        # Drop all tables to start fresh (ONE TIME ONLY)
-        await conn.run_sync(Base.metadata.drop_all)
-        # Create all tables
+        # COMMENTED OUT: Drop all tables to start fresh (ONE TIME ONLY)
+        # await conn.run_sync(Base.metadata.drop_all)
+        # Create all tables if they don't exist
         await conn.run_sync(Base.metadata.create_all)
 
 async def get_db():

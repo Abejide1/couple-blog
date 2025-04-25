@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from backend import models
 from backend import schemas
-from backend.database import engine, get_db, init_db
+from backend.database import engine, get_db, init_db, Base, AsyncSessionLocal
 from backend.books import router as books_router
 from backend.movies import router as movies_router
 from backend.blog import router as blog_router
@@ -15,6 +15,9 @@ from backend.goals import router as goals_router
 
 # Import our custom models to ensure they're included in create_all
 from backend.challenge_models import Challenge, ChallengeProgress, Goal
+
+# Import seed data function
+from backend.seed_challenges import seed_challenges
 
 app = FastAPI()
 
@@ -46,14 +49,18 @@ async def root():
 async def startup_event():
     # Create database tables if they don't exist (don't drop existing tables)
     async with engine.begin() as conn:
-        # Skip the drop_all to preserve existing data
-        # await conn.run_sync(Base.metadata.drop_all)
+        # Create all tables if they don't exist (without dropping existing ones)
         await conn.run_sync(Base.metadata.create_all)
     
     # Get a DB session
     async with AsyncSessionLocal() as session:
-        # Seed challenges
-        await seed_challenges(session)
+        try:
+            # Seed challenges
+            await seed_challenges(session)
+            print("✓ Database initialized and challenges seeded")
+        except Exception as e:
+            print(f"Error during seeding: {e}")
+            # Continue app startup even if seeding fails
 
 @app.get("/activities/", response_model=List[schemas.Activity])
 async def get_activities(

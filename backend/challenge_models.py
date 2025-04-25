@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from backend.models import Base
+from backend.database import Base
 
 # Challenge Model - System-defined challenges for all couples
 class Challenge(Base):

@@ -147,7 +147,18 @@ sample_challenges = [
 ]
 
 async def seed_challenges(db: AsyncSession):
-    # Check if challenges already exist
+    # Check if any challenges already exist (by querying the first one)
+    from sqlalchemy.future import select
+    result = await db.execute(select(Challenge).limit(1))
+    existing = result.scalar_one_or_none()
+    
+    # If challenges already exist, skip seeding
+    if existing:
+        print("Challenges already exist in the database, skipping seed")
+        return
+    
+    print("Seeding challenges...")
+    # Create the challenges since none exist
     for challenge_data in sample_challenges:
         db_challenge = Challenge(
             title=challenge_data["title"],
@@ -161,3 +172,4 @@ async def seed_challenges(db: AsyncSession):
         db.add(db_challenge)
     
     await db.commit()
+    print(f"✓ {len(sample_challenges)} challenges seeded successfully")

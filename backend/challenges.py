@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from backend.database import get_db
-from backend import models, schemas
+from backend import schemas
+from backend.challenge_ops import get_challenge, get_couple_challenges, start_challenge, complete_challenge, create_challenge, update_challenge
 from .auth import validate_couple_code
 
 router = APIRouter()
@@ -14,7 +15,7 @@ async def get_challenges(
     db: AsyncSession = Depends(get_db)
 ):
     """Get all challenges with progress for the current couple"""
-    challenges = await models.get_couple_challenges(db, code)
+    challenges = await get_couple_challenges(db, code)
     result = []
     
     for challenge, progress in challenges:
@@ -36,11 +37,11 @@ async def start_challenge(
 ):
     """Start a challenge for a couple"""
     # Check if challenge exists
-    challenge = await models.get_challenge(db, challenge_id)
+    challenge = await get_challenge(db, challenge_id)
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
         
-    progress = await models.start_challenge(db, challenge_id, code)
+    progress = await start_challenge(db, challenge_id, code)
     return progress
 
 # Complete a challenge for a couple
@@ -53,11 +54,11 @@ async def complete_challenge(
 ):
     """Complete a challenge for a couple"""
     # Check if challenge exists
-    challenge = await models.get_challenge(db, challenge_id)
+    challenge = await get_challenge(db, challenge_id)
     if not challenge:
         raise HTTPException(status_code=404, detail="Challenge not found")
         
-    progress = await models.complete_challenge(
+    progress = await complete_challenge(
         db, 
         challenge_id, 
         code, 
@@ -73,7 +74,7 @@ async def create_challenge(
     # In a real app, add admin validation here
 ):
     """Create a new challenge (admin only)"""
-    return await models.create_challenge(db, challenge)
+    return await create_challenge(db, challenge)
 
 @router.put("/admin/{challenge_id}", response_model=schemas.Challenge)
 async def update_challenge(
@@ -83,4 +84,4 @@ async def update_challenge(
     # In a real app, add admin validation here
 ):
     """Update an existing challenge (admin only)"""
-    return await models.update_challenge(db, challenge_id, challenge)
+    return await update_challenge(db, challenge_id, challenge)

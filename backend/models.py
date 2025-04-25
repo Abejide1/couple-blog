@@ -1,12 +1,11 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from fastapi import HTTPException
 from backend import schemas
-
-Base = declarative_base()
+from backend.database import Base
 
 
 
