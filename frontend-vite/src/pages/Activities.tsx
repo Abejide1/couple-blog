@@ -13,28 +13,28 @@ import {
     Box,
     Paper,
     Chip,
-    Divider
+    Divider,
+    Grid
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { TrendingUp, CheckCircle, Schedule, Category as CategoryIcon, Timer } from '@mui/icons-material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { TrendingUp, CheckCircle, Schedule, Category as CategoryIcon, Timer, Add as AddIcon } from '@mui/icons-material';
 import { Activity, Category, Difficulty, Cost, Season } from '../types';
 import { activitiesApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MoodPicker from '../components/MoodPicker';
 import ActivityGallery from '../components/ActivityGallery';
 
-const initialActivity = {
+const initialActivity: Omit<Activity, 'id' | 'created_at'> & { mood?: string } = {
     title: '',
     description: '',
-    status: 'planned' as const,
-    category: 'indoor' as Category,
-    difficulty: 'easy' as Difficulty,
+    status: 'planned',
+    category: 'indoor',
+    difficulty: 'easy',
     duration: 30,
-    cost: 'low' as Cost,
-    season: 'any' as Season,
+    cost: 'low',
+    season: 'any',
     rating: undefined,
-    notes: undefined
+    notes: undefined,
+    mood: ''
 };
 
 const Activities = () => {
@@ -42,7 +42,7 @@ const Activities = () => {
     const [activities, setActivities] = useState<ActivityWithMood[]>([]);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
-    const [newActivity, setNewActivity] = useState<Omit<Activity, 'id' | 'created_at'>>(initialActivity);
+    const [newActivity, setNewActivity] = useState<Omit<Activity, 'id' | 'created_at'> & { mood?: string }>(initialActivity);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -66,7 +66,6 @@ const Activities = () => {
     const handleSubmit = React.useCallback(async () => {
         setSubmitLoading(true);
         setErrorMsg(null);
-        // Check for couple code
         const coupleCode = localStorage.getItem('coupleCode');
         if (!coupleCode) {
             setErrorMsg('Please enter your couple code first.');
@@ -74,9 +73,7 @@ const Activities = () => {
             return;
         }
         try {
-            // 1. Create activity
             const res = await activitiesApi.create(newActivity);
-            // 2. If photo, upload it
             if (photoFile && res.data?.id) {
                 const formData = new FormData();
                 formData.append('file', photoFile);
@@ -106,7 +103,6 @@ const Activities = () => {
         const planned = activities.filter(a => a.status === 'planned').length;
         const categoryCount: Record<string, number> = {};
         let totalDuration = 0;
-
         activities.forEach(a => {
             categoryCount[a.category] = (categoryCount[a.category] || 0) + 1;
             totalDuration += a.duration || 0;
@@ -118,7 +114,6 @@ const Activities = () => {
 
     if (loading) return <LoadingSpinner />;
 
-    // --- UI ---
     return (
         <Box>
             <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
@@ -134,42 +129,12 @@ const Activities = () => {
                 </Button>
             </Box>
             {/* --- STATISTICS SECTION --- */}
-            <Grid container spacing={2} style={{ marginBottom: 32 }}>
-                <Grid item xs={12} sm={6} md={2}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.50' }}>
-                        <TrendingUp color="primary" sx={{ fontSize: 32, mb: 1 }} />
-                        <Typography variant="h6">Total</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.total}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={2}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'success.50' }}>
-                        <CheckCircle color="success" sx={{ fontSize: 32, mb: 1 }} />
-                        <Typography variant="h6">Completed</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.completed}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={2}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'warning.50' }}>
-                        <Schedule color="warning" sx={{ fontSize: 32, mb: 1 }} />
-                        <Typography variant="h6">Planned</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.planned}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'info.50' }}>
-                        <CategoryIcon color="info" sx={{ fontSize: 32, mb: 1 }} />
-                        <Typography variant="h6">Popular Category</Typography>
-                        <Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600 }} />
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'secondary.50' }}>
-                        <Timer color="secondary" sx={{ fontSize: 32, mb: 1 }} />
-                        <Typography variant="h6">Avg. Duration</Typography>
-                        <Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography>
-                    </Paper>
-                </Grid>
+            <Grid container spacing={2} sx={{ marginBottom: 4 }}>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.50' }}><TrendingUp color="primary" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Total</Typography><Typography variant="h5" fontWeight={700}>{stats.total}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'success.50' }}><CheckCircle color="success" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Completed</Typography><Typography variant="h5" fontWeight={700}>{stats.completed}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'warning.50' }}><Schedule color="warning" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Planned</Typography><Typography variant="h5" fontWeight={700}>{stats.planned}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'info.50' }}><CategoryIcon color="info" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Popular Category</Typography><Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600 }} /></Paper></Grid>
+                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'secondary.50' }}><Timer color="secondary" sx={{ fontSize: 32, mb: 1 }} /><Typography variant="h6">Avg. Duration</Typography><Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography></Paper></Grid>
             </Grid>
             <Divider sx={{ mb: 4 }} />
             <Grid container spacing={3}>
@@ -307,80 +272,5 @@ const Activities = () => {
         </Box>
     );
 };
-
-export default Activities;
-                    <TextField
-                        type="number"
-                        margin="dense"
-                        label="Duration (minutes)"
-                        fullWidth
-                        value={newActivity.duration}
-                        onChange={(e) => setNewActivity({ ...newActivity, duration: parseInt(e.target.value) })}
-                    />
-                    <TextField
-                        select
-                        margin="dense"
-                        label="Cost"
-                        fullWidth
-                        value={newActivity.cost}
-                        onChange={(e) => setNewActivity({ ...newActivity, cost: e.target.value as Cost })}
-                    >
-                        <MenuItem value="free">Free</MenuItem>
-                        <MenuItem value="low">Low</MenuItem>
-                        <MenuItem value="medium">Medium</MenuItem>
-                        <MenuItem value="high">High</MenuItem>
-                    </TextField>
-                    <TextField
-                        select
-                        margin="dense"
-                        label="Season"
-                        fullWidth
-                        value={newActivity.season}
-                        onChange={(e) => setNewActivity({ ...newActivity, season: e.target.value as Season })}
-                    >
-                        <MenuItem value="any">Any Season</MenuItem>
-                        <MenuItem value="spring">Spring</MenuItem>
-                        <MenuItem value="summer">Summer</MenuItem>
-                        <MenuItem value="fall">Fall</MenuItem>
-                        <MenuItem value="winter">Winter</MenuItem>
-                    </TextField>
-                    <TextField
-                        select
-                        margin="dense"
-                        label="Status"
-                        fullWidth
-                        value={newActivity.status}
-                        onChange={(e) => setNewActivity({ ...newActivity, status: e.target.value as 'planned' | 'completed' })}
-                    >
-                        <MenuItem value="planned">Planned</MenuItem>
-                        <MenuItem value="completed">Completed</MenuItem>
-                    </TextField>
-                  <MoodPicker
-                    value={newActivity.mood}
-                    onChange={(mood) => setNewActivity({ ...newActivity, mood })}
-                  />
-                  <Box mt={2}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={e => setPhotoFile(e.target.files?.[0] || null)}
-                    />
-                  </Box>
-                </DialogContent>
-                {errorMsg && (
-                    <Box mt={2} color="error.main">
-                        <Typography color="error">{errorMsg}</Typography>
-                    </Box>
-                )}
-                <DialogActions>
-                    <Button onClick={() => setOpen(false)} disabled={submitLoading}>Cancel</Button>
-                    <Button onClick={handleSubmit} color="primary" disabled={submitLoading}>
-                        {submitLoading ? 'Adding...' : 'Add'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
-}
 
 export default Activities;
