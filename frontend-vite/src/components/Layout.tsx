@@ -239,6 +239,63 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             Change Code
                         </Button>
                     </Box>
+                    {/* User avatar/profile/logout dropdown */}
+                    {user && (
+                        <Box ml={2}>
+                            <Button
+                                onClick={handleUserMenuOpen}
+                                sx={{
+                                    borderRadius: 8,
+                                    p: 0.5,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    bgcolor: '#FFF6FB',
+                                    boxShadow: '0 2px 8px #FFD6E8',
+                                    '&:hover': { bgcolor: '#FFD6E8' },
+                                    minWidth: 0
+                                }}
+                            >
+                                <Avatar
+                                    src={user.profile_pic ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/${user.profile_pic}` : undefined}
+                                    sx={{ width: 36, height: 36, bgcolor: '#FFD6E8', fontWeight: 900, mr: 1 }}
+                                >
+                                    {user.display_name?.charAt(0) || user.email.charAt(0)}
+                                </Avatar>
+                                <Typography sx={{ fontWeight: 700, color: '#B388FF', mr: 1, display: { xs: 'none', md: 'block' } }}>
+                                    {user.display_name || user.email}
+                                </Typography>
+                                <span style={{ color: '#B388FF', fontSize: 18, marginLeft: 2 }}>▼</span>
+                            </Button>
+                            <Menu
+                                anchorEl={userMenuAnchor}
+                                open={Boolean(userMenuAnchor)}
+                                onClose={handleUserMenuClose}
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                PaperProps={{ sx: { borderRadius: 4, minWidth: 180, p: 1 } }}
+                            >
+                                <MenuItem onClick={handleProfile} sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 2 }}>Profile</MenuItem>
+                                <MenuItem onClick={handleLogout} sx={{ fontWeight: 700, color: '#FF7EB9', borderRadius: 2 }}>Logout</MenuItem>
+                            </Menu>
+                        </Box>
+                    )}
+                    {/* Settings gear icon and dropdown */}
+                    <Tooltip title="Settings">
+                        <IconButton color="inherit" onClick={handleSettingsClick} sx={{ ml: 1 }}>
+                            <FaCog size={28} />
+                        </IconButton>
+                    </Tooltip>
+                    <SettingsMenu
+                        anchorEl={settingsAnchor}
+                        open={Boolean(settingsAnchor)}
+                        onClose={handleSettingsClose}
+                        background={background}
+                        setBackground={setBackground}
+                        floatingIcons={floatingIcons}
+                        setFloatingIcons={setFloatingIcons}
+                        iconStyle={iconStyle}
+                        setIconStyle={setIconStyle}
+                    />
                 </Toolbar>
             </AppBar>
 
