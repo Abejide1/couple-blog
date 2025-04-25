@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, ImageList, ImageListItem, Dialog } from '@mui/material';
 import axios from 'axios';
 

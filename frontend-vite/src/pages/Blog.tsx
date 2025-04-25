@@ -19,8 +19,6 @@ import { blogApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MoodPicker from '../components/MoodPicker';
 import ActivityGallery from '../components/ActivityGallery';
-import MoodPicker from '../components/MoodPicker';
-import ActivityGallery from '../components/ActivityGallery';
 
 const Blog = () => {
     const [entries, setEntries] = useState<BlogEntry[]>([]);

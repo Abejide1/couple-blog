@@ -1,7 +1,5 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
-import { CustomThemeProvider, useThemeMode } from './contexts/ThemeContext';
+import { CustomThemeProvider } from './contexts/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
 import Layout from './components/Layout';
 import Activities from './pages/Activities';
@@ -12,16 +10,7 @@ import CodeEntry from './pages/CodeEntry';
 import { CoupleProvider } from './contexts/CoupleContext';
 import RequireCode from './components/RequireCode';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2196f3',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-  },
-});
+
 
 function App() {
   return (
@@ -49,7 +38,7 @@ function App() {
             />
           </Routes>
         </CoupleProvider>
-      </ThemeProvider>
+      </CustomThemeProvider>
     </BrowserRouter>
   );
 }
