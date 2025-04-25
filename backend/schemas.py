@@ -58,7 +58,7 @@ class Activity(ActivityBase):
     mood: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BookBase(BaseModel):
     title: str
@@ -80,7 +80,7 @@ class Book(BookBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class MovieBase(BaseModel):
     title: str
@@ -102,7 +102,7 @@ class Movie(MovieBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BlogEntryBase(BaseModel):
     title: str
@@ -121,7 +121,7 @@ class Photo(BaseModel):
     uploaded_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class BlogEntryUpdate(BlogEntryBase):
     title: Optional[str] = None
@@ -134,7 +134,7 @@ class BlogEntry(BlogEntryBase):
     mood: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Calendar Event Schemas
 class EventType(str, Enum):
@@ -191,7 +191,7 @@ class CalendarEventOut(CalendarEventBase):
     couple_code: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         
 # Challenge & Goal Schemas
 class ChallengeBase(BaseModel):
@@ -218,7 +218,7 @@ class Challenge(ChallengeBase):
     created_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ChallengeWithProgress(Challenge):
     started: bool = False
@@ -238,7 +238,7 @@ class ChallengeProgress(BaseModel):
     progress_data: Optional[str] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Goal Schemas
 class GoalBase(BaseModel):
@@ -268,4 +268,4 @@ class Goal(GoalBase):
     couple_code: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True
