@@ -309,53 +309,6 @@ const Activities = () => {
 };
 
 export default Activities;
-                                </Box>
-                                <Typography variant="caption" color="text.secondary">
-                                    Created: {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : '-'}
-                                </Typography>
-                            </CardContent>
-                            <Box p={2} display="flex" justifyContent="flex-end">
-                                <Button
-                                    size="small"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        // TODO: Implement activity details/edit dialog
-                                    }}
-                                >
-                                    Details
-                                </Button>
-                            </Box>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-
-            {/* --- ADD ACTIVITY DIALOG (unchanged) --- */}
-            <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Add Activity</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Title"
-                        fullWidth
-                        value={newActivity.title}
-                        onChange={(e) => setNewActivity({ ...newActivity, title: e.target.value })}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Description"
-                        fullWidth
-                        value={newActivity.description}
-                        onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
-                    />
-                    <TextField
-                        select
-                        margin="dense"
-                        label="Category"
-                        fullWidth
-                        value={newActivity.category}
-                        onChange={(e) => setNewActivity({ ...newActivity, category: e.target.value as Category })}
                     >
                         <MenuItem value="outdoor">Outdoor</MenuItem>
                         <MenuItem value="indoor">Indoor</MenuItem>
