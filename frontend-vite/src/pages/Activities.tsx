@@ -171,8 +171,10 @@ const Activities = () => {
             <Grid container spacing={3} justifyContent="center" alignItems="center">
                 {activities.map((activity) => (
                     <Grid item xs={12} sm={6} md={4} key={activity.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                        {/* ...activity card content here... */}
+                    </Grid>
                 ))}
-            </Box>
+            </Grid>
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>Add Activity</DialogTitle>
                 <DialogContent>
