@@ -143,13 +143,6 @@ const Movies = () => {
                                 />
                             </Box>
                         )}
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => {
-                                const nextStatus = movie.status === 'to_watch' ? 'watched' : 'to_watch';
-                                moviesApi.update(movie.id, { status: nextStatus })
-                                    .then(() => fetchMovies())
                                 </Box>
                                 {(movie.status === 'watched' || movie.rating) && (
                                     <Box mt={2}>
