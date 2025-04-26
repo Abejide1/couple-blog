@@ -180,19 +180,30 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             Couple Activities App
           </Typography>
 
-          {/* Palette icon */}
-          <Tooltip title="Change AppBar Color">
-            <IconButton onClick={handlePaletteClick} sx={{ mx: 1 }}>
-              <FaPalette size={22} color={appBarColor} />
-            </IconButton>
-          </Tooltip>
-
-          {/* Dark mode toggle */}
-          <Tooltip title={mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
-            <IconButton onClick={handleDarkModeToggle} sx={{ mx: 1 }}>
-              {mode === 'dark' ? <FaSun size={22} color="#FFD36E" /> : <FaMoon size={22} color="#B388FF" />}
-            </IconButton>
-          </Tooltip>
+          {/* Challenges button */}
+          <Button
+            color="secondary"
+            startIcon={<FaTasks size={28} />}
+            component={RouterLink}
+            to="/challenges"
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+              px: 3,
+              py: 1.2,
+              borderRadius: 8,
+              boxShadow: '0 2px 8px #FFD6E8',
+              background: '#fff',
+              color: '#FF7EB9',
+              ml: 2,
+              '&:hover': {
+                background: '#FF7EB9',
+                color: '#fff'
+              }
+            }}
+          >
+            Challenges
+          </Button>
 
           {/* Settings */}
           <Tooltip title="Settings">
