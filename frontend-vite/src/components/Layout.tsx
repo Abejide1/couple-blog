@@ -285,12 +285,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             <FaCog size={28} />
                         </IconButton>
                     </Tooltip>
-const handleUserMenuOpen = () => setUserMenuAnchor(document.body);
-const handleUserMenuClose = () => setUserMenuAnchor(null);
-const handleSettingsClick = () => setSettingsAnchor(document.body);
-const handleSettingsClose = () => setSettingsAnchor(null);
-const handlePaletteClick = (event: React.MouseEvent<HTMLElement>) => {
-    setPaletteAnchor(event.currentTarget);
+                    <SettingsMenu
+                        anchorEl={settingsAnchor}
+                        open={Boolean(settingsAnchor)}
+                        onClose={handleSettingsClose}
+                        background={background}
+                        setBackground={setBackground}
+                        floatingIcons={floatingIcons}
+                        setFloatingIcons={setFloatingIcons}
+                        iconStyle={iconStyle}
+                        setIconStyle={setIconStyle}
+                        mode={mode}
+                        toggleTheme={toggleTheme}
+                        accent={appBarColor}
+                        setAccent={setAppBarColor}
+                    />
+                </Toolbar>
+            </AppBar>
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
+                    p: 3,
+                    width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+                    marginLeft: { sm: `${DRAWER_WIDTH}px` },
+                }}
 };
 const handlePaletteClose = () => setPaletteAnchor(null);
 const handleColorChange = (color: any) => {
