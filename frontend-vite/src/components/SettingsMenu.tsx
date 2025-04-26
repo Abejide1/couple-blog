@@ -40,6 +40,8 @@ export interface SettingsMenuProps {
   onClose: () => void;
   background: string;
   setBackground: (color: string) => void;
+  sidebarColor: string;
+  setSidebarColor: (color: string) => void;
   floatingIcons: string;
   setFloatingIcons: (type: string) => void;
   iconStyle: string;
@@ -51,7 +53,7 @@ export interface SettingsMenuProps {
 }
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({
-  anchorEl, open, onClose, background, setBackground, floatingIcons, setFloatingIcons, iconStyle, setIconStyle, mode, toggleTheme, accent, setAccent
+  anchorEl, open, onClose, background, setBackground, sidebarColor, setSidebarColor, floatingIcons, setFloatingIcons, iconStyle, setIconStyle, mode, toggleTheme, accent, setAccent
 }) => {
   // Helper: render color swatches (supports gradients)
   const renderColorSwatch = (color: string, selected: boolean, onClick: () => void) => (
@@ -106,6 +108,12 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         <Typography variant="caption" sx={{ color: '#B388FF' }}>
           Includes ombre, ambient, and masculine options
         </Typography>
+      </Box>
+      <Box mb={2}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 0.5 }}>Sidebar Color</Typography>
+        <Box display="flex" flexWrap="wrap" gap={0.5}>
+          {colorOptions.map(color => renderColorSwatch(color, sidebarColor === color, () => setSidebarColor(color)))}
+        </Box>
       </Box>
       <Divider sx={{ my: 1 }} />
       <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 0.5 }}>Floating Icons</Typography>

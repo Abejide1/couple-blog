@@ -70,10 +70,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Settings for background and floating icons
   const [background, setBackground] = useState<string>(localStorage.getItem('bgColor') || '#FFF6FB');
+  const [sidebarColor, setSidebarColor] = useState<string>(localStorage.getItem('sidebarColor') || '#FFF6FB');
   const [floatingIcons, setFloatingIcons] = useState<string>(localStorage.getItem('floatingIcons') || 'hearts');
   const [iconStyle, setIconStyle] = useState<string>(localStorage.getItem('iconStyle') || 'bubbly');
 
   useEffect(() => { localStorage.setItem('bgColor', background); }, [background]);
+  useEffect(() => { localStorage.setItem('sidebarColor', sidebarColor); }, [sidebarColor]);
   useEffect(() => { localStorage.setItem('floatingIcons', floatingIcons); }, [floatingIcons]);
   useEffect(() => { localStorage.setItem('iconStyle', iconStyle); }, [iconStyle]);
   useEffect(() => { localStorage.setItem('appBarColor', appBarColor); }, [appBarColor]);
@@ -149,9 +151,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 cursor: 'pointer',
                 transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
                 '&:hover': {
-                  background: '#39FF14', // Neon green
+                  background: '#DC0073',
                   color: '#fff',
-                  boxShadow: '0 4px 24px #39FF14',
+                  boxShadow: '0 4px 24px #DC0073',
                   transform: 'scale(1.07)'
                 },
                 gap: 2,
@@ -359,6 +361,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             onClose={handleSettingsClose}
             background={background}
             setBackground={setBackground}
+            sidebarColor={sidebarColor}
+            setSidebarColor={setSidebarColor}
             floatingIcons={floatingIcons}
             setFloatingIcons={setFloatingIcons}
             iconStyle={iconStyle}
@@ -387,7 +391,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: DRAWER_WIDTH,
-              background: background,
+              background: sidebarColor,
               borderRadius: '32px',
               boxShadow: '0 8px 32px 0 rgba(255, 126, 185, 0.12)',
               backdropFilter: 'blur(12px)',
@@ -412,7 +416,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }}
       >
         <Toolbar />
-        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', fontFamily: '"Swanky and Moo Moo", cursive' }}>
+        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', fontFamily: '"Swanky and Moo Moo", cursive', mx: 'auto' }}>
           {children}
         </Container>
       </Box>
