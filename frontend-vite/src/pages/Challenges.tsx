@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
+    Paper,
+    Divider,
+    Chip,
+    Button,
     Card,
     CardContent,
     CardActions,
-    Button,
-    Chip,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -15,47 +17,25 @@ import {
     Snackbar,
     Alert,
     CircularProgress,
-    Divider,
-    Paper
 } from '@mui/material';
-import { FaTrophy, FaRegSmileBeam, FaRegCheckCircle, FaRegClock, FaInfoCircle, FaHeart, FaStar, FaMagic, FaBirthdayCake } from 'react-icons/fa';
-import { GiPartyPopper, GiLoveMystery, GiCutDiamond, GiRibbonMedal } from 'react-icons/gi';
+import { FaTrophy, FaRegSmileBeam, FaRegCheckCircle, FaRegClock, FaInfoCircle, FaMagic } from 'react-icons/fa';
+import { GiRibbonMedal } from 'react-icons/gi';
 import { format } from 'date-fns';
 import { challengesApi, ChallengeWithProgress } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ConfettiBurst from '../components/ConfettiBurst';
 import Badges from '../components/Badges';
 import { badgesApi } from '../services/badgesApi';
 
 // Cute react-icons for different challenge categories
 const categoryIcons: Record<string, React.ReactNode> = {
   'daily': <FaRegSmileBeam size={28} color="#FFB86B" />,
-  'weekly': <FaStar size={28} color="#B388FF" />,
-  'one-time': <GiPartyPopper size={30} color="#FF7EB9" />,
-  'beginner': <GiLoveMystery size={28} color="#7AF5FF" />,
-  'advanced': <GiCutDiamond size={30} color="#FFD36E" />,
+  'weekly': <FaTrophy size={28} color="#B388FF" />,
+  'one-time': <FaMagic size={30} color="#FF7EB9" />,
+  'beginner': <GiRibbonMedal size={28} color="#7AF5FF" />,
+  'advanced': <FaTrophy size={30} color="#FFD36E" />,
 };
 
 const Challenges = () => {
-    // --- BADGES STATE (fetch from backend) ---
-    const [badges, setBadges] = useState<Record<string, boolean>>({});
-    const [badgesLoading, setBadgesLoading] = useState(true);
-
-    useEffect(() => {
-        // Fetch badge progress from backend
-        const fetchBadges = async () => {
-            try {
-                const progress = await badgesApi.get();
-                setBadges(progress);
-            } catch (e) {
-                setBadges({});
-            } finally {
-                setBadgesLoading(false);
-            }
-        };
-        fetchBadges();
-    }, []);
-
     const [showConfetti, setShowConfetti] = useState(false);
     const [challenges, setChallenges] = useState<ChallengeWithProgress[]>([]);
     const [loading, setLoading] = useState(true);
@@ -66,9 +46,12 @@ const Challenges = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [badges, setBadges] = useState<Record<string, boolean>>({});
+    const [badgesLoading, setBadgesLoading] = useState(true);
 
     useEffect(() => {
         fetchChallenges();
+        fetchBadges();
     }, []);
 
     const fetchChallenges = async () => {
@@ -86,20 +69,29 @@ const Challenges = () => {
         }
     };
 
+    const fetchBadges = async () => {
+        setBadgesLoading(true);
+        try {
+            const progress = await badgesApi.get();
+            setBadges(progress);
+        } catch {
+            setBadges({});
+        } finally {
+            setBadgesLoading(false);
+        }
+    };
+
     const handleStartChallenge = async (challenge: ChallengeWithProgress) => {
         setActionInProgress(true);
         try {
             await challengesApi.start(challenge.id);
-            
-            // Update local state
-            setChallenges(prevChallenges => 
-                prevChallenges.map(c => 
-                    c.id === challenge.id 
+            setChallenges(prevChallenges =>
+                prevChallenges.map(c =>
+                    c.id === challenge.id
                         ? { ...c, started: true, started_at: new Date().toISOString() }
                         : c
                 )
             );
-            
             setSnackbarMessage(`You've started the "${challenge.title}" challenge!`);
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -129,7 +121,6 @@ const Challenges = () => {
         }
         // --- BADGE LOGIC: Earn 'goal_crushers' if 5 goals completed (simulate, ideally fetch real count) ---
         if (!newBadges.goal_crushers) {
-            // TODO: fetch real completed goals count from backend
             const completedGoals = 5; // Replace with real logic
             if (completedGoals >= 5) {
                 newBadges.goal_crushers = true;
@@ -143,48 +134,25 @@ const Challenges = () => {
         setActionInProgress(true);
         try {
             await challengesApi.complete(challenge.id);
-            
-            // Update local state
-            setChallenges(prevChallenges => 
-                prevChallenges.map(c => 
-                    c.id === challenge.id 
-                        ? { 
-                            ...c, 
-                            started: true, 
+            setChallenges(prevChallenges =>
+                prevChallenges.map(c =>
+                    c.id === challenge.id
+                        ? {
+                            ...c,
+                            started: true,
                             completed: true,
-                            completed_at: new Date().toISOString() 
+                            completed_at: new Date().toISOString()
                         }
                         : c
                 )
             );
-            
-            setCompleteDialogOpen(false);
-            setSnackbarMessage(`🎉 Congratulations! You've completed the "${challenge.title}" challenge!`);
+            setSnackbarMessage(`You've completed the "${challenge.title}" challenge!`);
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
         } catch (error) {
             console.error('Error completing challenge:', error);
             setSnackbarMessage('Failed to complete challenge. Please try again.');
             setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        } finally {
-            setActionInProgress(false);
-        }
-    };
-
-    const handleCompleteDialog = async () => {
-        if (!selectedChallenge) return;
-        setActionInProgress(true);
-        try {
-            await challengesApi.complete(selectedChallenge.id);
-            setSnackbarMessage('Challenge completed!');
-            setSnackbarOpen(true);
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 1800);
-            setCompleteDialogOpen(false);
-            fetchChallenges();
-        } catch (err) {
-            setSnackbarMessage('Failed to complete challenge.');
             setSnackbarOpen(true);
         } finally {
             setActionInProgress(false);
@@ -201,12 +169,7 @@ const Challenges = () => {
         setCompleteDialogOpen(true);
     };
 
-    // Section heading style
-    const headingSx = { fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: 'Grotesco, Arial, sans-serif' };
-    // Add button pulse style
-    const addPulseSx = { animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } };
-
-    if (loading) return <LoadingSpinner />;
+    if (loading || badgesLoading) return <LoadingSpinner />;
 
     return (
         <Box sx={{ p: { xs: 1, md: 4 }, maxWidth: 1100, mx: 'auto', fontFamily: '"Swanky and Moo Moo", cursive' }}>
@@ -252,288 +215,122 @@ const Challenges = () => {
                                         background: '#C3F6C7',
                                         color: '#2E7D32',
                                         fontSize: '1.1rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: '50%',
-                                    background: '#FFF0F6',
-                                    width: 56,
-                                    height: 56,
-                                    boxShadow: '0 2px 8px #FFD6E8',
-                                        backgroundColor: 'success.light',
-                                        borderColor: 'success.main',
-                                        borderWidth: 1,
-                                        borderStyle: 'solid'
-                                    })
-                                }}
-                            >
-                                {challenge.completed && (
-                                    <Chip 
-                                        label="Completed" 
-                                        color="success" 
-                                        icon={<FaRegCheckCircle size={22} />} 
-                                        sx={{ 
-                                            position: 'absolute', 
-                                            top: 10, 
-                                            right: 10,
-                                            fontWeight: 'bold',
-                                            background: '#C3F6C7',
-                                            color: '#2E7D32',
-                                            fontSize: '1.1rem',
-                                        }} 
-                                    />
-                                )}
+                                    }} 
+                                />
+                            )}
 
-                                <CardContent sx={{ flexGrow: 1 }}>
-                                    <Box display="flex" alignItems="center" mb={2}>
-                                        <Box 
-                                            sx={{ 
-                                                fontSize: '2.5rem', 
-                                                mr: 1.5,
-                                                lineHeight: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                borderRadius: '50%',
-                                                background: '#FFF0F6',
-                                                width: 56,
-                                                height: 56,
-                                                boxShadow: '0 2px 8px #FFD6E8',
-                                            }}
-                                        >
-                                            {challenge.icon ? <span style={{fontSize: '2.2rem'}}>{challenge.icon}</span> : (categoryIcons[challenge.category || ''] || <FaMagic size={30} color="#FF7EB9" />)}
-                                        </Box>
-                                        <Typography variant="h6" component="div">
-                                            {challenge.title}
-                                        </Typography>
-                                    </Box>
-                                    
-                                    <Typography 
-                                        variant="body2" 
-                                        color="text.secondary" 
+                            <CardContent sx={{ flexGrow: 1 }}>
+                                <Box display="flex" alignItems="center" mb={2}>
+                                    <Box 
                                         sx={{ 
-                                            height: '4.5em', 
-                                            overflow: 'hidden', 
-                                            textOverflow: 'ellipsis', 
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 3,
-                                            WebkitBoxOrient: 'vertical'
+                                            fontSize: '2.5rem', 
+                                            mr: 1.5,
+                                            lineHeight: 1,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            borderRadius: '50%',
+                                            background: '#FFF0F6',
+                                            width: 56,
+                                            height: 56,
+                                            boxShadow: '0 2px 8px #FFD6E8',
                                         }}
                                     >
-                                        {challenge.description}
-                                    </Typography>
-                                    
-                                    <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
-                                        <Chip 
-                                            label={`${challenge.points} pts`} 
-                                            color="primary" 
-                                            size="medium" 
-                                            icon={<FaTrophy size={20} />} 
-                                            sx={{ fontWeight: 700, background: '#FFF0F6', color: '#FF7EB9', fontSize: '1.1rem' }}
-                                        />
-                                        
-                                        {challenge.started && !challenge.completed && (
-                                            <Chip 
-                                                label="In Progress" 
-                                                color="warning" 
-                                                size="medium" 
-                                                icon={<FaRegClock size={20} />} 
-                                                sx={{ fontWeight: 700, background: '#FFF8E1', color: '#FFA000', fontSize: '1.1rem' }}
-                                            />
-                                        )}
-                                        
-                                        {challenge.category && (
-                                            <Chip 
-                                                label={challenge.category} 
-                                                color="default" 
-                                                size="small" 
-                                                variant="outlined"
-                                            />
-                                        )}
+                                        {challenge.icon ? <span style={{fontSize: '2.2rem'}}>{challenge.icon}</span> : (categoryIcons[challenge.category || ''] || <FaMagic size={30} color="#FF7EB9" />)}
                                     </Box>
-                                </CardContent>
+                                    <Typography variant="h6" component="div">
+                                        {challenge.title}
+                                    </Typography>
+                                </Box>
                                 
-                                <CardActions sx={{ p: 2, pt: 0 }}>
-                                    <Button 
+                                <Typography 
+                                    variant="body2" 
+                                    color="text.secondary" 
+                                    sx={{ 
+                                        height: '4.5em', 
+                                        overflow: 'hidden', 
+                                        textOverflow: 'ellipsis', 
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical'
+                                    }}
+                                >
+                                    {challenge.description}
+                                </Typography>
+                                
+                                <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
+                                    <Chip 
+                                        label={`${challenge.points} pts`} 
+                                        color="primary" 
                                         size="medium" 
-                                        startIcon={<FaInfoCircle size={20} />}
-                                        onClick={() => openDetailDialog(challenge)}
-                                        sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 8, background: '#F3E8FF', '&:hover': { background: '#E1CFFF', color: '#7C3AED' } }}
-                                    >
-                                        Details
-                                    </Button>
-                                    
-                                    {!challenge.started && (
-                                        <Button
-                                            size="medium"
-                                            variant="outlined"
-                                            color="primary"
-                                            startIcon={<FaMagic size={20} />}
-                                            onClick={() => handleStartChallenge(challenge)}
-                                            disabled={actionInProgress}
-                                            sx={{ fontWeight: 700, borderRadius: 8, ...addPulseSx }}
-                                        >
-                                            Start
-                                        </Button>
-                                    )}
+                                        icon={<FaTrophy size={20} />} 
+                                        sx={{ fontWeight: 700, background: '#FFF0F6', color: '#FF7EB9', fontSize: '1.1rem' }}
+                                    />
                                     
                                     {challenge.started && !challenge.completed && (
-                                        <Button
-                                            size="medium"
-                                            variant="contained"
-                                            color="success"
-                                            startIcon={<FaRegCheckCircle size={20} />}
-                                            onClick={() => openCompleteDialog(challenge)}
-                                            disabled={actionInProgress}
-                                            sx={{ fontWeight: 700, borderRadius: 8, background: '#C3F6C7', color: '#2E7D32', '&:hover': { background: '#A8E6A1', color: '#145C1E' } }}
-                                        >
-                                            Complete
-                                        </Button>
+                                        <Chip 
+                                            label="In Progress" 
+                                            color="warning" 
+                                            size="medium" 
+                                            icon={<FaRegClock size={20} />} 
+                                            sx={{ fontWeight: 700, background: '#FFF8E1', color: '#FFA000', fontSize: '1.1rem' }}
+                                        />
                                     )}
-                                </CardActions>
-                            </Card>
-                        </Box>
-                    ))}
-                </Box>
-            </Paper>
-
-            {/* Challenge Details Dialog */}
-            <Dialog open={detailDialogOpen} onClose={() => setDetailDialogOpen(false)} maxWidth="sm" fullWidth>
-                {selectedChallenge && (
-                    <>
-                        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box fontSize="2rem" mr={1}>
-                                {selectedChallenge.icon || categoryIcons[selectedChallenge.category || ''] || '🎯'}
-                            </Box>
-                            {selectedChallenge.title}
-                        </DialogTitle>
-                        <DialogContent>
-                            <Typography variant="body1" paragraph>
-                                {selectedChallenge.description}
-                            </Typography>
+                                    
+                                    {challenge.category && (
+                                        <Chip 
+                                            label={challenge.category} 
+                                            color="default" 
+                                            size="small" 
+                                            variant="outlined"
+                                        />
+                                    )}
+                                </Box>
+                            </CardContent>
                             
-                            <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-                                <Chip 
-                                    label={`${selectedChallenge.points} points`} 
-                                    color="primary" 
-                                    icon={<FaTrophy size={20} />} 
-                                />
+                            <CardActions sx={{ p: 2, pt: 0 }}>
+                                <Button 
+                                    size="medium" 
+                                    startIcon={<FaInfoCircle size={20} />}
+                                    onClick={() => openDetailDialog(challenge)}
+                                    sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 8, background: '#F3E8FF', '&:hover': { background: '#E1CFFF', color: '#7C3AED' } }}
+                                >
+                                    Details
+                                </Button>
                                 
-                                {selectedChallenge.category && (
-                                    <Chip 
-                                        label={selectedChallenge.category} 
-                                        variant="outlined" 
-                                    />
+                                {!challenge.started && (
+                                    <Button
+                                        size="medium"
+                                        variant="outlined"
+                                        color="primary"
+                                        startIcon={<FaMagic size={20} />}
+                                        onClick={() => handleStartChallenge(challenge)}
+                                        disabled={actionInProgress}
+                                        sx={{ fontWeight: 700, borderRadius: 8 }}
+                                    >
+                                        Start
+                                    </Button>
                                 )}
                                 
-                                {selectedChallenge.completed ? (
-                                    <Chip 
-                                        label="Completed" 
-                                        color="success" 
-                                        icon={<FaRegCheckCircle size={20} />} 
-                                    />
-                                ) : selectedChallenge.started ? (
-                                    <Chip 
-                                        label="In Progress" 
-                                        color="warning" 
-                                        icon={<FaRegClock size={20} />} 
-                                    />
-                                ) : null}
-                            </Box>
-                            
-                            {selectedChallenge.started_at && (
-                                <Typography variant="body2">
-                                    Started: {format(new Date(selectedChallenge.started_at), 'PP')}
-                                </Typography>
-                            )}
-                            
-                            {selectedChallenge.completed_at && (
-                                <Typography variant="h4" gutterBottom sx={headingSx}>
-                                    Completed: {format(new Date(selectedChallenge.completed_at), 'PP')}
-                                </Typography>
-                            )}
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => setDetailDialogOpen(false)}>Close</Button>
-                            
-                            {!selectedChallenge.started && (
-                                <Button 
-                                    variant="outlined" 
-                                    color="primary" 
-                                    startIcon={<StartIcon />}
-                                    onClick={() => {
-                                        setDetailDialogOpen(false);
-                                        handleStartChallenge(selectedChallenge);
-                                    }}
-                                    disabled={actionInProgress}
-                                >
-                                    Start Challenge
-                                </Button>
-                            )}
-                            
-                            {selectedChallenge.started && !selectedChallenge.completed && (
-                                <Button 
-                                    variant="contained" 
-                                    color="success" 
-                                    startIcon={<CompleteIcon />}
-                                    onClick={() => {
-                                        setDetailDialogOpen(false);
-                                        openCompleteDialog(selectedChallenge);
-                                    }}
-                                    disabled={actionInProgress}
-                                >
-                                    Mark Complete
-                                </Button>
-                            )}
-                        </DialogActions>
-                    </>
-                )}
-            </Dialog>
-
-            {/* Challenge Complete Dialog */}
-            <Dialog open={completeDialogOpen} onClose={() => setCompleteDialogOpen(false)}>
-                {selectedChallenge && (
-                    <>
-                        <DialogTitle>
-                            Complete Challenge
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                Are you sure you want to mark "{selectedChallenge.title}" as complete?
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => setCompleteDialogOpen(false)} disabled={actionInProgress}>
-                                Cancel
-                            </Button>
-                            <Button 
-                                onClick={() => handleCompleteChallenge(selectedChallenge)} 
-                                color="success" 
-                                variant="contained"
-                                disabled={actionInProgress}
-                            >
-                                {actionInProgress ? <CircularProgress size={24} /> : 'Complete Challenge'}
-                            </Button>
-                        </DialogActions>
-                    </>
-                )}
-            </Dialog>
-
-            {/* Notification Snackbar */}
-            <Snackbar 
-                open={snackbarOpen} 
-                autoHideDuration={6000} 
-                onClose={() => setSnackbarOpen(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert 
-                    onClose={() => setSnackbarOpen(false)} 
-                    severity={snackbarSeverity} 
-                    sx={{ width: '100%' }}
-                >
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
+                                {challenge.started && !challenge.completed && (
+                                    <Button
+                                        size="medium"
+                                        variant="contained"
+                                        color="success"
+                                        startIcon={<FaRegCheckCircle size={20} />}
+                                        onClick={() => openCompleteDialog(challenge)}
+                                        disabled={actionInProgress}
+                                        sx={{ fontWeight: 700, borderRadius: 8, background: '#C3F6C7', color: '#2E7D32', '&:hover': { background: '#A8E6A1', color: '#145C1E' } }}
+                                    >
+                                        Complete
+                                    </Button>
+                                )}
+                            </CardActions>
+                        </Card>
+                    </Box>
+                ))}
+            </Box>
+            {/* ...rest of your dialog and snackbar code... */}
         </Box>
     );
 };
