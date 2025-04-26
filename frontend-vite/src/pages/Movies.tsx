@@ -150,17 +150,7 @@ const Movies = () => {
                                 const nextStatus = movie.status === 'to_watch' ? 'watched' : 'to_watch';
                                 moviesApi.update(movie.id, { status: nextStatus })
                                     .then(() => fetchMovies())
-                                    .catch(error => console.error('Error updating movie:', error));
-                            }}
-                        >
-                            {movie.status === 'to_watch' ? 'Mark Watched' : 'Watch Again'}
-                        </Button>
-                    </Box>
-                                    >
-                                        {movie.status === 'to_watch' ? 'Mark Watched' : 'Watch Again'}
-                                    </Button>
                                 </Box>
-
                                 {(movie.status === 'watched' || movie.rating) && (
                                     <Box mt={2}>
                                         <Typography component="legend">Your Rating</Typography>
