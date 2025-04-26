@@ -254,39 +254,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {/* Couple code buttons */}
           {coupleCode && (
             <Tooltip title="Copy couple code">
-              <Button
-                color="inherit"
-                startIcon={<MdContentCopy size={22} />}
-                onClick={() => {
-                  navigator.clipboard.writeText(coupleCode);
-                  setSnackbarOpen(true);
-                }}
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '1.1rem',
-                  color: '#fff',
-                  background: 'rgba(255,255,255,0.15)',
-                  borderRadius: 6,
-                  mx: 2,
-                  '&:hover': {
-                    background: '#FFEBF7',
-                    color: '#FF7EB9',
-                    boxShadow: '0 8px 24px #FFD6E8',
-                    transform: 'scale(1.07)',
-                  },
-                  transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
-                }}
-              >
-                {coupleCode}
-              </Button>
-            </Tooltip>
-          )}
-          {coupleCode && (
             <Button
               color="inherit"
+              startIcon={<MdContentCopy size={22} />}
               onClick={() => {
-                clearCode();
-                navigate('/code');
+                navigator.clipboard.writeText(coupleCode);
+                setSnackbarOpen(true);
               }}
               sx={{
                 fontWeight: 700,

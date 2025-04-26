@@ -121,7 +121,17 @@ const Compatibility: React.FC = () => {
 
   return (
     <Box minHeight="100vh" display="flex" alignItems="center" justifyContent="center" sx={{ background: 'linear-gradient(135deg, #FFD6E8 0%, #B388FF 100%)', py: 6 }}>
-      <Paper elevation={5} sx={{ maxWidth: 420, width: '100%', p: { xs: 2, sm: 4 }, borderRadius: 6, textAlign: 'center', backdropFilter: 'blur(6px)' }}>
+      <Box sx={{
+        bgcolor: '#FFF6FB',
+        borderRadius: '32px',
+        boxShadow: '0 2px 12px #FFD6E8',
+        textAlign: 'center',
+        p: 3,
+        mb: 3,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
         <Typography variant="h4" fontWeight={800} color="primary" mb={2}>
           <FavoriteIcon color="error" fontSize="large" sx={{ verticalAlign: 'middle', mr: 1 }} />
           Couple Compatibility Quiz
@@ -129,7 +139,17 @@ const Compatibility: React.FC = () => {
         <LinearProgress variant="determinate" value={progress} sx={{ my: 2, borderRadius: 4, height: 8 }} />
         {showResult ? (
           <Fade in={showResult}>
-            <Box>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              p: 3,
+              borderRadius: '32px',
+              boxShadow: '0 2px 12px #FFD6E8',
+              bgcolor: '#FFF6FB',
+              mb: 3,
+            }}>
               <CelebrationIcon color="secondary" fontSize="large" sx={{ fontSize: 48, mb: 1 }} />
               <Typography variant="h5" fontWeight={700} color="secondary" gutterBottom>
                 Compatibility Score: {compatibility}%

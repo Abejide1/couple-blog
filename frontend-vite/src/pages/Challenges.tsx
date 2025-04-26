@@ -185,10 +185,56 @@ const Challenges = () => {
             <Typography variant="body1" paragraph>Choose from our curated list of activities designed to help couples connect, communicate, and create memories.</Typography>
             <Divider sx={{ mb: 2 }} />
             
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-                {challenges.map((challenge) => (
-                    <Box key={challenge.id} sx={{ width: { xs: '100%', sm: '45%', md: '30%' } }}>
-                        <Card 
+            <Box sx={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: { xs: 2, sm: 3 },
+  width: '100%',
+  mt: 1,
+}}>
+  {challenges.map((challenge) => (
+    <Box
+      key={challenge.id}
+      sx={{
+        width: { xs: 170, sm: 200 },
+        height: { xs: 170, sm: 200 },
+        bgcolor: '#FFF6FB',
+        borderRadius: '50%',
+        boxShadow: '0 2px 12px #FFD6E8',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        m: 1,
+        flex: '0 0 auto',
+        p: 2,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h6" fontWeight={700} sx={{ color: '#B388FF', mb: 1, fontSize: { xs: '1rem', sm: '1.15rem' } }}>
+        {challenge.title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+        {challenge.description}
+      </Typography>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, justifyContent: 'center', mb: 1 }}>
+        {challenge.category && <Chip icon={categoryIcons[challenge.category] || <FaMagic size={14} />} label={challenge.category} size="small" />}
+        {challenge.points && <Chip icon={<FaTrophy size={14} />} label={challenge.points + ' pts'} size="small" />}
+        {challenge.status && <Chip icon={<FaRegCheckCircle size={14} />} label={challenge.status} size="small" color={challenge.completed ? 'success' : 'default'} />}
+      </Box>
+      <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', gap: 1 }}>
+        <Button size="small" startIcon={<FaInfoCircle size={16} />} onClick={() => openDetailDialog(challenge)} sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 8, background: '#F3E8FF', '&:hover': { background: '#E1CFFF', color: '#7C3AED' }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>Details</Button>
+        {!challenge.started && (
+          <Button size="small" variant="outlined" color="primary" startIcon={<FaMagic size={16} />} onClick={() => handleStartChallenge(challenge)} disabled={actionInProgress} sx={{ fontWeight: 700, borderRadius: 8, fontSize: { xs: '0.8rem', sm: '1rem' } }}>Start</Button>
+        )}
+        {challenge.started && !challenge.completed && (
+          <Button size="small" variant="contained" color="success" startIcon={<FaRegCheckCircle size={16} />} onClick={() => openCompleteDialog(challenge)} disabled={actionInProgress} sx={{ fontWeight: 700, borderRadius: 8, background: '#C3F6C7', color: '#2E7D32', '&:hover': { background: '#A8E6A1', color: '#145C1E' }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>Complete</Button>
+        )}
+      </Box>
+    </Box>
+  ))}
+</Box>
                             sx={{
                                 height: '100%',
                                 display: 'flex',

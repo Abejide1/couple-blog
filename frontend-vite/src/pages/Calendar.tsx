@@ -355,25 +355,6 @@ const Calendar = () => {
             <FormControl fullWidth>
               <InputLabel>Event Type</InputLabel>
               <Select
-                value={newEvent.event_type || 'other'}
-                onChange={(e) => handleEventTypeChange(e as any)}
-                label="Event Type"
-              >
-                <MenuItem value="birthday">Birthday</MenuItem>
-                <MenuItem value="anniversary">Anniversary</MenuItem>
-                <MenuItem value="date">Date</MenuItem>
-                <MenuItem value="reminder">Reminder</MenuItem>
-                <MenuItem value="appointment">Appointment</MenuItem>
-                <MenuItem value="activity">Activity</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel>Recurrence</InputLabel>
-              <Select
-                value={newEvent.recurrence || 'none'}
-                onChange={(e) => setNewEvent({ ...newEvent, recurrence: e.target.value as any })}
                 label="Recurrence"
               >
                 <MenuItem value="none">None (One-time)</MenuItem>

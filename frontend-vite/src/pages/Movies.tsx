@@ -89,34 +89,73 @@ const Movies = () => {
 
             <Grid container spacing={3}>
                 {movies.map((movie) => (
-                    <Grid key={movie.id} sx={{ gridColumn: { xs: '1 / -1', sm: 'span 6', md: 'span 4' } }}>
-                        <Card
-                                sx={{
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    bgcolor: movie.status === 'watched' ? 'success.light' : 'background.paper'
-                                }}>
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6" gutterBottom>
-                                    {movie.title}
-                                </Typography>
-                                <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                                    Genre: {movie.genre}
-                                </Typography>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                                    <Typography variant="body2" color="primary">
-                                        Status: {movie.status.replace('_', ' ')}
-                                    </Typography>
-                                    <Button
-                                        size="small"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            const nextStatus = movie.status === 'to_watch' ? 'watched' : 'to_watch';
-                                            moviesApi.update(movie.id, { status: nextStatus })
+                    <Box
+                        key={movie.id}
+                        sx={{
+                            width: { xs: 170, sm: 200 },
+                            height: { xs: 170, sm: 200 },
+                            bgcolor: '#FFF6FB',
+                            borderRadius: '50%',
+                            boxShadow: '0 2px 12px #FFD6E8',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            m: 1,
+                            flex: '0 0 auto',
+                            p: 2,
+                            textAlign: 'center',
+                        }}
+                    >
+                        <Typography variant="h6" fontWeight={700} sx={{ color: '#B388FF', mb: 1 }}>{movie.title}</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{movie.genre}</Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 1 }}>
+                            {movie.status && <Chip label={movie.status} size="small" color={movie.status === 'watched' ? 'success' : 'default'} />}
+                        </Box>
+                        {(movie.status === 'watched' || movie.rating) && (
+                            <Box mt={2}>
+                                <Typography component="legend">Your Rating</Typography>
+                                <Rating
+                                    value={movie.rating || 0}
+                                    onChange={(_, value) => {
+                                        if (value !== null) {
+                                            moviesApi.update(movie.id, { status: movie.status, rating: value })
                                                 .then(() => fetchMovies())
-                                                .catch(error => console.error('Error updating movie:', error));
-                                        }}
+                                                .catch(error => console.error('Error updating rating:', error));
+                                        }
+                                    }}
+                                />
+                            </Box>
+                        )}
+                        {(movie.status === 'watched' || movie.review) && (
+                            <Box mt={2}>
+                                <TextField
+                                    label="Your Review"
+                                    multiline
+                                    rows={3}
+                                    fullWidth
+                                    value={movie.review || ''}
+                                    onChange={(e) => {
+                                        moviesApi.update(movie.id, { status: movie.status, review: e.target.value })
+                                            .then(() => fetchMovies())
+                                            .catch(error => console.error('Error updating review:', error));
+                                    }}
+                                />
+                            </Box>
+                        )}
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => {
+                                const nextStatus = movie.status === 'to_watch' ? 'watched' : 'to_watch';
+                                moviesApi.update(movie.id, { status: nextStatus })
+                                    .then(() => fetchMovies())
+                                    .catch(error => console.error('Error updating movie:', error));
+                            }}
+                        >
+                            {movie.status === 'to_watch' ? 'Mark Watched' : 'Watch Again'}
+                        </Button>
+                    </Box>
                                     >
                                         {movie.status === 'to_watch' ? 'Mark Watched' : 'Watch Again'}
                                     </Button>

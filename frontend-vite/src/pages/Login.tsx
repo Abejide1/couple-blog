@@ -22,11 +22,18 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Box maxWidth={420} mx="auto" mt={8}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 6, boxShadow: '0 4px 24px #FFD6E8' }}>
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 900, color: '#FF7EB9', fontFamily: 'Grotesco, Arial, sans-serif' }}>
-          Welcome Back
-        </Typography>
+    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 400, mx: 'auto', fontFamily: 'inherit', mt: 8 }}>
+      <Box sx={{
+        bgcolor: '#FFF6FB',
+        borderRadius: '32px',
+        boxShadow: '0 2px 12px #FFD6E8',
+        textAlign: 'center',
+        p: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        <Typography variant="h4" fontWeight={900} sx={{ color: '#B388FF', mb: 2 }}>Sign In</Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             label="Email"

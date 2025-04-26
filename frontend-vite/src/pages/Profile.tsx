@@ -61,21 +61,25 @@ const Profile: React.FC = () => {
 
 
   return (
-    <Box maxWidth={420} mx="auto" mt={8}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 6, boxShadow: '0 4px 24px #FFD6E8' }}>
-        <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
-          <Avatar
-            key={avatarKey}
-            src={user.profile_pic ? `${API_URL}/${user.profile_pic}` : undefined}
-            sx={{ width: 90, height: 90, mb: 2, bgcolor: '#FFD6E8', fontSize: 40 }}
-          >
-            {user.display_name?.charAt(0) || user.email.charAt(0)}
-          </Avatar>
-          <Button variant="outlined" component="label" sx={{ borderRadius: 8, fontWeight: 700, mb: 2 }} disabled={picLoading}>
-            {picLoading ? <CircularProgress size={22} sx={{ mr: 1 }} /> : 'Change Picture'}
-            <input type="file" accept="image/*" hidden onChange={handlePicUpload} />
-          </Button>
-        </Box>
+    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 600, mx: 'auto', fontFamily: 'inherit', mt: 4 }}>
+      <Box sx={{
+        bgcolor: '#FFF6FB',
+        borderRadius: '32px',
+        boxShadow: '0 2px 12px #FFD6E8',
+        textAlign: 'center',
+        p: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        <Avatar src={user.profile_pic ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/${user.profile_pic}` : undefined} sx={{ bgcolor: '#B388FF', width: 80, height: 80, fontWeight: 700, mx: 'auto', mb: 2 }}>
+          {user.display_name?.charAt(0) || user.email.charAt(0)}
+        </Avatar>
+        <Typography variant="h5" fontWeight={700} sx={{ color: '#B388FF', mb: 1 }}>{user.display_name || user.email}</Typography>
+        <Button variant="outlined" component="label" sx={{ borderRadius: 8, fontWeight: 700, mb: 2 }} disabled={picLoading}>
+          {picLoading ? <CircularProgress size={22} sx={{ mr: 1 }} /> : 'Change Picture'}
+          <input type="file" accept="image/*" hidden onChange={handlePicUpload} />
+        </Button>
         <form onSubmit={handleProfileUpdate}>
           <TextField
             label="Display Name"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Grid, Paper, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, CircularProgress } from '@mui/material';
 import Badges from '../components/Badges';
 import { badgesApi } from '../services/badgesApi';
 import { activitiesApi, booksApi, goalsApi, challengesApi, blogApi } from '../services/api';
@@ -115,76 +115,85 @@ export default function Dashboard() {
       {/* Widgets Grid */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Paper elevation={6} sx={{ p: 3, borderRadius: 4, textAlign: 'center', bgcolor: 'linear-gradient(120deg,#FFF6FB 60%,#FFD6E8 100%)', boxShadow: '0 4px 24px #FFD6E8', position: 'relative', overflow: 'visible' }}>
-            <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <FaStar color="#FFD36E" size={28} /> Badges
-            </Typography>
-            <Badges badges={badges} />
-          </Paper>
-        </Grid>
+  <Card sx={{ borderRadius: '50%', minHeight: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#FFF6FB', boxShadow: '0 4px 24px #FFD6E8', p: 2, mb: 3 }}>
+    <CardContent sx={{ textAlign: 'center', width: '100%' }}>
+      <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+        <FaStar color="#FFD36E" size={28} /> Badges
+      </Typography>
+      <Badges badges={badges} />
+    </CardContent>
+  </Card>
+</Grid>
         <Grid item xs={12} md={4}>
-          <Paper elevation={6} sx={{ p: 3, borderRadius: 4, textAlign: 'center', bgcolor: 'linear-gradient(120deg,#F8F8FF 60%,#B388FF22 100%)', boxShadow: '0 4px 24px #B388FF33' }}>
-            <Typography variant="h6" color="secondary" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <FaChartLine color="#43a047" size={24} /> Points
-            </Typography>
-            <Typography variant="h2" fontWeight={900} color="#DC0073">{stats.points}</Typography>
-            <Typography variant="body2">Earn points by unlocking badges and completing activities!</Typography>
-          </Paper>
-        </Grid>
+  <Card sx={{ borderRadius: '50%', minHeight: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#F8F8FF', boxShadow: '0 4px 24px #B388FF33', p: 2, mb: 3 }}>
+    <CardContent sx={{ textAlign: 'center', width: '100%' }}>
+      <Typography variant="h6" color="secondary" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+        <FaChartLine color="#43a047" size={24} /> Points
+      </Typography>
+      <Typography variant="h2" fontWeight={900} color="#DC0073">{stats.points}</Typography>
+      <Typography variant="body2">Earn points by unlocking badges and completing activities!</Typography>
+    </CardContent>
+  </Card>
+</Grid>
         <Grid item xs={12} md={4}>
-          <Paper elevation={6} sx={{ p: 3, borderRadius: 4, textAlign: 'center', bgcolor: 'linear-gradient(120deg,#E3F6FC 60%,#7AF5FF22 100%)', boxShadow: '0 4px 24px #7AF5FF33' }}>
-            <Typography variant="h6" color="info.main" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <FaRegSmileBeam color="#FF7EB9" size={24} /> Streaks
-            </Typography>
-            <Typography variant="h2" fontWeight={900} color="#43a047">{stats.currentStreak}</Typography>
-            <Typography variant="body2">Current streak</Typography>
-            <Typography variant="subtitle2" color="#B388FF">Longest: {stats.longestStreak} days</Typography>
-          </Paper>
-        </Grid>
+  <Card sx={{ borderRadius: '50%', minHeight: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#E3F6FC', boxShadow: '0 4px 24px #7AF5FF33', p: 2, mb: 3 }}>
+    <CardContent sx={{ textAlign: 'center', width: '100%' }}>
+      <Typography variant="h6" color="info.main" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+        <FaRegSmileBeam color="#FF7EB9" size={24} /> Streaks
+      </Typography>
+      <Typography variant="h2" fontWeight={900} color="#43a047">{stats.currentStreak}</Typography>
+      <Typography variant="body2">Current streak</Typography>
+      <Typography variant="subtitle2" color="#B388FF">Longest: {stats.longestStreak} days</Typography>
+    </CardContent>
+  </Card>
+</Grid>
         {/* Activity/Book/Goal/Challenge Widgets */}
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaRegSmileBeam color="#FF7EB9" /> Completed Activities</Typography>
-            <Typography variant="h4" color="#43a047" fontWeight={700}>{stats.completedActivities}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#F8F8FF', boxShadow: '0 2px 10px #B388FF33' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaCamera color="#43a047" /> Uploaded Photos</Typography>
-            <Typography variant="h4" color="#B388FF" fontWeight={700}>{stats.uploadedPhotos}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#FFF6FB', boxShadow: '0 2px 10px #FFD36E8' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaBook color="#FFD36E" /> Completed Books</Typography>
-            <Typography variant="h4" color="#FFD36E" fontWeight={700}>{stats.completedBooks}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaChartLine color="#43a047" /> Completed Goals</Typography>
-            <Typography variant="h4" color="#FF7EB9" fontWeight={700}>{stats.completedGoals}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#F8F8FF', boxShadow: '0 2px 10px #B388FF33' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaStar color="#FFD36E" /> Completed Challenges</Typography>
-            <Typography variant="h4" color="#DC0073" fontWeight={700}>{stats.completedChallenges}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#E3F6FC', boxShadow: '0 2px 10px #7AF5FF33' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaBlog color="#B388FF" /> Blog Posts</Typography>
-            <Typography variant="h4" color="#7AF5FF" fontWeight={700}>{stats.blogPosts}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Paper elevation={4} sx={{ p: 2, borderRadius: 3, textAlign: 'center', bgcolor: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8' }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><FaEnvelopeOpenText color="#2196f3" /> Messages</Typography>
-            <Typography variant="h4" color="#2196f3" fontWeight={700}>{stats.messages}</Typography>
-            <Typography variant="caption" color="textSecondary">(Coming soon)</Typography>
-          </Paper>
-        </Grid>
+<Grid item xs={12}>
+  <Card sx={{ borderRadius: 6, p: 3, bgcolor: '#F8F8FF', boxShadow: '0 4px 24px #B388FF22', mt: 3 }}>
+    <CardContent>
+      <Box sx={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: { xs: 2, sm: 3 },
+  width: '100%',
+  mt: 1,
+}}>
+  {[
+    { icon: <FaRegSmileBeam color: "#FF7EB9" size={32} />, label: 'Activities', value: stats.completedActivities },
+    { icon: <FaCamera color: "#43a047" size={32} />, label: 'Photos', value: stats.uploadedPhotos },
+    { icon: <FaBook color: "#FFD36E" size={32} />, label: 'Books', value: stats.completedBooks },
+    { icon: <FaChartLine color: "#43a047" size={32} />, label: 'Goals', value: stats.completedGoals },
+    { icon: <FaStar color: "#FFD36E" size={32} />, label: 'Challenges', value: stats.completedChallenges },
+    { icon: <FaBlog color: "#B388FF" size={32} />, label: 'Blog', value: stats.blogPosts },
+    { icon: <FaEnvelopeOpenText color: "#2196f3" size={32} />, label: 'Messages', value: stats.messages, caption: '(Soon)' },
+  ].map((stat, idx) => (
+    <Box
+      key={stat.label}
+      sx={{
+        width: { xs: 120, sm: 140 },
+        height: { xs: 120, sm: 140 },
+        bgcolor: '#FFF6FB',
+        borderRadius: '50%',
+        boxShadow: '0 2px 12px #FFD6E8',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        m: 1,
+        flex: '0 0 auto',
+      }}
+    >
+      {stat.icon}
+      <Typography variant="subtitle2" sx={{ mt: 1, fontSize: { xs: '0.9rem', sm: '1rem' } }}>{stat.label}</Typography>
+      <Typography variant="h5" fontWeight={700}>{stat.value}</Typography>
+      {stat.caption && <Typography variant="caption" color="textSecondary">{stat.caption}</Typography>}
+    </Box>
+  ))}
+</Box>
+    </CardContent>
+  </Card>
+</Grid>
       </Grid>
     </Box>
   );

@@ -293,20 +293,31 @@ const Goals = () => {
                         </Button>
                     </Box>
                 ) : (
-                    <List sx={{ width: '100%' }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        gap: { xs: 2, sm: 3 },
+                        width: '100%',
+                        mt: 2,
+                    }}>
                         {sortedGoals.map((goal) => (
-                            <ListItem
+                            <Box
                                 key={goal.id}
                                 sx={{
-                                    mb: 2,
+                                    width: { xs: 170, sm: 200 },
+                                    height: { xs: 170, sm: 200 },
+                                    bgcolor: goal.completed ? '#C3F6C7' : '#FFF6FB',
+                                    borderRadius: '50%',
+                                    boxShadow: goal.completed ? '0 2px 12px #C3F6C7' : '0 2px 12px #FFD6E8',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    m: 1,
+                                    flex: '0 0 auto',
                                     p: 2,
-                                    borderRadius: 2,
-                                    bgcolor: 'background.paper',
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    ...(goal.completed && {
-                                        bgcolor: 'success.light',
-                                        opacity: 0.8,
+                                    textAlign: 'center',
                                         borderColor: 'success.main'
                                     })
                                 }}

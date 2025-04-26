@@ -171,21 +171,8 @@ const Activities = () => {
             <Grid container spacing={3} justifyContent="center" alignItems="center">
                 {activities.map((activity) => (
                     <Grid item xs={12} sm={6} md={4} key={activity.id} sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Card sx={{ borderRadius: 99, boxShadow: '0 4px 24px #FFD6E8', background: '#FFF6FB', fontFamily: '"Swanky and Moo Moo", cursive', transition: 'all 0.18s cubic-bezier(.4,2,.6,1)', '&:hover': { background: '#39FF14', boxShadow: '0 8px 32px #39FF14', color: '#fff', transform: 'scale(1.04)' } }}>
-                            <CardContent>
-                                <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                    {activity.mood && <span style={{ fontSize: 28 }}>{activity.mood}</span>}
-                                    <Typography variant="h6" fontWeight={600} sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>{activity.title}</Typography>
-                                </Box>
-                                <Typography variant="body2" color="textSecondary" gutterBottom sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>
-                                    {activity.description}
-                                </Typography>
-                                <ActivityGallery activityId={activity.id} />
-                            </CardContent>
-                        </Card>
-                    </Grid>
                 ))}
-            </Grid>
+            </Box>
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>Add Activity</DialogTitle>
                 <DialogContent>

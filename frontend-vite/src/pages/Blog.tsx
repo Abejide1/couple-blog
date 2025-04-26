@@ -89,32 +89,47 @@ const Blog = () => {
                 </Button>
             </Box>
 
-            <Grid container spacing={3}>
-                {entries.map((entry) => (
-                    <Grid key={entry.id} sx={{ gridColumn: '1 / -1' }}>
-                        <Paper elevation={3}>
-                            <Card>
-                                <CardContent>
-                                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                        {entry.mood && <span style={{ fontSize: 28 }}>{entry.mood}</span>}
-                                        <Typography variant="h5" gutterBottom>
-                                            {entry.title}
-                                        </Typography>
-                                    </Box>
-                                    <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                                        Written by {entry.author} on {new Date(entry.created_at).toLocaleDateString()}
-                                    </Typography>
-                                    <Typography variant="body1" style={{ whiteSpace: 'pre-line' }}>
-                                        {entry.content}
-                                    </Typography>
-                                    {/* Blog Gallery (reuse ActivityGallery with blogEntryId) */}
-                                    <ActivityGallery blogEntryId={entry.id} />
-                                </CardContent>
-                            </Card>
-                        </Paper>
-                    </Grid>
-                ))}
-            </Grid>
+            <Box sx={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: { xs: 2, sm: 3 },
+  width: '100%',
+  mt: 2,
+}}>
+  {entries.map((entry) => (
+    <Box
+      key={entry.id}
+      sx={{
+        width: { xs: 170, sm: 220 },
+        height: { xs: 170, sm: 220 },
+        bgcolor: '#FFF6FB',
+        borderRadius: '50%',
+        boxShadow: '0 2px 12px #FFD6E8',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        m: 1,
+        flex: '0 0 auto',
+        p: 2,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h6" fontWeight={700} sx={{ color: '#B388FF', mb: 1, fontSize: { xs: '1rem', sm: '1.15rem' } }}>
+        {entry.title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+        by {entry.author}
+      </Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>{new Date(entry.created_at).toLocaleDateString()}</Typography>
+      {entry.mood && <Typography variant="body2" sx={{ fontSize: { xs: '1.2rem', sm: '1.4rem' }, mb: 1 }}>{entry.mood}</Typography>}
+      <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', sm: '0.95rem' }, mb: 1, overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: 48 }}>{entry.content}</Typography>
+      {/* Blog Gallery (reuse ActivityGallery with blogEntryId) */}
+      <ActivityGallery blogEntryId={entry.id} />
+    </Box>
+  ))}
+</Box>
 
             <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
                 <DialogTitle>New Blog Entry</DialogTitle>

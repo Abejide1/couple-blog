@@ -100,21 +100,45 @@ const Books = () => {
                 </Button>
             </Box>
 
-            <Grid container spacing={3}>
-                {books.map((book) => (
-                    <Grid key={book.id} sx={{ gridColumn: { xs: '1 / -1', sm: 'span 6', md: 'span 4' } }}>
-                        <Card
-                                sx={{
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    bgcolor: book.status === 'completed' ? 'success.light' : 
-                                            book.status === 'reading' ? 'info.light' : 'background.paper'
-                                }}>
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6" gutterBottom>
-                                    {book.title}
-                                </Typography>
+            <Box sx={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: { xs: 2, sm: 3 },
+  width: '100%',
+  mt: 2,
+}}>
+  {books.map((book) => (
+    <Box
+      key={book.id}
+      sx={{
+        width: { xs: 170, sm: 200 },
+        height: { xs: 170, sm: 200 },
+        bgcolor: book.status === 'completed' ? '#C3F6C7' : book.status === 'reading' ? '#E3F6FC' : '#FFF6FB',
+        borderRadius: '50%',
+        boxShadow: '0 2px 12px #FFD6E8',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        m: 1,
+        flex: '0 0 auto',
+        p: 2,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h6" fontWeight={700} sx={{ color: '#B388FF', mb: 1, fontSize: { xs: '1rem', sm: '1.15rem' } }}>
+        {book.title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+        by {book.author}
+      </Typography>
+      <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>{book.status.toUpperCase()}</Typography>
+      {book.rating > 0 && <Rating value={book.rating} readOnly size="small" sx={{ mb: 1 }} />}
+      {book.review && <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', sm: '0.95rem' } }}>{book.review}</Typography>}
+    </Box>
+  ))}
+</Box>
                                 <Typography variant="subtitle1" color="textSecondary" gutterBottom>
                                     by {book.author}
                                 </Typography>
