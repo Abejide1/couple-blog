@@ -112,27 +112,71 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Drawer content
   const drawer = (
-    <Box>
+    <Box sx={{
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      pt: 2,
+      background: 'transparent',
+    }}>
       <Toolbar />
-      <Divider />
-      <List>
+      <Divider sx={{ width: '80%', mb: 2 }} />
+      <List sx={{ width: '100%', px: 1 }}>
         {menuItems.map((item) => (
-          <ListItem button key={item.text} onClick={() => navigate(item.path)}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
+          <ListItem
+            key={item.text}
+            disablePadding
+            sx={{ justifyContent: 'center', mb: 2 }}
+            onClick={() => {
+              navigate(item.path);
+              setMobileOpen(false);
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                px: 2.5,
+                py: 1.2,
+                borderRadius: 99,
+                background: '#FFF6FB',
+                boxShadow: '0 2px 10px #FFD6E8',
+                fontWeight: 700,
+                fontSize: '1.1rem',
+                color: '#FF7EB9',
+                fontFamily: '"Swanky and Moo Moo", cursive',
+                cursor: 'pointer',
+                transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
+                '&:hover': {
+                  background: '#FFEBF7',
+                  color: '#fff',
+                  boxShadow: '0 4px 24px #FFD6E8',
+                  transform: 'scale(1.07)'
+                },
+                gap: 2,
+                minWidth: 170,
+                justifyContent: 'flex-start',
+              }}
+            >
+              <Box sx={{ mr: 1 }}>{item.icon}</Box>
+              <span>{item.text}</span>
+            </Box>
           </ListItem>
         ))}
       </List>
-      <Divider sx={{ mt: 2 }} />
-      <List sx={{ mt: 1 }}>
+      <Divider sx={{ width: '80%', my: 2 }} />
+      <List sx={{ width: '100%', px: 1 }}>
         {!user && [
-          <ListItem button key="Login" onClick={() => navigate('/login')}>
-            <ListItemIcon><span role="img" aria-label="login">🔑</span></ListItemIcon>
-            <ListItemText primary="Login" />
+          <ListItem key="Login" disablePadding sx={{ justifyContent: 'center', mb: 1 }} onClick={() => { navigate('/login'); setMobileOpen(false); }}>
+            <Box sx={{ px: 2.5, py: 1.2, borderRadius: 99, background: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8', fontWeight: 700, fontFamily: '"Swanky and Moo Moo", cursive', color: '#B388FF', cursor: 'pointer', '&:hover': { background: '#FFEBF7', color: '#fff', boxShadow: '0 4px 24px #FFD6E8', transform: 'scale(1.07)' } }}>
+              <span role="img" aria-label="login">🔑</span> Login
+            </Box>
           </ListItem>,
-          <ListItem button key="Register" onClick={() => navigate('/register')}>
-            <ListItemIcon><span role="img" aria-label="register">📝</span></ListItemIcon>
-            <ListItemText primary="Register" />
+          <ListItem key="Register" disablePadding sx={{ justifyContent: 'center', mb: 1 }} onClick={() => { navigate('/register'); setMobileOpen(false); }}>
+            <Box sx={{ px: 2.5, py: 1.2, borderRadius: 99, background: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8', fontWeight: 700, fontFamily: '"Swanky and Moo Moo", cursive', color: '#B388FF', cursor: 'pointer', '&:hover': { background: '#FFEBF7', color: '#fff', boxShadow: '0 4px 24px #FFD6E8', transform: 'scale(1.07)' } }}>
+              <span role="img" aria-label="register">📝</span> Register
+            </Box>
           </ListItem>,
         ]}
       </List>
@@ -140,7 +184,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive' }}>
+
       {/* AppBar */}
       <AppBar
         position="fixed"
@@ -153,17 +198,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       >
         <Toolbar sx={{ minHeight: 80, px: 3, position: 'relative' }}>
           {/* Mobile menu icon */}
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={() => setMobileOpen(true)}
-              sx={{ mr: 2 }}
-            >
-              <MdMenu size={32} />
-            </IconButton>
-          )}
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={() => setMobileOpen((open) => !open)}
+            sx={{ mr: 2, display: { sm: 'block' } }}
+          >
+            <MdMenu size={32} />
+          </IconButton>
 
           {/* App title */}
           <Typography
@@ -174,7 +217,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               fontWeight: 700,
               color: '#fff',
               letterSpacing: '0.05em',
-              fontFamily: 'Grotesco, Arial, sans-serif',
+              fontFamily: '"Swanky and Moo Moo", cursive',
             }}
           >
             Couple Activities App
@@ -204,6 +247,62 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           >
             Challenges
           </Button>
+
+          {/* Couple code buttons */}
+          {coupleCode && (
+            <Tooltip title="Copy couple code">
+              <Button
+                color="inherit"
+                startIcon={<MdContentCopy size={22} />}
+                onClick={() => {
+                  navigator.clipboard.writeText(coupleCode);
+                  setSnackbarOpen(true);
+                }}
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  color: '#fff',
+                  background: 'rgba(255,255,255,0.15)',
+                  borderRadius: 6,
+                  mx: 2,
+                  '&:hover': {
+                    background: '#FFEBF7',
+                    color: '#FF7EB9',
+                    boxShadow: '0 8px 24px #FFD6E8',
+                    transform: 'scale(1.07)',
+                  },
+                  transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
+                }}
+              >
+                {coupleCode}
+              </Button>
+            </Tooltip>
+          )}
+          {coupleCode && (
+            <Button
+              color="inherit"
+              onClick={() => {
+                clearCode();
+                navigate('/code');
+              }}
+              sx={{
+                fontWeight: 700,
+                fontSize: '1.1rem',
+                color: '#fff',
+                borderRadius: 6,
+                '&:hover': {
+                  background: '#FFEBF7',
+                  color: '#FF7EB9',
+                  boxShadow: '0 8px 24px #FFD6E8',
+                  transform: 'scale(1.07)',
+                },
+                transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
+                ml: 1,
+              }}
+            >
+              Change Code
+            </Button>
+          )}
 
           {/* Settings */}
           <Tooltip title="Settings">
@@ -279,8 +378,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         aria-label="sidebar"
       >
         <Drawer
-          variant={isMobile ? 'temporary' : 'permanent'}
-          open={isMobile ? mobileOpen : true}
+          variant="temporary"
+          open={mobileOpen}
           onClose={() => setMobileOpen(false)}
           ModalProps={{ keepMounted: true }}
           sx={{
