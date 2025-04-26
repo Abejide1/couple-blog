@@ -126,9 +126,9 @@ const Activities = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <Box>
+        <Box sx={{ fontFamily: '"Swanky and Moo Moo", cursive', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
             <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
-                <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: 'Grotesco, Arial, sans-serif' }}>
+                <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: '"Swanky and Moo Moo", cursive' }}>
                     🎉 Activities
                 </Typography>
                 <Button
@@ -136,30 +136,30 @@ const Activities = () => {
                     color="primary"
                     startIcon={<MdAdd size={22} />}
                     onClick={() => setOpen(true)}
-                    sx={{ mb: 2, fontWeight: 700, borderRadius: 8, fontSize: '1.13rem', boxShadow: '0 2px 8px #FFD6E8', animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } }}
+                    sx={{ mb: 2, fontWeight: 700, borderRadius: 99, fontSize: '1.13rem', boxShadow: '0 2px 8px #FFD6E8', fontFamily: '"Swanky and Moo Moo", cursive', animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } }}
                 >
                     Add Activity
                 </Button>
             </Box>
             {/* --- STATISTICS SECTION --- */}
-            <Grid container spacing={2} sx={{ marginBottom: 4 }}>
-                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'grey.50' }}><FaMagic color="#B388FF" size={32} /><Typography variant="h6">Total</Typography><Typography variant="h5" fontWeight={700}>{stats.total}</Typography></Paper></Grid>
-                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'success.50' }}><FaRegCheckCircle color="#34C759" size={32} /><Typography variant="h6">Completed</Typography><Typography variant="h5" fontWeight={700}>{stats.completed}</Typography></Paper></Grid>
-                <Grid item xs={12} sm={6} md={2}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'warning.50' }}><FaRegSmileBeam color="#FFC107" size={32} /><Typography variant="h6">Planned</Typography><Typography variant="h5" fontWeight={700}>{stats.planned}</Typography></Paper></Grid>
-                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'info.50' }}><FaHiking color="#2196F3" size={32} /><Typography variant="h6">Popular Category</Typography><Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600 }} /></Paper></Grid>
-                <Grid item xs={12} sm={6} md={3}><Paper elevation={2} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'secondary.50' }}><FaMusic color="#9C27B0" size={32} /><Typography variant="h6">Avg. Duration</Typography><Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography></Paper></Grid>
+            <Grid container spacing={2} sx={{ marginBottom: 4, justifyContent: 'center', alignItems: 'center' }}>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={6} sx={{ p: 2.5, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: '#FFF6FB', borderRadius: 99, boxShadow: '0 4px 24px #FFD6E8', fontFamily: '"Swanky and Moo Moo", cursive', minWidth: 150 }}><FaMagic color="#B388FF" size={32} /><Typography variant="h6" sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>Total</Typography><Typography variant="h5" fontWeight={700}>{stats.total}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={6} sx={{ p: 2.5, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: '#E0FFFA', borderRadius: 99, boxShadow: '0 4px 24px #7AF5FF', fontFamily: '"Swanky and Moo Moo", cursive', minWidth: 150 }}><FaRegCheckCircle color="#34C759" size={32} /><Typography variant="h6" sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>Completed</Typography><Typography variant="h5" fontWeight={700}>{stats.completed}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={2}><Paper elevation={6} sx={{ p: 2.5, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: '#FFF9E6', borderRadius: 99, boxShadow: '0 4px 24px #FFD36E', fontFamily: '"Swanky and Moo Moo", cursive', minWidth: 150 }}><FaRegSmileBeam color="#FFC107" size={32} /><Typography variant="h6" sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>Planned</Typography><Typography variant="h5" fontWeight={700}>{stats.planned}</Typography></Paper></Grid>
+                <Grid item xs={12} sm={6} md={3}><Paper elevation={6} sx={{ p: 2.5, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: '#F3EFFF', borderRadius: 99, boxShadow: '0 4px 24px #B388FF', fontFamily: '"Swanky and Moo Moo", cursive', minWidth: 180 }}><FaHiking color="#2196F3" size={32} /><Typography variant="h6" sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>Popular Category</Typography><Chip label={stats.mostPopularCategory} color="info" sx={{ mt: 1, fontWeight: 600, fontFamily: '"Swanky and Moo Moo", cursive' }} /></Paper></Grid>
+                <Grid item xs={12} sm={6} md={3}><Paper elevation={6} sx={{ p: 2.5, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: '#F6E7FF', borderRadius: 99, boxShadow: '0 4px 24px #B388FF', fontFamily: '"Swanky and Moo Moo", cursive', minWidth: 180 }}><FaMusic color="#9C27B0" size={32} /><Typography variant="h6" sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>Avg. Duration</Typography><Typography variant="h5" fontWeight={700}>{stats.avgDuration} min</Typography></Paper></Grid>
             </Grid>
             <Divider sx={{ mb: 4 }} />
-            <Grid container spacing={3}>
+            <Grid container spacing={3} justifyContent="center" alignItems="center">
                 {activities.map((activity) => (
-                    <Grid item xs={12} sm={6} md={4} key={activity.id}>
-                        <Card>
+                    <Grid item xs={12} sm={6} md={4} key={activity.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Card sx={{ borderRadius: 99, boxShadow: '0 4px 24px #FFD6E8', background: '#FFF6FB', fontFamily: '"Swanky and Moo Moo", cursive', transition: 'all 0.18s cubic-bezier(.4,2,.6,1)', '&:hover': { background: '#39FF14', boxShadow: '0 8px 32px #39FF14', color: '#fff', transform: 'scale(1.04)' } }}>
                             <CardContent>
                                 <Box display="flex" alignItems="center" gap={1} mb={1}>
                                     {activity.mood && <span style={{ fontSize: 28 }}>{activity.mood}</span>}
-                                    <Typography variant="h6" fontWeight={600}>{activity.title}</Typography>
+                                    <Typography variant="h6" fontWeight={600} sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>{activity.title}</Typography>
                                 </Box>
-                                <Typography variant="body2" color="textSecondary" gutterBottom>
+                                <Typography variant="body2" color="textSecondary" gutterBottom sx={{ fontFamily: '"Swanky and Moo Moo", cursive' }}>
                                     {activity.description}
                                 </Typography>
                                 <ActivityGallery activityId={activity.id} />

@@ -149,9 +149,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 cursor: 'pointer',
                 transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
                 '&:hover': {
-                  background: '#FFEBF7',
+                  background: '#39FF14', // Neon green
                   color: '#fff',
-                  boxShadow: '0 4px 24px #FFD6E8',
+                  boxShadow: '0 4px 24px #39FF14',
                   transform: 'scale(1.07)'
                 },
                 gap: 2,
@@ -184,7 +184,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive' }}>
+    <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
 
       {/* AppBar */}
       <AppBar
@@ -412,7 +412,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }}
       >
         <Toolbar />
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', fontFamily: '"Swanky and Moo Moo", cursive' }}>
           {children}
         </Container>
       </Box>
