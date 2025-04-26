@@ -33,6 +33,7 @@ import { format } from 'date-fns';
 import { goalsApi, Goal, GoalCreate, GoalUpdate } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ConfettiBurst from '../components/ConfettiBurst';
+import { badgesApi } from '../services/badgesApi';
 
 // Priority colors
 const priorityColors: Record<string, string> = {
@@ -162,9 +163,28 @@ const Goals = () => {
     };
 
     const handleCompleteGoal = async (goal: Goal) => {
+        // BADGE LOGIC: Goal Crushers badge & goal streak
+        let badges = {};
+        try {
+            badges = await badgesApi.get();
+        } catch {}
+
         setSubmitLoading(true);
         try {
             await goalsApi.update(goal.id, { ...goal, completed: true });
+            // Check for Goal Crushers badge
+            const goalsAfter = await goalsApi.getAll();
+            const completedGoals = goalsAfter.data.filter((g: any) => g.completed).length;
+            if (!badges.goal_crushers && completedGoals >= 5) {
+                await badgesApi.update({ ...badges, goal_crushers: true });
+            }
+            // Simple streak logic: completed a goal each week for 4 weeks
+            const now = new Date();
+            const completedDates = goalsAfter.data.filter((g: any) => g.completed && g.completed_at).map((g: any) => new Date(g.completed_at));
+            const weeks = new Set(completedDates.map(date => `${date.getFullYear()}-W${Math.ceil((((date.getTime() - new Date(date.getFullYear(),0,1).getTime())/86400000)+new Date(date.getFullYear(),0,1).getDay()+1)/7)}`));
+            if (!badges.goal_streak && weeks.size >= 4) {
+                await badgesApi.update({ ...badges, goal_streak: true });
+            }
             setSnackbarMessage('Goal marked as complete!');
             setSnackbarOpen(true);
             setShowConfetti(true);

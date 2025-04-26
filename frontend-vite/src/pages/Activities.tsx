@@ -33,6 +33,7 @@ import { activitiesApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MoodPicker from '../components/MoodPicker';
 import ActivityGallery from '../components/ActivityGallery';
+import { badgesApi } from '../services/badgesApi';
 
 const initialActivity: Omit<Activity, 'id' | 'created_at'> & { mood?: string } = {
     title: '',
@@ -75,6 +76,12 @@ const Activities = () => {
     }, [fetchActivities]);
 
     const handleSubmit = React.useCallback(async () => {
+        // BADGE LOGIC: Memory Makers & First Date
+        let badges = {};
+        try {
+            badges = await badgesApi.get();
+        } catch {}
+
         setSubmitLoading(true);
         setErrorMsg(null);
         const coupleCode = localStorage.getItem('coupleCode');
@@ -94,6 +101,17 @@ const Activities = () => {
                     method: 'POST',
                     body: formData
                 });
+            }
+            // Check for Memory Makers badge
+            const activitiesAfter = await activitiesApi.getAll();
+            const completedActivities = activitiesAfter.data.filter((a: any) => a.status === 'completed').length;
+            if (!badges.first_date && completedActivities >= 1) {
+                await badgesApi.update({ ...badges, first_date: true });
+            }
+            // Check for Memory Makers badge (10+ photos uploaded)
+            const uploadedPhotos = activitiesAfter.data.reduce((acc: number, a: any) => acc + (a.photos ? a.photos.length : 0), 0);
+            if (!badges.memory_makers && uploadedPhotos >= 10) {
+                await badgesApi.update({ ...badges, memory_makers: true });
             }
             setOpen(false);
             setNewActivity(initialActivity);

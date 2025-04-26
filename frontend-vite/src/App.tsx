@@ -7,6 +7,7 @@ import Books from './pages/Books';
 import Movies from './pages/Movies';
 import Blog from './pages/Blog';
 import Compatibility from './pages/Compatibility';
+import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -37,6 +38,7 @@ function App() {
                   <RequireCode>
                     <Layout>
                       <Routes>
+                        <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/activities" element={<Activities />} />
                         <Route path="/books" element={<Books />} />
                         <Route path="/movies" element={<Movies />} />
@@ -45,7 +47,7 @@ function App() {
                         <Route path="/challenges" element={<Challenges />} />
                         <Route path="/goals" element={<Goals />} />
                         <Route path="/compatibility" element={<Compatibility />} />
-                        <Route path="/" element={<Navigate to="/activities" replace />} />
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       </Routes>
                     </Layout>
                   </RequireCode>

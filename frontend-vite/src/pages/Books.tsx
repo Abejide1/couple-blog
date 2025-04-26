@@ -18,6 +18,7 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { Book } from '../types';
 import { booksApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { badgesApi } from '../services/badgesApi';
 
 const Books = () => {
     const [books, setBooks] = useState<Book[]>([]);
@@ -49,6 +50,12 @@ const Books = () => {
     }, []);
 
     const handleSubmit = async () => {
+        // BADGE LOGIC: Bookworms badge
+        let badges: Record<string, boolean> = {};
+        try {
+            badges = await badgesApi.get();
+        } catch {}
+
         setSubmitLoading(true);
         setErrorMsg(null);
         const coupleCode = localStorage.getItem('coupleCode');
@@ -59,6 +66,12 @@ const Books = () => {
         }
         try {
             await booksApi.create(newBook);
+            // Check for badge: 5 completed books
+            const booksAfter = await booksApi.getAll();
+            const completedBooks = booksAfter.data.filter((b: any) => b.status === 'completed').length;
+            if (!badges.bookworms && completedBooks >= 5) {
+                await badgesApi.update({ ...badges, bookworms: true });
+            }
             setOpen(false);
             setNewBook({ title: '', author: '', status: 'to_read', review: '', rating: 0 });
             fetchBooks();

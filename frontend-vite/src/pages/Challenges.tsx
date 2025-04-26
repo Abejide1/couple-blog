@@ -24,6 +24,8 @@ import { format } from 'date-fns';
 import { challengesApi, ChallengeWithProgress } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ConfettiBurst from '../components/ConfettiBurst';
+import Badges from '../components/Badges';
+import { badgesApi } from '../services/badgesApi';
 
 // Cute react-icons for different challenge categories
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -35,6 +37,25 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const Challenges = () => {
+    // --- BADGES STATE (fetch from backend) ---
+    const [badges, setBadges] = useState<Record<string, boolean>>({});
+    const [badgesLoading, setBadgesLoading] = useState(true);
+
+    useEffect(() => {
+        // Fetch badge progress from backend
+        const fetchBadges = async () => {
+            try {
+                const progress = await badgesApi.get();
+                setBadges(progress);
+            } catch (e) {
+                setBadges({});
+            } finally {
+                setBadgesLoading(false);
+            }
+        };
+        fetchBadges();
+    }, []);
+
     const [showConfetti, setShowConfetti] = useState(false);
     const [challenges, setChallenges] = useState<ChallengeWithProgress[]>([]);
     const [loading, setLoading] = useState(true);
@@ -93,6 +114,32 @@ const Challenges = () => {
     };
 
     const handleCompleteChallenge = async (challenge: ChallengeWithProgress) => {
+        let newBadges = { ...badges };
+        let badgeChanged = false;
+        // --- BADGE LOGIC: Earn 'challenge_accepted' badge on first complete ---
+        if (!newBadges.challenge_accepted) {
+            newBadges.challenge_accepted = true;
+            badgeChanged = true;
+        }
+        // --- BADGE LOGIC: Earn 'streak_master' if 30 challenges completed (example streak logic) ---
+        const completedCount = challenges.filter(c => c.completed).length + 1; // +1 for this one
+        if (!newBadges.streak_master && completedCount >= 30) {
+            newBadges.streak_master = true;
+            badgeChanged = true;
+        }
+        // --- BADGE LOGIC: Earn 'goal_crushers' if 5 goals completed (simulate, ideally fetch real count) ---
+        if (!newBadges.goal_crushers) {
+            // TODO: fetch real completed goals count from backend
+            const completedGoals = 5; // Replace with real logic
+            if (completedGoals >= 5) {
+                newBadges.goal_crushers = true;
+                badgeChanged = true;
+            }
+        }
+        if (badgeChanged) {
+            setBadges(newBadges);
+            await badgesApi.update(newBadges);
+        }
         setActionInProgress(true);
         try {
             await challengesApi.complete(challenge.id);
@@ -162,21 +209,56 @@ const Challenges = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <Box>
-            <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
-                <Typography variant="h4" sx={{ flexGrow: 1 }}>Relationship Challenges</Typography>
+        <Box sx={{ p: { xs: 1, md: 4 }, maxWidth: 1100, mx: 'auto', fontFamily: '"Swanky and Moo Moo", cursive' }}>
+            <Typography variant="h3" align="center" gutterBottom sx={{ fontFamily: '"Swanky and Moo Moo", cursive', color: '#B388FF', fontWeight: 900 }}>
+                Couple Challenges
+            </Typography>
+            {/* --- BADGES SECTION --- */}
+            <Box display="flex" justifyContent="center" mb={3}>
+                <Badges badges={badges} />
             </Box>
+            <Divider sx={{ mb: 4 }} />
+            <Typography variant="h4" sx={{ flexGrow: 1 }}>Relationship Challenges</Typography>
+            <Typography variant="body1" paragraph>Choose from our curated list of activities designed to help couples connect, communicate, and create memories.</Typography>
+            <Divider sx={{ mb: 2 }} />
+            
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                {challenges.map((challenge) => (
+                    <Box key={challenge.id} sx={{ width: { xs: '100%', sm: '45%', md: '30%' } }}>
+                        <Card 
+                            sx={{
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                position: 'relative',
+                                ...(challenge.completed && {
+                                    backgroundColor: 'success.light',
+                                    borderColor: 'success.main',
+                                    borderWidth: 1,
+                                    borderStyle: 'solid'
+                                })
+                            }}
+                        >
+                            {challenge.completed && (
+                                <Chip 
+                                    label="Completed" 
+                                    color="success" 
+                                    icon={<FaRegCheckCircle size={22} />} 
+                                    sx={{ 
+                                        position: 'absolute', 
+                                        top: 10, 
+                                        right: 10,
+                                        fontWeight: 'bold',
+                                        background: '#C3F6C7',
+                                        color: '#2E7D32',
+                                        fontSize: '1.1rem',
+                                    }} 
+                                />
+                            )}
 
-            <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom sx={headingSx}>
-                    💖 Challenges
-                </Typography>
-                <Typography variant="body1" paragraph>Choose from our curated list of activities designed to help couples connect, communicate, and create memories.</Typography>
-                <Divider sx={{ mb: 2 }} />
-                
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-                    {challenges.map((challenge) => (
-                        <Box key={challenge.id} sx={{ width: { xs: '100%', sm: '45%', md: '30%' } }}>
+                            <CardContent sx={{ flexGrow: 1 }}>
+                                <Box display="flex" alignItems="center" mb={2}>
+                                    <Box 
                             <Card 
                                 sx={{
                                     height: '100%',

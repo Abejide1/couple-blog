@@ -44,6 +44,7 @@ const DRAWER_WIDTH = 320;
 const defaultAppBarColor = '#FF7EB9';
 
 const menuItems = [
+  { text: 'Dashboard', path: '/dashboard', icon: <span style={{ fontSize: 34, color: '#DC0073', filter: 'drop-shadow(0 0 8px #FFD6E8)' }}>🎉</span>, gradient: 'linear-gradient(90deg,#FF7EB9 0%,#B388FF 100%)' },
   { text: 'Compatibility', path: '/compatibility', icon: <span role="img" aria-label="compatibility">💞</span> },
   { text: 'Activities', icon: <FaRegSmileBeam size={36} color="#FF7EB9" />, path: '/activities' },
   { text: 'Books', icon: <BsFillBookmarkHeartFill size={34} color="#7AF5FF" />, path: '/books' },
@@ -410,13 +411,25 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          marginLeft: { sm: `${DRAWER_WIDTH}px` },
+          p: { xs: 2, sm: 3 },
+          width: '100%',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: background,
         }}
       >
         <Toolbar />
-        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: '"Swanky and Moo Moo", cursive', mx: 'auto' }}>
+        <Container maxWidth="md" sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: '100%',
+          fontFamily: '"Swanky and Moo Moo", cursive',
+          mx: 'auto',
+          px: { xs: 0, sm: 2 },
+        }}>
           {children}
         </Container>
       </Box>
