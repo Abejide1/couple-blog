@@ -29,18 +29,14 @@ import {
   FaBlog,
   FaFilm,
   FaTasks,
-  FaPalette,
-  FaMoon,
-  FaSun,
   FaCog,
 } from 'react-icons/fa';
 import { MdMenu, MdContentCopy } from 'react-icons/md';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useThemeMode } from '../contexts/ThemeContext';
 import { useCouple } from '../contexts/CoupleContext';
 
 const DRAWER_WIDTH = 320;
-
 const defaultAppBarColor = '#FF7EB9';
 
 const menuItems = [
@@ -62,11 +58,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [appBarColor, setAppBarColor] = useState(() => localStorage.getItem('appBarColor') || defaultAppBarColor);
   const [settingsAnchor, setSettingsAnchor] = useState<null | HTMLElement>(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
-  const [paletteAnchor, setPaletteAnchor] = useState<null | HTMLElement>(null);
 
-  const { mode, toggleTheme, setAccent } = useThemeMode();
-  const { coupleCode, clearCode } = useCouple();
+  const { mode, toggleTheme } = useThemeMode();
+  const { coupleCode } = useCouple();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
 
   // Settings for background and floating icons
@@ -82,113 +78,50 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => { localStorage.setItem('appBarColor', appBarColor); }, [appBarColor]);
   useEffect(() => { document.body.style.background = background; }, [background]);
 
-  // User menu handlers
+  // Menu handlers
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => setUserMenuAnchor(event.currentTarget);
   const handleUserMenuClose = () => setUserMenuAnchor(null);
-
-  // Settings menu handlers
   const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => setSettingsAnchor(event.currentTarget);
   const handleSettingsClose = () => setSettingsAnchor(null);
 
-  // Color palette handlers
-  const handlePaletteClick = (event: React.MouseEvent<HTMLElement>) => setPaletteAnchor(event.currentTarget);
-  const handlePaletteClose = () => setPaletteAnchor(null);
-  const handleColorChange = (color: any) => {
-    setAppBarColor(color.hex);
-    setAccent(color.hex);
-    setPaletteAnchor(null);
-  };
-
-  // Theme toggle
-  const handleDarkModeToggle = () => toggleTheme();
-
-  // Profile and logout
-  const handleProfile = () => {
-    navigate('/profile');
-    handleUserMenuClose();
-  };
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-    handleUserMenuClose();
-  };
-
   // Drawer content
   const drawer = (
-    <Box sx={{
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      pt: 2,
-      background: 'transparent',
-    }}>
-      <Toolbar />
-      <Divider sx={{ width: '80%', mb: 2 }} />
-      <List sx={{ width: '100%', px: 1 }}>
+    <Box sx={{ p: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 900, color: '#B388FF', mb: 2, textAlign: 'center' }}>
+        Couple Activities
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <List>
         {menuItems.map((item) => (
           <ListItem
+            button
             key={item.text}
-            disablePadding
-            sx={{ justifyContent: 'center', mb: 2 }}
-            onClick={() => {
-              navigate(item.path);
-              setMobileOpen(false);
+            component={RouterLink}
+            to={item.path}
+            onClick={() => { if (isMobile) setMobileOpen(false); }}
+            sx={{
+              borderRadius: 4,
+              mb: 1,
+              bgcolor: location.pathname === item.path ? '#FFD6E8' : 'transparent',
+              color: location.pathname === item.path ? '#DC0073' : '#B388FF',
+              fontWeight: 700,
+              transition: 'background 0.3s',
+              '&:hover': {
+                bgcolor: '#FFF6FB',
+                color: '#DC0073',
+              },
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                px: 2.5,
-                py: 1.2,
-                borderRadius: 99,
-                background: '#FFF6FB',
-                boxShadow: '0 2px 10px #FFD6E8',
-                fontWeight: 700,
-                fontSize: '1.1rem',
-                color: '#FF7EB9',
-                fontFamily: '"Swanky and Moo Moo", cursive',
-                cursor: 'pointer',
-                transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
-                '&:hover': {
-                  background: '#DC0073',
-                  color: '#fff',
-                  boxShadow: '0 4px 24px #DC0073',
-                  transform: 'scale(1.07)'
-                },
-                gap: 2,
-                minWidth: 170,
-                justifyContent: 'flex-start',
-              }}
-            >
-              <Box sx={{ mr: 1 }}>{item.icon}</Box>
-              <span>{item.text}</span>
-            </Box>
+            <ListItemIcon sx={{ minWidth: 0, mr: 2 }}>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
           </ListItem>
         ))}
-      </List>
-      <Divider sx={{ width: '80%', my: 2 }} />
-      <List sx={{ width: '100%', px: 1 }}>
-        {!user && [
-          <ListItem key="Login" disablePadding sx={{ justifyContent: 'center', mb: 1 }} onClick={() => { navigate('/login'); setMobileOpen(false); }}>
-            <Box sx={{ px: 2.5, py: 1.2, borderRadius: 99, background: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8', fontWeight: 700, fontFamily: '"Swanky and Moo Moo", cursive', color: '#B388FF', cursor: 'pointer', '&:hover': { background: '#FFEBF7', color: '#fff', boxShadow: '0 4px 24px #FFD6E8', transform: 'scale(1.07)' } }}>
-              <span role="img" aria-label="login">🔑</span> Login
-            </Box>
-          </ListItem>,
-          <ListItem key="Register" disablePadding sx={{ justifyContent: 'center', mb: 1 }} onClick={() => { navigate('/register'); setMobileOpen(false); }}>
-            <Box sx={{ px: 2.5, py: 1.2, borderRadius: 99, background: '#FFF6FB', boxShadow: '0 2px 10px #FFD6E8', fontWeight: 700, fontFamily: '"Swanky and Moo Moo", cursive', color: '#B388FF', cursor: 'pointer', '&:hover': { background: '#FFEBF7', color: '#fff', boxShadow: '0 4px 24px #FFD6E8', transform: 'scale(1.07)' } }}>
-              <span role="img" aria-label="register">📝</span> Register
-            </Box>
-          </ListItem>,
-        ]}
       </List>
     </Box>
   );
 
   return (
     <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive', width: '100%' }}>
-
       {/* AppBar */}
       <AppBar
         position="fixed"
@@ -251,33 +184,34 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             Challenges
           </Button>
 
-          {/* Couple code buttons */}
+          {/* Couple code button */}
           {coupleCode && (
             <Tooltip title="Copy couple code">
-            <Button
-              color="inherit"
-              startIcon={<MdContentCopy size={22} />}
-              onClick={() => {
-                navigator.clipboard.writeText(coupleCode);
-                setSnackbarOpen(true);
-              }}
-              sx={{
-                fontWeight: 700,
-                fontSize: '1.1rem',
-                color: '#fff',
-                borderRadius: 6,
-                '&:hover': {
-                  background: '#FFEBF7',
-                  color: '#FF7EB9',
-                  boxShadow: '0 8px 24px #FFD6E8',
-                  transform: 'scale(1.07)',
-                },
-                transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
-                ml: 1,
-              }}
-            >
-              Change Code
-            </Button>
+              <Button
+                color="inherit"
+                startIcon={<MdContentCopy size={22} />}
+                onClick={() => {
+                  navigator.clipboard.writeText(coupleCode);
+                  setSnackbarOpen(true);
+                }}
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  color: '#fff',
+                  borderRadius: 6,
+                  '&:hover': {
+                    background: '#FFEBF7',
+                    color: '#FF7EB9',
+                    boxShadow: '0 8px 24px #FFD6E8',
+                    transform: 'scale(1.07)',
+                  },
+                  transition: 'all 0.18s cubic-bezier(.4,2,.6,1)',
+                  ml: 1,
+                }}
+              >
+                {coupleCode}
+              </Button>
+            </Tooltip>
           )}
 
           {/* Settings */}
@@ -322,8 +256,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 PaperProps={{ sx: { borderRadius: 4, minWidth: 180, p: 1 } }}
               >
-                <MenuItem onClick={handleProfile} sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 2 }}>Profile</MenuItem>
-                <MenuItem onClick={handleLogout} sx={{ fontWeight: 700, color: '#FF7EB9', borderRadius: 2 }}>Logout</MenuItem>
+                <MenuItem onClick={() => { handleUserMenuClose(); navigate('/profile'); }} sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 2 }}>Profile</MenuItem>
+                <MenuItem onClick={() => { handleUserMenuClose(); logout(); }} sx={{ fontWeight: 700, color: '#FF7EB9', borderRadius: 2 }}>Logout</MenuItem>
               </Menu>
             </>
           )}
