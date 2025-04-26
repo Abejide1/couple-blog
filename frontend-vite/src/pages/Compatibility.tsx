@@ -223,7 +223,7 @@ const Compatibility: React.FC = () => {
             </Typography>
           </Box>
         )}
-      </Paper>
+      </Box>
     </Box>
   );
 };
