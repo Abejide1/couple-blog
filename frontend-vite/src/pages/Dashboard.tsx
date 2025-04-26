@@ -160,13 +160,13 @@ export default function Dashboard() {
   mt: 1,
 }}>
   {[
-    { icon: <FaRegSmileBeam color: "#FF7EB9" size={32} />, label: 'Activities', value: stats.completedActivities },
-    { icon: <FaCamera color: "#43a047" size={32} />, label: 'Photos', value: stats.uploadedPhotos },
-    { icon: <FaBook color: "#FFD36E" size={32} />, label: 'Books', value: stats.completedBooks },
-    { icon: <FaChartLine color: "#43a047" size={32} />, label: 'Goals', value: stats.completedGoals },
-    { icon: <FaStar color: "#FFD36E" size={32} />, label: 'Challenges', value: stats.completedChallenges },
-    { icon: <FaBlog color: "#B388FF" size={32} />, label: 'Blog', value: stats.blogPosts },
-    { icon: <FaEnvelopeOpenText color: "#2196f3" size={32} />, label: 'Messages', value: stats.messages, caption: '(Soon)' },
+    { icon: <FaRegSmileBeam color="#FF7EB9" size={32} />, label: 'Activities', value: stats.completedActivities },
+    { icon: <FaCamera color="#43a047" size={32} />, label: 'Photos', value: stats.uploadedPhotos },
+    { icon: <FaBook color="#FFD36E" size={32} />, label: 'Books', value: stats.completedBooks },
+    { icon: <FaChartLine color="#43a047" size={32} />, label: 'Goals', value: stats.completedGoals },
+    { icon: <FaStar color="#FFD36E" size={32} />, label: 'Challenges', value: stats.completedChallenges },
+    { icon: <FaBlog color="#B388FF" size={32} />, label: 'Blog', value: stats.blogPosts },
+    { icon: <FaEnvelopeOpenText color="#2196f3" size={32} />, label: 'Messages', value: stats.messages, caption: '(Soon)' },
   ].map((stat, idx) => (
     <Box
       key={stat.label}
