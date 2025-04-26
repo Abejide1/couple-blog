@@ -298,22 +298,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         mode={mode}
                         toggleTheme={toggleTheme}
                         accent={appBarColor}
-                        setAccent={setAppBarColor}
-                    />
-                </Toolbar>
-            </AppBar>
-            <Box
-                component="main"
-                sx={{
-                    flexGrow: 1,
-                    p: 3,
-                    width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-                    marginLeft: { sm: `${DRAWER_WIDTH}px` },
-                }}
 const handleUserMenuOpen = () => setUserMenuAnchor(document.body);
 const handleUserMenuClose = () => setUserMenuAnchor(null);
 const handleSettingsClick = () => setSettingsAnchor(document.body);
 const handleSettingsClose = () => setSettingsAnchor(null);
+const handlePaletteClick = (event: React.MouseEvent<HTMLElement>) => {
+  setPaletteAnchor(event.currentTarget);
+};
+const handlePaletteClose = () => setPaletteAnchor(null);
+const handleColorChange = (color: any) => {
+  setAppBarColor(color.hex);
+  setAccent(color.hex); // update global accent color
+  setPaletteAnchor(null);
+};
+const handleDarkModeToggle = () => toggleTheme();
+const handleProfile = () => navigate('/profile');
+const handleLogout = () => logout();
 
 return (
   <Box sx={{ display: 'flex' }}>
