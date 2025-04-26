@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Paper, Typography, TextField, Button, Avatar, CircularProgress, Alert } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -12,6 +13,7 @@ const Profile: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -23,6 +25,9 @@ const Profile: React.FC = () => {
     try {
       await updateProfile({ display_name: displayName });
       setSuccess('Profile updated!');
+      setTimeout(() => {
+        navigate('/activities');
+      }, 800); // short delay so user sees success
     } catch (err: any) {
       setError('Update failed');
     }
@@ -44,6 +49,8 @@ const Profile: React.FC = () => {
       setProfilePic(null);
       setSuccess('Profile picture updated!');
       await refreshProfile();
+      // Clear file input value
+      if (e.target) e.target.value = '';
     } catch (err: any) {
       setError('Failed to upload profile picture');
     }

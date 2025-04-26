@@ -295,6 +295,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         setFloatingIcons={setFloatingIcons}
                         iconStyle={iconStyle}
                         setIconStyle={setIconStyle}
+                        mode={mode}
+                        toggleTheme={toggleTheme}
+                        accent={appBarColor}
+                        setAccent={setAppBarColor}
                     />
                 </Toolbar>
             </AppBar>
