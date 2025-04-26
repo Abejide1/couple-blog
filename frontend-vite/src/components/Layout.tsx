@@ -301,18 +301,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </AppBar>
             <Box
                 component="main"
-                sx={{
-                    flexGrow: 1,
-                    p: 3,
-                    width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-                    marginLeft: { sm: `${DRAWER_WIDTH}px` },
-                }}
 };
 const handlePaletteClose = () => setPaletteAnchor(null);
 const handleColorChange = (color: any) => {
-    setAppBarColor(color.hex);
-    setAccent(color.hex); // update global accent color
-    setPaletteAnchor(null);
+  setAppBarColor(color.hex);
+  setAccent(color.hex); // update global accent color
+  setPaletteAnchor(null);
 };
 const handleDarkModeToggle = () => toggleTheme();
 const handleProfile = () => navigate('/profile');
