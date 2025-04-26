@@ -13,6 +13,8 @@ const Profile: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [picLoading, setPicLoading] = useState(false);
+  const [avatarKey, setAvatarKey] = useState(0);
   const navigate = useNavigate();
 
   if (!user) return null;
@@ -36,7 +38,7 @@ const Profile: React.FC = () => {
 
   const handlePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !token) return;
-    setLoading(true);
+    setPicLoading(true);
     setError('');
     setSuccess('');
     const file = e.target.files[0];
@@ -49,26 +51,28 @@ const Profile: React.FC = () => {
       setProfilePic(null);
       setSuccess('Profile picture updated!');
       await refreshProfile();
-      // Clear file input value
+      setAvatarKey(k => k + 1); // force Avatar to update
       if (e.target) e.target.value = '';
     } catch (err: any) {
       setError('Failed to upload profile picture');
     }
-    setLoading(false);
+    setPicLoading(false);
   };
+
 
   return (
     <Box maxWidth={420} mx="auto" mt={8}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 6, boxShadow: '0 4px 24px #FFD6E8' }}>
         <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
           <Avatar
+            key={avatarKey}
             src={user.profile_pic ? `${API_URL}/${user.profile_pic}` : undefined}
             sx={{ width: 90, height: 90, mb: 2, bgcolor: '#FFD6E8', fontSize: 40 }}
           >
             {user.display_name?.charAt(0) || user.email.charAt(0)}
           </Avatar>
-          <Button variant="outlined" component="label" sx={{ borderRadius: 8, fontWeight: 700, mb: 2 }}>
-            Change Picture
+          <Button variant="outlined" component="label" sx={{ borderRadius: 8, fontWeight: 700, mb: 2 }} disabled={picLoading}>
+            {picLoading ? <CircularProgress size={22} sx={{ mr: 1 }} /> : 'Change Picture'}
             <input type="file" accept="image/*" hidden onChange={handlePicUpload} />
           </Button>
         </Box>

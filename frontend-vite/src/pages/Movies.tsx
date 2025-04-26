@@ -58,7 +58,7 @@ const Movies = () => {
             return;
         }
         try {
-            await moviesApi.create(newMovie);
+            await moviesApi.create({ ...newMovie, couple_code: coupleCode });
             setOpen(false);
             setNewMovie({ title: '', genre: '', status: 'to_watch', review: '', rating: 0 });
             fetchMovies();

@@ -186,7 +186,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+    <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive', width: '100%' }}>
 
       {/* AppBar */}
       <AppBar
@@ -416,7 +416,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }}
       >
         <Toolbar />
-        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', fontFamily: '"Swanky and Moo Moo", cursive', mx: 'auto' }}>
+        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: '"Swanky and Moo Moo", cursive', mx: 'auto' }}>
           {children}
         </Container>
       </Box>
