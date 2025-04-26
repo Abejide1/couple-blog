@@ -315,11 +315,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         >
                             <MenuItem onClick={handleProfile} sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 2 }}>Profile</MenuItem>
                             <MenuItem onClick={handleLogout} sx={{ fontWeight: 700, color: '#FF7EB9', borderRadius: 2 }}>Logout</MenuItem>
-                        </Menu>
-                    </Box>
-                )}
-                {/* Settings gear icon and dropdown */}
-                <Tooltip title="Settings">
 };
 const handlePaletteClose = () => setPaletteAnchor(null);
 const handleColorChange = (color: any) => {
