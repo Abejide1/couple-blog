@@ -341,17 +341,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 />
             </Toolbar>
         </AppBar>
-                        accent={appBarColor}
-                        setAccent={setAppBarColor}
-                    />
-                </Toolbar>
-            </AppBar>
 
-            <Box
-                component="nav"
-                sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}
-            >
-                <Drawer
+        <Box
+            component="nav"
+            sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}
+        >
+            <Drawer
+                variant="temporary"
+                open={mobileOpen}
+                onClose={() => setMobileOpen(false)}
+                ModalProps={{ keepMounted: true }}
                     variant="temporary"
                     open={mobileOpen}
                     onClose={() => setMobileOpen(false)}
