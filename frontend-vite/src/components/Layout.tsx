@@ -299,22 +299,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         toggleTheme={toggleTheme}
                             >
                                 {user.display_name?.charAt(0) || user.email.charAt(0)}
-                            </Avatar>
-                            <Typography sx={{ fontWeight: 700, color: '#B388FF', mr: 1, display: { xs: 'none', md: 'block' } }}>
-                                {user.display_name || user.email}
-                            </Typography>
-                            <span style={{ color: '#B388FF', fontSize: 18, marginLeft: 2 }}>▼</span>
-                        </Button>
-                        <Menu
-                            anchorEl={userMenuAnchor}
-                            open={Boolean(userMenuAnchor)}
-                            onClose={handleUserMenuClose}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            PaperProps={{ sx: { borderRadius: 4, minWidth: 180, p: 1 } }}
-                        >
-                            <MenuItem onClick={handleProfile} sx={{ fontWeight: 700, color: '#B388FF', borderRadius: 2 }}>Profile</MenuItem>
-                            <MenuItem onClick={handleLogout} sx={{ fontWeight: 700, color: '#FF7EB9', borderRadius: 2 }}>Logout</MenuItem>
 };
 const handlePaletteClose = () => setPaletteAnchor(null);
 const handleColorChange = (color: any) => {
@@ -325,6 +309,11 @@ const handleColorChange = (color: any) => {
 
 // Dark mode toggle handler (uses ThemeContext)
 const handleDarkModeToggle = () => toggleTheme();
+
+const handleUserMenuOpen = () => setUserMenuAnchor(document.body);
+const handleUserMenuClose = () => setUserMenuAnchor(null);
+const handleSettingsClick = () => setSettingsAnchor(document.body);
+const handleSettingsClose = () => setSettingsAnchor(null);
 
 return (
   <Box sx={{ display: 'flex' }}>
