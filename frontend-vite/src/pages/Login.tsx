@@ -68,7 +68,7 @@ const Login: React.FC = () => {
         <Typography align="center" sx={{ mt: 2, fontSize: '1rem' }}>
           Don't have an account? <Link to="/register">Register</Link>
         </Typography>
-      </Paper>
+      </Box>
     </Box>
   );
 };
