@@ -252,20 +252,14 @@ const Challenges = () => {
                                         background: '#C3F6C7',
                                         color: '#2E7D32',
                                         fontSize: '1.1rem',
-                                    }} 
-                                />
-                            )}
-
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Box display="flex" alignItems="center" mb={2}>
-                                    <Box 
-                            <Card 
-                                sx={{
-                                    height: '100%',
                                     display: 'flex',
-                                    flexDirection: 'column',
-                                    position: 'relative',
-                                    ...(challenge.completed && {
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: '50%',
+                                    background: '#FFF0F6',
+                                    width: 56,
+                                    height: 56,
+                                    boxShadow: '0 2px 8px #FFD6E8',
                                         backgroundColor: 'success.light',
                                         borderColor: 'success.main',
                                         borderWidth: 1,
