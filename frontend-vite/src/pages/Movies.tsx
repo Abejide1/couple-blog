@@ -143,19 +143,7 @@ const Movies = () => {
                                 />
                             </Box>
                         )}
-                                </Box>
-                                {(movie.status === 'watched' || movie.rating) && (
-                                    <Box mt={2}>
-                                        <Typography component="legend">Your Rating</Typography>
-                                        <Rating
-                                            value={movie.rating || 0}
-                                            onChange={(_, value) => {
-                                                if (value !== null) {
-                                                    moviesApi.update(movie.id, { status: movie.status, rating: value })
-                                                        .then(() => fetchMovies())
-                                                        .catch(error => console.error('Error updating rating:', error));
-                                                }
-                                            }}
+                    </Box>
                                         />
                                     </Box>
                                 )}
