@@ -134,13 +134,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       localStorage.setItem('appBarColor', appBarColor);
     }, [appBarColor]);
 
-    // Handler functions (must be above return and outside of JSX)
-    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setUserMenuAnchor(event.currentTarget);
-    };
-    const handleUserMenuClose = () => setUserMenuAnchor(null);
-    const handleSettingsClick = (e: React.MouseEvent<HTMLElement>) => setSettingsAnchor(e.currentTarget);
-    const handleSettingsClose = () => setSettingsAnchor(null);
     const handlePaletteClick = (event: React.MouseEvent<HTMLElement>) => {
       setPaletteAnchor(event.currentTarget);
     };
@@ -151,15 +144,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setPaletteAnchor(null);
     };
     const handleDarkModeToggle = () => toggleTheme();
-    const handleProfile = () => {
-        navigate('/profile');
-        handleUserMenuClose();
-    };
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-        handleUserMenuClose();
-    };
 
     return (
         <Box sx={{ display: 'flex' }}>
