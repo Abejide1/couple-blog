@@ -78,6 +78,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => { localStorage.setItem('appBarColor', appBarColor); }, [appBarColor]);
   useEffect(() => { document.body.style.background = background; }, [background]);
 
+  // Auto-close sidebar on any navigation
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   // Menu handlers
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => setUserMenuAnchor(event.currentTarget);
   const handleUserMenuClose = () => setUserMenuAnchor(null);
