@@ -115,7 +115,7 @@ const Profile: React.FC = () => {
             {loading ? <CircularProgress size={24} /> : 'Save Changes'}
           </Button>
         </form>
-      </Paper>
+      </Box>
     </Box>
   );
 };
