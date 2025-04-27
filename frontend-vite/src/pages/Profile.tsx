@@ -1,20 +1,35 @@
 import React, { useState } from 'react';
-import { Box, Paper, Typography, TextField, Button, Avatar, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, TextField, Button, CircularProgress, Alert, Grid } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { FaSmile, FaMeh, FaLaugh, FaSadTear, FaAngry, FaHeart } from 'react-icons/fa';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+// Avatar creation options
+const faceColors = ['#FFD6E8', '#F8E9D6', '#E3D6C5', '#C4A88F', '#8D6E63', '#5D4037', '#6A74C9', '#A6D3FF'];
+const hairStyles = ['short', 'medium', 'long', 'bald', 'curly', 'wavy'];
+const hairColors = ['#000000', '#6D4C41', '#FFC107', '#FF5722', '#9C27B0', '#E91E63', '#607D8B', '#FFFFFF'];
+const expressions = ['smile', 'laugh', 'meh', 'sad', 'angry', 'love'];
+const accessories = ['none', 'glasses', 'hat', 'earrings'];
 
 const Profile: React.FC = () => {
   const { user, token, updateProfile, refreshProfile } = useAuth();
   const [displayName, setDisplayName] = useState(user?.display_name || '');
-  const [profilePic, setProfilePic] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [picLoading, setPicLoading] = useState(false);
-  const [avatarKey, setAvatarKey] = useState(0);
+  const [showAvatarCreator, setShowAvatarCreator] = useState(false);
+  
+  // Avatar customization state
+  // Use default values since user may not have avatar data yet
+  const [faceColor, setFaceColor] = useState(faceColors[0]);
+  const [hairStyle, setHairStyle] = useState(hairStyles[0]);
+  const [hairColor, setHairColor] = useState(hairColors[0]);
+  const [expression, setExpression] = useState(expressions[0]);
+  const [accessory, setAccessory] = useState(accessories[0]);
+  
   const navigate = useNavigate();
 
   if (!user) return null;
@@ -36,27 +51,103 @@ const Profile: React.FC = () => {
     setLoading(false);
   };
 
-  const handlePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !token) return;
-    setPicLoading(true);
+  // Save avatar settings to backend
+  const handleSaveAvatar = async () => {
+    if (!token) return;
+    setLoading(true);
     setError('');
     setSuccess('');
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
+    
     try {
-      await axios.post(`${API_URL}/user/profile/picture`, formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+      // Create an object with the avatar settings
+      const avatarData = {
+        faceColor,
+        hairStyle,
+        hairColor,
+        expression,
+        accessory
+      };
+      
+      // Send the avatar data to the backend
+      await axios.post(`${API_URL}/user/avatar`, avatarData, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setProfilePic(null);
-      setSuccess('Profile picture updated!');
+      
+      setSuccess('Avatar updated!');
       await refreshProfile();
-      setAvatarKey(k => k + 1); // force Avatar to update
-      if (e.target) e.target.value = '';
+      setShowAvatarCreator(false);
     } catch (err: any) {
-      setError('Failed to upload profile picture');
+      setError('Failed to update avatar');
     }
-    setPicLoading(false);
+    setLoading(false);
+  };
+  
+  // Get avatar component based on selected options
+  const getExpressionIcon = () => {
+    switch(expression) {
+      case 'smile': return <FaSmile color="#333" size={24} />;
+      case 'laugh': return <FaLaugh color="#333" size={24} />;
+      case 'meh': return <FaMeh color="#333" size={24} />;
+      case 'sad': return <FaSadTear color="#333" size={24} />;
+      case 'angry': return <FaAngry color="#333" size={24} />;
+      case 'love': return <FaHeart color="#333" size={24} />;
+      default: return <FaSmile color="#333" size={24} />;
+    }
+  };
+  
+  // Render the avatar preview
+  const renderAvatarPreview = () => {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 80,
+          height: 80,
+          borderRadius: '50%',
+          backgroundColor: faceColor,
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Hair */}
+        {hairStyle !== 'bald' && (
+          <Box sx={{
+            position: 'absolute',
+            top: hairStyle === 'short' ? -20 : -30,
+            left: 0,
+            right: 0,
+            height: hairStyle === 'long' ? 70 : hairStyle === 'medium' ? 50 : 30,
+            backgroundColor: hairColor,
+            borderTopLeftRadius: '50%',
+            borderTopRightRadius: '50%',
+            transform: hairStyle === 'curly' ? 'scaleX(1.2)' : 'none',
+            border: hairStyle === 'wavy' ? `2px solid ${hairColor}` : 'none'
+          }} />
+        )}
+        
+        {/* Face/Expression */}
+        <Box sx={{ marginTop: hairStyle === 'bald' ? 0 : 10 }}>
+          {getExpressionIcon()}
+        </Box>
+        
+        {/* Accessories */}
+        {accessory === 'glasses' && (
+          <Box sx={{ position: 'absolute', top: 30, left: 15, right: 15, height: 10, borderBottom: '2px solid #333', borderRadius: 10 }} />
+        )}
+        {accessory === 'hat' && (
+          <Box sx={{ position: 'absolute', top: -15, left: 5, right: 5, height: 15, backgroundColor: '#ff5722', borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
+        )}
+        {accessory === 'earrings' && (
+          <>
+            <Box sx={{ position: 'absolute', top: 35, left: 5, width: 5, height: 5, backgroundColor: '#ffeb3b', borderRadius: '50%' }} />
+            <Box sx={{ position: 'absolute', top: 35, right: 5, width: 5, height: 5, backgroundColor: '#ffeb3b', borderRadius: '50%' }} />
+          </>
+        )}
+      </Box>
+    );
   };
 
 
@@ -72,14 +163,115 @@ const Profile: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-        <Avatar src={user.profile_pic ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/${user.profile_pic}` : undefined} sx={{ bgcolor: '#B388FF', width: 80, height: 80, fontWeight: 700, mx: 'auto', mb: 2 }}>
-          {user.display_name?.charAt(0) || user.email.charAt(0)}
-        </Avatar>
+        <Box sx={{ mb: 2 }}>
+          {renderAvatarPreview()}
+        </Box>
         <Typography variant="h5" fontWeight={700} sx={{ color: '#B388FF', mb: 1 }}>{user.display_name || user.email}</Typography>
-        <Button variant="outlined" component="label" sx={{ borderRadius: 8, fontWeight: 700, mb: 2 }} disabled={picLoading}>
-          {picLoading ? <CircularProgress size={22} sx={{ mr: 1 }} /> : 'Change Picture'}
-          <input type="file" accept="image/*" hidden onChange={handlePicUpload} />
+        <Button 
+          variant="outlined" 
+          onClick={() => setShowAvatarCreator(!showAvatarCreator)} 
+          sx={{ borderRadius: 8, fontWeight: 700, mb: 2 }}
+        >
+          {showAvatarCreator ? 'Close Avatar Creator' : 'Customize Avatar'}
         </Button>
+        
+        {/* Avatar Customization UI */}
+        {showAvatarCreator && (
+          <Box sx={{ width: '100%', mt: 2, mb: 3 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1 }}>Face Color</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
+              {faceColors.map((color) => (
+                <Box 
+                  key={color}
+                  onClick={() => setFaceColor(color)}
+                  sx={{
+                    width: 30, 
+                    height: 30, 
+                    borderRadius: '50%', 
+                    backgroundColor: color,
+                    border: faceColor === color ? '3px solid #FF7EB9' : '2px solid #FFF',
+                    cursor: 'pointer',
+                    boxShadow: faceColor === color ? '0 0 8px #FF7EB9' : 'none'
+                  }}
+                />
+              ))}
+            </Box>
+
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Hair Style</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
+              {hairStyles.map((style) => (
+                <Button
+                  key={style}
+                  variant={hairStyle === style ? 'contained' : 'outlined'}
+                  color="secondary"
+                  onClick={() => setHairStyle(style)}
+                  sx={{ borderRadius: 4, minWidth: 'auto', px: 2 }}
+                >
+                  {style.charAt(0).toUpperCase() + style.slice(1)}
+                </Button>
+              ))}
+            </Box>
+
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Hair Color</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
+              {hairColors.map((color) => (
+                <Box 
+                  key={color}
+                  onClick={() => setHairColor(color)}
+                  sx={{
+                    width: 30, 
+                    height: 30, 
+                    borderRadius: '50%', 
+                    backgroundColor: color,
+                    border: hairColor === color ? '3px solid #FF7EB9' : '2px solid #FFF',
+                    cursor: 'pointer',
+                    boxShadow: hairColor === color ? '0 0 8px #FF7EB9' : 'none'
+                  }}
+                />
+              ))}
+            </Box>
+
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Expression</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
+              {expressions.map((expr) => (
+                <Button
+                  key={expr}
+                  variant={expression === expr ? 'contained' : 'outlined'}
+                  color="secondary"
+                  onClick={() => setExpression(expr)}
+                  sx={{ borderRadius: 4, minWidth: 'auto', px: 2 }}
+                >
+                  {expr.charAt(0).toUpperCase() + expr.slice(1)}
+                </Button>
+              ))}
+            </Box>
+
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Accessories</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
+              {accessories.map((acc) => (
+                <Button
+                  key={acc}
+                  variant={accessory === acc ? 'contained' : 'outlined'}
+                  color="secondary"
+                  onClick={() => setAccessory(acc)}
+                  sx={{ borderRadius: 4, minWidth: 'auto', px: 2 }}
+                >
+                  {acc.charAt(0).toUpperCase() + acc.slice(1)}
+                </Button>
+              ))}
+            </Box>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveAvatar}
+              sx={{ mt: 2, borderRadius: 8, fontWeight: 700 }}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} /> : 'Save Avatar'}
+            </Button>
+          </Box>
+        )}
         <form onSubmit={handleProfileUpdate}>
           <TextField
             label="Display Name"
