@@ -24,6 +24,24 @@ import {
 } from 'react-icons/fa';
 
 export default function Dashboard() {
+  // Consistent bubble style for all three widgets
+  const bubbleSx = {
+    borderRadius: '50%',
+    minHeight: 160,
+    minWidth: 160,
+    width: { xs: 140, sm: 180, md: 220 },
+    height: { xs: 140, sm: 180, md: 220 },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bgcolor: '#FFF6FB',
+    boxShadow: '0 4px 24px #FFD6E8',
+    p: { xs: 1, sm: 2 },
+    mb: 3,
+    mx: 'auto',
+    textAlign: 'center',
+  };
+
   const [badgesAnchorEl, setBadgesAnchorEl] = useState<null | HTMLElement>(null);
   const [badges, setBadges] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
@@ -204,20 +222,8 @@ export default function Dashboard() {
       {/* Widgets Grid */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              borderRadius: '50%',
-              minHeight: 220,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: '#FFF6FB',
-              boxShadow: '0 4px 24px #FFD6E8',
-              p: 2,
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ textAlign: 'center', width: '100%' }}>
+          <Card sx={bubbleSx}>
+            <CardContent sx={{ textAlign: 'center', width: '100%', p: 0.5, m: 0 }}>
               <Box
                 sx={{
                   display: 'flex',
@@ -286,20 +292,8 @@ export default function Dashboard() {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              borderRadius: '50%',
-              minHeight: 220,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: '#F8F8FF',
-              boxShadow: '0 4px 24px #B388FF33',
-              p: 2,
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ textAlign: 'center', width: '100%' }}>
+          <Card sx={{ ...bubbleSx, bgcolor: '#F8F8FF', boxShadow: '0 4px 24px #B388FF33' }}>
+            <CardContent sx={{ textAlign: 'center', width: '100%', p: 0.5, m: 0 }}>
               <Typography
                 variant="h6"
                 color="secondary"
@@ -323,20 +317,8 @@ export default function Dashboard() {
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              borderRadius: '50%',
-              minHeight: 220,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: '#FFF6FB',
-              boxShadow: '0 4px 24px #FFD6E8',
-              p: 2,
-              mb: 3,
-            }}
-          >
-            <CardContent sx={{ textAlign: 'center', width: '100%' }}>
+          <Card sx={bubbleSx}>
+            <CardContent sx={{ textAlign: 'center', width: '100%', p: 0.5, m: 0 }}>
               <Typography
                 variant="h6"
                 color="info.main"
@@ -371,7 +353,7 @@ export default function Dashboard() {
               mt: 3,
             }}
           >
-            <CardContent>
+            <CardContent sx={{ p: 0.5, m: 0 }}>
               <Box
                 sx={{
                   display: 'flex',
