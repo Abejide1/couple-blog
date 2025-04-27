@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, CircularProgress, Alert, Grid } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, TextField, Button, CircularProgress, Alert } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaSmile, FaMeh, FaLaugh, FaSadTear, FaAngry, FaHeart } from 'react-icons/fa';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Avatar creation options
 const faceColors = ['#FFD6E8', '#F8E9D6', '#E3D6C5', '#C4A88F', '#8D6E63', '#5D4037', '#6A74C9', '#A6D3FF'];
@@ -15,7 +12,7 @@ const expressions = ['smile', 'laugh', 'meh', 'sad', 'angry', 'love'];
 const accessories = ['none', 'glasses', 'hat', 'earrings'];
 
 const Profile: React.FC = () => {
-  const { user, token, updateProfile, refreshProfile } = useAuth();
+  const { user, token, updateProfile } = useAuth();
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -23,12 +20,29 @@ const Profile: React.FC = () => {
   const [showAvatarCreator, setShowAvatarCreator] = useState(false);
   
   // Avatar customization state
-  // Use default values since user may not have avatar data yet
+  // Load from localStorage or use defaults
   const [faceColor, setFaceColor] = useState(faceColors[0]);
   const [hairStyle, setHairStyle] = useState(hairStyles[0]);
   const [hairColor, setHairColor] = useState(hairColors[0]);
   const [expression, setExpression] = useState(expressions[0]);
   const [accessory, setAccessory] = useState(accessories[0]);
+  
+  // Load saved avatar from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedAvatar = localStorage.getItem('userAvatar');
+      if (savedAvatar) {
+        const avatarData = JSON.parse(savedAvatar);
+        setFaceColor(avatarData.faceColor || faceColors[0]);
+        setHairStyle(avatarData.hairStyle || hairStyles[0]);
+        setHairColor(avatarData.hairColor || hairColors[0]);
+        setExpression(avatarData.expression || expressions[0]);
+        setAccessory(avatarData.accessory || accessories[0]);
+      }
+    } catch (err) {
+      console.log('Error loading avatar from localStorage', err);
+    }
+  }, []);
   
   const navigate = useNavigate();
 
@@ -51,9 +65,8 @@ const Profile: React.FC = () => {
     setLoading(false);
   };
 
-  // Save avatar settings to backend
+  // Save avatar settings to local storage and update profile
   const handleSaveAvatar = async () => {
-    if (!token) return;
     setLoading(true);
     setError('');
     setSuccess('');
@@ -68,16 +81,24 @@ const Profile: React.FC = () => {
         accessory
       };
       
-      // Send the avatar data to the backend
-      await axios.post(`${API_URL}/user/avatar`, avatarData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Save avatar data to local storage for persistence
+      localStorage.setItem('userAvatar', JSON.stringify(avatarData));
+      
+      // Only update the profile displayName - avatar is stored in localStorage only
+      if (token) {
+        try {
+          // Only update the display name - we're storing avatar separately in localStorage
+          await updateProfile({ display_name: displayName });
+        } catch (apiError) {
+          console.log('Profile update failed');
+        }
+      }
       
       setSuccess('Avatar updated!');
-      await refreshProfile();
       setShowAvatarCreator(false);
     } catch (err: any) {
       setError('Failed to update avatar');
+      console.error(err);
     }
     setLoading(false);
   };
