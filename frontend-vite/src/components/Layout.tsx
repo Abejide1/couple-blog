@@ -17,10 +17,10 @@ import {
   Divider,
   Menu,
   MenuItem,
-  Avatar,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import CustomAvatar from './CustomAvatar';
 import { useAuth } from '../contexts/AuthContext';
 import SettingsMenu from './SettingsMenu';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
@@ -291,12 +291,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   ml: 2,
                 }}
               >
-                <Avatar
-                  src={user.profile_pic ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/${user.profile_pic}` : undefined}
-                  sx={{ bgcolor: '#B388FF', width: 36, height: 36, fontWeight: 700, mr: 1 }}
-                >
-                  {user.display_name?.charAt(0) || user.email.charAt(0)}
-                </Avatar>
+                <CustomAvatar
+                  size={36}
+                  displayText={user.display_name || user.email}
+                />
+                
                 <Typography sx={{ fontWeight: 700, color: '#B388FF', mr: 1, display: { xs: 'none', md: 'block' } }}>
                   {user.display_name || user.email}
                 </Typography>
