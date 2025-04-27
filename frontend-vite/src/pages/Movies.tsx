@@ -144,27 +144,6 @@ const Movies = () => {
                             </Box>
                         )}
                     </Box>
-                                        />
-                                    </Box>
-                                )}
-                                {(movie.status === 'watched' || movie.review) && (
-                                    <Box mt={2}>
-                                        <TextField
-                                            label="Your Review"
-                                            multiline
-                                            rows={3}
-                                            fullWidth
-                                            value={movie.review || ''}
-                                            onChange={(e) => {
-                                                moviesApi.update(movie.id, { status: movie.status, review: e.target.value })
-                                                    .then(() => fetchMovies())
-                                                    .catch(error => console.error('Error updating review:', error));
-                                            }}
-                                        />
-                                    </Box>
-                                )}
-                            </CardContent>
-                        </Card>
                     </Grid>
                 ))}
             </Grid>
