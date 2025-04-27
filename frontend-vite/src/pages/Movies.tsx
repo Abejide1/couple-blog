@@ -12,7 +12,8 @@ import {
     TextField,
     MenuItem,
     Box,
-    Rating
+    Rating,
+    Chip
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Movie } from '../types';
@@ -74,7 +75,7 @@ const Movies = () => {
     if (loading) return <LoadingSpinner />;
 
     return (
-        <>
+        <Box>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h4">Movies</Typography>
                 <Button
@@ -90,58 +91,60 @@ const Movies = () => {
             <Grid container spacing={3}>
                 {movies.map((movie) => (
                     <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
-    <Box
-        sx={{
-            width: { xs: 170, sm: 200 },
-            height: { xs: 170, sm: 200 },
-            bgcolor: '#FFF6FB',
-            borderRadius: '50%',
-            boxShadow: '0 2px 12px #FFD6E8',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            m: 1,
-            flex: '0 0 auto',
-            p: 2,
-            textAlign: 'center',
-        }}
-    >
-                        <Typography variant="h6" fontWeight={700} sx={{ color: '#B388FF', mb: 1 }}>{movie.title}</Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{movie.genre}</Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 1 }}>
-                            {movie.status && <Chip label={movie.status} size="small" color={movie.status === 'watched' ? 'success' : 'default'} />}
-                        </Box>
-                        {(movie.status === 'watched' || movie.rating) && (
-                            <Box mt={2}>
-                                <Typography component="legend">Your Rating</Typography>
-                                <Rating
-                                    value={movie.rating || 0}
-                                    onChange={(_, value) => {
-                                        if (value !== null) {
-                                            moviesApi.update(movie.id, { status: movie.status, rating: value })
-                                                .then(() => fetchMovies())
-                                                .catch(error => console.error('Error updating rating:', error));
-                                        }
-                                    }}
-                                />
+                        <Box
+                            sx={{
+                                width: { xs: 170, sm: 200 },
+                                height: { xs: 170, sm: 200 },
+                                bgcolor: '#FFF6FB',
+                                borderRadius: '50%',
+                                boxShadow: '0 2px 12px #FFD6E8',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                m: 1,
+                                flex: '0 0 auto',
+                                p: 2,
+                                textAlign: 'center',
+                            }}
+                        >
+                            <Typography variant="h6" fontWeight={700} sx={{ color: '#B388FF', mb: 1 }}>{movie.title}</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{movie.genre}</Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mb: 1 }}>
+                                {movie.status && <Chip label={movie.status} size="small" color={movie.status === 'watched' ? 'success' : 'default'} />}
                             </Box>
-                        )}
-                        {(movie.status === 'watched' || movie.review) && (
-                            <Box mt={2}>
-    <TextField
-        label="Your Review"
-        multiline
-        rows={3}
-        fullWidth
-        value={movie.review || ''}
-        onChange={(e) => {
-            moviesApi.update(movie.id, { status: movie.status, review: e.target.value })
-                .then(() => fetchMovies())
-                .catch(error => console.error('Error updating review:', error));
-        }}
-    />
-</Box>
+                            {(movie.status === 'watched' || movie.rating) && (
+                                <Box mt={2}>
+                                    <Typography component="legend">Your Rating</Typography>
+                                    <Rating
+                                        value={movie.rating || 0}
+                                        onChange={(_, value) => {
+                                            if (value !== null) {
+                                                moviesApi.update(movie.id, { status: movie.status, rating: value })
+                                                    .then(() => fetchMovies())
+                                                    .catch(error => console.error('Error updating rating:', error));
+                                            }
+                                        }}
+                                    />
+                                </Box>
+                            )}
+                            {(movie.status === 'watched' || movie.review) && (
+                                <Box mt={2}>
+                                    <TextField
+                                        label="Your Review"
+                                        multiline
+                                        rows={3}
+                                        fullWidth
+                                        value={movie.review || ''}
+                                        onChange={(e) => {
+                                            moviesApi.update(movie.id, { status: movie.status, review: e.target.value })
+                                                .then(() => fetchMovies())
+                                                .catch(error => console.error('Error updating review:', error));
+                                        }}
+                                    />
+                                </Box>
+                            )}
+                        </Box>
                     </Grid>
                 ))}
             </Grid>
