@@ -84,7 +84,7 @@ const Register: React.FC = () => {
         <Typography align="center" sx={{ mt: 2, fontSize: '1rem' }}>
           Already have an account? <Link to="/login">Login</Link>
         </Typography>
-      </Paper>
+      </Box>
     </Box>
   );
 };
