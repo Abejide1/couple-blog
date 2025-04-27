@@ -5,7 +5,6 @@ import {
     Typography,
     TextField,
     Button,
-    Paper,
     Alert,
     Divider
 } from '@mui/material';
@@ -84,56 +83,38 @@ const CodeEntry = () => {
                                     Join
                                 </Button>
                             </Box>
-                    <Typography variant="h6" gutterBottom>
-                        Join Existing Couple
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-                        <TextField
-                            fullWidth
-                            label="Enter Couple Code"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value.toUpperCase())}
-                            placeholder="ABCD12"
-                            inputProps={{ maxLength: 6 }}
-                        />
-                        <Button
-                            variant="contained"
-                            onClick={handleJoin}
-                            disabled={code.length !== 6}
-                        >
-                            Join
-                        </Button>
-                    </Box>
+                        </Box>
 
-                    <Divider sx={{ my: 3 }}>OR</Divider>
+                        <Divider sx={{ my: 3 }}>OR</Divider>
 
-                    <Typography variant="h6" gutterBottom>
-                        Create New Couple
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField
-                            fullWidth
-                            label="Your Couple Code"
-                            value={newCode}
-                            InputProps={{ readOnly: true }}
-                            placeholder="Click Generate"
-                        />
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={handleCreate}
-                        >
-                            {newCode ? 'Use Code' : 'Generate'}
-                        </Button>
+                        <Typography variant="h6" gutterBottom>
+                            Create New Couple
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <TextField
+                                fullWidth
+                                label="Your Couple Code"
+                                value={newCode}
+                                InputProps={{ readOnly: true }}
+                                placeholder="Click Generate"
+                            />
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleCreate}
+                            >
+                                {newCode ? 'Use Code' : 'Generate'}
+                            </Button>
+                        </Box>
+                        {newCode && (
+                            <Alert severity="info" sx={{ mt: 2 }}>
+                                Share this code with your partner so they can join using the same code!
+                            </Alert>
+                        )}
                     </Box>
-                    {newCode && (
-                        <Alert severity="info" sx={{ mt: 2 }}>
-                            Share this code with your partner so they can join using the same code!
-                        </Alert>
-                    )}
                 </Box>
             </Box>
-        </Box>
+        </Container>
     );
 };
 
