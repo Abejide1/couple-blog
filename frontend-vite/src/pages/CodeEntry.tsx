@@ -131,9 +131,9 @@ const CodeEntry = () => {
                             Share this code with your partner so they can join using the same code!
                         </Alert>
                     )}
-                </Paper>
+                </Box>
             </Box>
-        </Container>
+        </Box>
     );
 };
 
