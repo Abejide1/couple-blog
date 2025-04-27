@@ -60,6 +60,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
   const { mode, toggleTheme } = useThemeMode();
+  // Ensure mode is correctly typed as 'light' | 'dark'
+  const themeMode = mode as 'light' | 'dark';
   const { coupleCode } = useCouple();
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,7 +101,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <List>
         {menuItems.map((item) => (
           <ListItem
-            button
             key={item.text}
             component={RouterLink}
             to={item.path}
@@ -121,6 +122,54 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
+
+        {/* Login and Register buttons when user is not logged in */}
+        {!user && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#B388FF', mb: 1, pl: 2 }}>
+              Account
+            </Typography>
+            <ListItem
+              component={RouterLink}
+              to="/login"
+              onClick={() => { if (isMobile) setMobileOpen(false); }}
+              sx={{
+                borderRadius: 4,
+                mb: 1,
+                bgcolor: location.pathname === '/login' ? '#FFD6E8' : 'transparent',
+                color: location.pathname === '/login' ? '#DC0073' : '#B388FF',
+                fontWeight: 700,
+                transition: 'background 0.3s',
+                '&:hover': {
+                  bgcolor: '#FFF6FB',
+                  color: '#DC0073',
+                },
+              }}
+            >
+              <ListItemText primary="Login" />
+            </ListItem>
+            <ListItem
+              component={RouterLink}
+              to="/register"
+              onClick={() => { if (isMobile) setMobileOpen(false); }}
+              sx={{
+                borderRadius: 4,
+                mb: 1,
+                bgcolor: location.pathname === '/register' ? '#FFD6E8' : 'transparent',
+                color: location.pathname === '/register' ? '#DC0073' : '#B388FF',
+                fontWeight: 700,
+                transition: 'background 0.3s',
+                '&:hover': {
+                  bgcolor: '#FFF6FB',
+                  color: '#DC0073',
+                },
+              }}
+            >
+              <ListItemText primary="Register" />
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
@@ -280,7 +329,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setFloatingIcons={setFloatingIcons}
             iconStyle={iconStyle}
             setIconStyle={setIconStyle}
-            mode={mode}
+            mode={themeMode}
             toggleTheme={toggleTheme}
             accent={appBarColor}
             setAccent={setAppBarColor}
