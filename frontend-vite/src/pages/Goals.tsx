@@ -1,595 +1,216 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Box,
-    Typography,
-    Paper,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
-    IconButton,
-    Button,
-    Checkbox,
-    Chip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
-    Snackbar,
-    Alert,
-    Fab,
-    Divider,
-    LinearProgress,
-    Tooltip
+  Box,
+  Typography,
+  Button,
+  Chip,
+  Card,
+  CardContent,
+  CardActions,
+  Divider,
+  Snackbar,
+  Alert,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  TextField,
 } from '@mui/material';
-import { FaFlag, FaEdit, FaTrash, FaRegCheckCircle, FaCalendarAlt, FaListAlt, FaCheck, FaRegSmileBeam, FaHeart, FaStar, FaBirthdayCake } from 'react-icons/fa';
-import { MdAdd, MdCelebration } from 'react-icons/md';
-import { format } from 'date-fns';
-import { goalsApi, Goal, GoalCreate, GoalUpdate } from '../services/api';
+import { FaTrophy, FaRegCheckCircle, FaRegClock, FaInfoCircle, FaMagic, FaPlus, FaTrash } from 'react-icons/fa';
+import { goalsApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ConfettiBurst from '../components/ConfettiBurst';
-import { badgesApi } from '../services/badgesApi';
-
-// Priority colors
-const priorityColors: Record<string, string> = {
-    'high': 'error',
-    'medium': 'warning',
-    'low': 'success',
-};
 
 const Goals = () => {
-    const [showConfetti, setShowConfetti] = useState(false);
-    const [goals, setGoals] = useState<Goal[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [editMode, setEditMode] = useState(false);
-    const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
-    const [formData, setFormData] = useState<GoalCreate>({
-        title: '',
-        description: '',
-        target_date: undefined,
-        priority: 'medium',
-        category: ''
-    });
-    const [completeAlertOpen, setCompleteAlertOpen] = useState(false);
-    const [completedGoal, setCompletedGoal] = useState<Goal | null>(null);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+  const [goals, setGoals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionInProgress, setActionInProgress] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+  const [newGoal, setNewGoal] = useState('');
+  const [addingGoal, setAddingGoal] = useState(false);
 
-    // Categories for goals (could be dynamic or based on couple's interests)
-    const categories = ['Travel', 'Home', 'Financial', 'Adventure', 'Learning', 'Relationship', 'Health', 'Entertainment', 'Other'];
+  useEffect(() => {
+    fetchGoals();
+  }, []);
 
-    useEffect(() => {
-        fetchGoals();
-    }, []);
+  const fetchGoals = async () => {
+    setLoading(true);
+    try {
+      const response = await goalsApi.getAll();
+      setGoals(response.data);
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to load goals.', severity: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchGoals = async () => {
-        setLoading(true);
-        try {
-            const response = await goalsApi.getAll();
-            setGoals(response.data);
-        } catch (error) {
-            console.error('Error fetching goals:', error);
-            setSnackbarMessage('Failed to load goals. Please try again.');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleAddGoal = async () => {
+    if (!newGoal.trim()) return;
+    setActionInProgress(true);
+    try {
+      await goalsApi.create({ title: newGoal });
+      setSnackbar({ open: true, message: 'Goal added!', severity: 'success' });
+      setNewGoal('');
+      fetchGoals();
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to add goal.', severity: 'error' });
+    } finally {
+      setActionInProgress(false);
+    }
+  };
 
-    const handleOpen = (goal?: Goal) => {
-        if (goal) {
-            setSelectedGoal(goal);
-            setFormData({
-                title: goal.title,
-                description: goal.description || '',
-                target_date: goal.target_date,
-                priority: goal.priority || 'medium',
-                category: goal.category || ''
-            });
-            setEditMode(true);
-        } else {
-            setSelectedGoal(null);
-            setFormData({
-                title: '',
-                description: '',
-                target_date: undefined,
-                priority: 'medium',
-                category: ''
-            });
-            setEditMode(false);
-        }
-        setDialogOpen(true);
-    };
+  const handleCompleteGoal = async (goal: any) => {
+    setActionInProgress(true);
+    try {
+      await goalsApi.complete(goal.id);
+      setSnackbar({ open: true, message: 'Goal completed!', severity: 'success' });
+      fetchGoals();
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to complete goal.', severity: 'error' });
+    } finally {
+      setActionInProgress(false);
+    }
+  };
 
-    const handleClose = () => {
-        setDialogOpen(false);
-    };
+  const handleDeleteGoal = async (goal: any) => {
+    setActionInProgress(true);
+    try {
+      await goalsApi.delete(goal.id);
+      setSnackbar({ open: true, message: 'Goal deleted!', severity: 'success' });
+      fetchGoals();
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Failed to delete goal.', severity: 'error' });
+    } finally {
+      setActionInProgress(false);
+    }
+  };
 
-    const handleCreateGoal = async () => {
-        try {
-            const response = await goalsApi.create(formData);
-            setGoals([...goals, response.data]);
-            setDialogOpen(false);
-            setSnackbarMessage('Goal created successfully!');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
-        } catch (error) {
-            console.error('Error creating goal:', error);
-            setSnackbarMessage('Failed to create goal. Please try again.');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        }
-    };
+  if (loading) return <LoadingSpinner />;
 
-    const handleUpdateGoal = async () => {
-        if (!selectedGoal) return;
+  return (
+    <Box sx={{ p: { xs: 1, sm: 3 }, maxWidth: 800, mx: 'auto' }}>
+      <Typography variant="h4" sx={{ mb: 2, fontWeight: 700, color: '#B388FF' }}>
+        Couple Goals
+      </Typography>
+      <Typography variant="body1" paragraph>
+        Set and track your shared goals as a couple!
+      </Typography>
+      <Divider sx={{ mb: 3 }} />
 
-        try {
-            const response = await goalsApi.update(selectedGoal.id, formData as GoalUpdate);
-            setGoals(goals.map(goal => goal.id === selectedGoal.id ? response.data : goal));
-            setDialogOpen(false);
-            setSnackbarMessage('Goal updated successfully!');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
-        } catch (error) {
-            console.error('Error updating goal:', error);
-            setSnackbarMessage('Failed to update goal. Please try again.');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        }
-    };
+      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <TextField
+          label="New Goal"
+          value={newGoal}
+          onChange={(e) => setNewGoal(e.target.value)}
+          fullWidth
+          disabled={actionInProgress}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<FaPlus />}
+          onClick={handleAddGoal}
+          disabled={actionInProgress || !newGoal.trim()}
+        >
+          Add
+        </Button>
+      </Box>
 
-    const handleDeleteGoal = async (goalId: number) => {
-        try {
-            await goalsApi.delete(goalId);
-            setGoals(goals.filter(goal => goal.id !== goalId));
-            setSnackbarMessage('Goal deleted successfully!');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
-        } catch (error) {
-            console.error('Error deleting goal:', error);
-            setSnackbarMessage('Failed to delete goal. Please try again.');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        }
-    };
-
-    const handleCompleteGoal = async (goal: Goal) => {
-        // BADGE LOGIC: Goal Crushers badge & goal streak
-        let badges = {};
-        try {
-            badges = await badgesApi.get();
-        } catch {}
-
-        setSubmitLoading(true);
-        try {
-            await goalsApi.update(goal.id, { ...goal, completed: true });
-            // Check for Goal Crushers badge
-            const goalsAfter = await goalsApi.getAll();
-            const completedGoals = goalsAfter.data.filter((g: any) => g.completed).length;
-            if (!badges.goal_crushers && completedGoals >= 5) {
-                await badgesApi.update({ ...badges, goal_crushers: true });
-            }
-            // Simple streak logic: completed a goal each week for 4 weeks
-            const now = new Date();
-            const completedDates = goalsAfter.data.filter((g: any) => g.completed && g.completed_at).map((g: any) => new Date(g.completed_at));
-            const weeks = new Set(completedDates.map(date => `${date.getFullYear()}-W${Math.ceil((((date.getTime() - new Date(date.getFullYear(),0,1).getTime())/86400000)+new Date(date.getFullYear(),0,1).getDay()+1)/7)}`));
-            if (!badges.goal_streak && weeks.size >= 4) {
-                await badgesApi.update({ ...badges, goal_streak: true });
-            }
-            setSnackbarMessage('Goal marked as complete!');
-            setSnackbarOpen(true);
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 1800);
-            fetchGoals();
-        } catch (err) {
-            setSnackbarMessage('Failed to complete goal.');
-            setSnackbarOpen(true);
-        } finally {
-            setSubmitLoading(false);
-        }
-    };
-
-    const getGoalProgress = () => {
-        const totalGoals = goals.length;
-        const completedGoals = goals.filter(goal => goal.completed).length;
-        return totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
-    };
-
-    if (loading) return <LoadingSpinner />;
-
-    // Sort goals: incomplete first, then by priority, then by target date
-    const sortedGoals = [...goals].sort((a, b) => {
-        // Incomplete goals first
-        if (a.completed !== b.completed) {
-            return a.completed ? 1 : -1;
-        }
-        
-        // Then by priority (high > medium > low)
-        const priorityOrder = { high: 0, medium: 1, low: 2 };
-        const aPriority = a.priority ? priorityOrder[a.priority as keyof typeof priorityOrder] || 3 : 3;
-        const bPriority = b.priority ? priorityOrder[b.priority as keyof typeof priorityOrder] || 3 : 3;
-        
-        if (aPriority !== bPriority) {
-            return aPriority - bPriority;
-        }
-        
-        // Then by target date (closest first)
-        if (a.target_date && b.target_date) {
-            return new Date(a.target_date).getTime() - new Date(b.target_date).getTime();
-        } else if (a.target_date) {
-            return -1;
-        } else if (b.target_date) {
-            return 1;
-        }
-        
-        // Finally by title
-        return a.title.localeCompare(b.title);
-    });
-
-    // Section heading style
-    const headingSx = { fontSize: { xs: '2.2rem', md: '2.7rem' }, fontWeight: 900, color: '#FF7EB9', letterSpacing: '0.04em', mb: 3, mt: 2, fontFamily: 'Grotesco, Arial, sans-serif' };
-    // Add button pulse style
-    const addPulseSx = { animation: 'pulse 1.6s infinite', '@keyframes pulse': { '0%': { boxShadow: '0 0 0 0 #FFD6E8' }, '70%': { boxShadow: '0 0 0 14px rgba(255,214,232,0)' }, '100%': { boxShadow: '0 0 0 0 #FFD6E8' } } };
-
-    return (
-        <Box>
-            <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
-                <Typography variant="h4" sx={{ flexGrow: 1 }}>Couple Goals</Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<MdAdd size={24} />}
-                    onClick={() => handleOpen()}
-                    sx={{ minWidth: 180, fontWeight: 700, borderRadius: 8, fontSize: '1.2rem', boxShadow: '0 2px 8px #FFD6E8', ...addPulseSx }}
-                >
-                    Add Goal
-                </Button>
-            </Box>
-
-            <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                <Box sx={{ mb: 3 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                        <Typography variant="h4" gutterBottom sx={headingSx}>
-                            🎯 Goals
-                        </Typography>
-                        <Typography variant="body2">
-                            {goals.filter(goal => goal.completed).length} of {goals.length} completed
-                        </Typography>
-                    </Box>
-                    <LinearProgress 
-                        variant="determinate" 
-                        value={getGoalProgress()} 
-                        sx={{ height: 10, borderRadius: 5 }} 
-                    />
-                </Box>
-
-                <Divider sx={{ mb: 3 }} />
-
-                {sortedGoals.length === 0 ? (
-                    <Box textAlign="center" p={3}>
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            No goals yet
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary" paragraph>
-                            Add some goals to work towards together!
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<MdAdd size={24} />}
-                            onClick={() => handleOpen()}
-                            sx={{ fontWeight: 700, borderRadius: 8, fontSize: '1.15rem', boxShadow: '0 2px 8px #FFD6E8' }}
-                        >
-                            Add Your First Goal
-                        </Button>
-                    </Box>
-                ) : (
-                    <Box sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        gap: { xs: 2, sm: 3 },
-                        width: '100%',
-                        mt: 2,
-                    }}>
-                        {sortedGoals.map((goal) => (
-                            <Box
-                                key={goal.id}
-                                sx={{
-                                    width: { xs: 170, sm: 200 },
-                                    height: { xs: 170, sm: 200 },
-                                    bgcolor: goal.completed ? '#C3F6C7' : '#FFF6FB',
-                                    borderRadius: '50%',
-                                    boxShadow: goal.completed ? '0 2px 12px #C3F6C7' : '0 2px 12px #FFD6E8',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    m: 1,
-                                    flex: '0 0 auto',
-                                    p: 2,
-                                    textAlign: 'center',
-                                        borderColor: 'success.main'
-                                    })
-                                }}
-                                secondaryAction={
-                                    <Box>
-                                        {!goal.completed && (
-                                            <>
-                                                <Tooltip title="Mark as complete">
-                                                    <IconButton edge="end" onClick={() => handleCompleteGoal(goal)}>
-                                                        <FaCheck color="#2E7D32" size={22} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Edit goal">
-                                                    <IconButton edge="end" onClick={() => handleOpen(goal)}>
-                                                        <FaEdit color="#B388FF" size={22} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </>
-                                        )}
-                                        <Tooltip title="Delete goal">
-                                            <IconButton edge="end" onClick={() => handleDeleteGoal(goal.id)}>
-                                                <FaTrash color="#FF7EB9" size={22} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                }
-                            >
-                                <ListItemIcon>
-                                    <Checkbox
-                                        edge="start"
-                                        checked={goal.completed}
-                                        onChange={() => !goal.completed && handleCompleteGoal(goal)}
-                                        sx={{ 
-                                            '&.Mui-checked': { color: 'success.main' }
-                                        }}
-                                    />
-                                </ListItemIcon>
-
-                                <ListItemText
-                                    primary={
-                                        <Box display="flex" alignItems="center">
-                                            <Typography 
-                                                variant="h6" 
-                                                sx={{ 
-                                                    mr: 1,
-                                                    textDecoration: goal.completed ? 'line-through' : 'none',
-                                                }}
-                                            >
-                                                {goal.title}
-                                            </Typography>
-                                            
-                                            {goal.priority && (
-                                                <Chip 
-                                                    label={goal.priority} 
-                                                    size="medium"
-                                                    color={priorityColors[goal.priority] as any || 'default'} 
-                                                    icon={<FaFlag size={18} />}
-                                                    sx={{ mr: 1, fontWeight: 700, background: '#FFF8E1', color: '#FFA000', fontSize: '1.05rem', borderRadius: 8 }}
-                                                />
-                                            )}
-                                            
-                                            {goal.category && (
-                                                <Chip 
-                                                    label={goal.category} 
-                                                    size="medium"
-                                                    variant="outlined"
-                                                    icon={<FaListAlt size={18} />}
-                                                    sx={{ fontWeight: 700, borderRadius: 8 }}
-                                                />
-                                            )}
-                                        </Box>
-                                    }
-                                    secondary={
-                                        <Box mt={1}>
-                                            {goal.description && (
-                                                <Typography 
-                                                    variant="body2" 
-                                                    paragraph 
-                                                    sx={{ 
-                                                        mt: 1,
-                                                        textDecoration: goal.completed ? 'line-through' : 'none',
-                                                        opacity: goal.completed ? 0.7 : 1
-                                                    }}
-                                                >
-                                                    {goal.description}
-                                                </Typography>
-                                            )}
-                                            
-                                            <Box display="flex" mt={1}>
-                                                {goal.target_date && (
-                                                    <Typography 
-                                                        variant="caption" 
-                                                        sx={{ 
-                                                            display: 'flex', 
-                                                            alignItems: 'center',
-                                                            mr: 2,
-                                                            color: 'text.secondary'
-                                                        }}
-                                                    >
-                                                        <FaCalendarAlt size={15} style={{ marginRight: 4 }} />
-                                                        Target: {format(new Date(goal.target_date), 'PP')}
-                                                    </Typography>
-                                                )}
-                                                
-                                                {goal.completed_at && (
-                                                    <Typography 
-                                                        variant="caption" 
-                                                        sx={{ 
-                                                            display: 'flex', 
-                                                            alignItems: 'center',
-                                                            color: 'success.main'
-                                                        }}
-                                                    >
-                                                        <FaRegCheckCircle size={15} style={{ marginRight: 4 }} />
-                                                        Completed: {format(new Date(goal.completed_at), 'PP')}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                        </Box>
-                                    }
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
+      <List>
+        {goals.map((goal) => (
+          <ListItem
+            key={goal.id}
+            sx={{
+              mb: 2,
+              bgcolor: goal.completed ? '#C3F6C7' : '#FFF6FB',
+              borderRadius: 3,
+              boxShadow: '0 2px 8px #FFD6E8',
+              border: goal.completed ? '2px solid #2E7D32' : '1px solid #FFD6E8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 2,
+              py: 1.5,
+              textAlign: 'center',
+              borderColor: goal.completed ? 'success.main' : undefined,
+            }}
+            secondaryAction={
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {!goal.completed && (
+                  <IconButton
+                    edge="end"
+                    color="success"
+                    onClick={() => handleCompleteGoal(goal)}
+                    disabled={actionInProgress}
+                  >
+                    <FaRegCheckCircle />
+                  </IconButton>
                 )}
-            </Paper>
-
-            {/* Create/Edit Goal Dialog */}
-            <Dialog open={dialogOpen} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>
-                    {editMode ? 'Edit Goal' : 'Add New Goal'}
-                </DialogTitle>
-                <DialogContent>
-                    <Box mt={2} display="flex" flexDirection="column" gap={2}>
-                        <TextField
-                            label="Title"
-                            fullWidth
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            required
-                        />
-
-                        <TextField
-                            label="Description"
-                            fullWidth
-                            multiline
-                            rows={3}
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        />
-
-                        <TextField
-                            label="Target Date"
-                            type="date"
-                            fullWidth
-                            value={formData.target_date ? format(new Date(formData.target_date), 'yyyy-MM-dd') : ''}
-                            onChange={(e) => setFormData({ ...formData, target_date: e.target.value ? new Date(e.target.value) : undefined })}
-                            InputLabelProps={{ shrink: true }}
-                        />
-
-                        <FormControl fullWidth>
-                            <InputLabel>Priority</InputLabel>
-                            <Select
-                                value={formData.priority || 'medium'}
-                                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                                label="Priority"
-                            >
-                                <MenuItem value="low">Low</MenuItem>
-                                <MenuItem value="medium">Medium</MenuItem>
-                                <MenuItem value="high">High</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <FormControl fullWidth>
-                            <InputLabel>Category</InputLabel>
-                            <Select
-                                value={formData.category || ''}
-                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                label="Category"
-                            >
-                                <MenuItem value="">None</MenuItem>
-                                {categories.map((category) => (
-                                    <MenuItem key={category} value={category}>{category}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button 
-                        onClick={editMode ? handleUpdateGoal : handleCreateGoal} 
-                        color="primary"
-                        variant="contained"
-                        disabled={!formData.title}
-                    >
-                        {editMode ? 'Update' : 'Create'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Goal Completion Celebration Dialog */}
-            <Dialog
-                open={completeAlertOpen}
-                onClose={() => setCompleteAlertOpen(false)}
-                PaperProps={{
-                    style: {
-                        backgroundColor: '#f8f9fa',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                        borderRadius: '12px',
-                        padding: '16px'
-                    }
-                }}
-            >
-                <DialogTitle sx={{ textAlign: 'center', pb: 0 }}>
-                    <MdCelebration color="#FF7EB9" size={60} />
-                </DialogTitle>
-                <DialogContent sx={{ textAlign: 'center', pt: 2 }}>
-                    <Typography variant="h5" color="success.main" gutterBottom>
-                        Goal Accomplished! 🎉
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        Congratulations on completing your goal:
-                    </Typography>
-                    <Typography variant="h6" fontWeight="bold" paragraph>
-                        "{completedGoal?.title}"
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Keep up the great work! What will you achieve next?
-                    </Typography>
-                </DialogContent>
-                <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
-                    <Button
-                        onClick={() => setCompleteAlertOpen(false)}
-                        variant="contained"
-                        color="success"
-                        sx={{ minWidth: 120 }}
-                    >
-                        Thank You!
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Notification Snackbar */}
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={() => setSnackbarOpen(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert
-                    onClose={() => setSnackbarOpen(false)}
-                    severity={snackbarSeverity}
-                    sx={{ width: '100%' }}
+                <IconButton
+                  edge="end"
+                  color="error"
+                  onClick={() => handleDeleteGoal(goal)}
+                  disabled={actionInProgress}
                 >
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
-
-            {/* Add Button (for mobile) */}
-            <Box sx={{ display: { sm: 'none' } }}>
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    sx={{ position: 'fixed', bottom: 16, right: 16, fontSize: 28, background: '#FF7EB9' }}
-                    onClick={() => handleOpen()}
+                  <FaTrash />
+                </IconButton>
+              </Box>
+            }
+          >
+            <ListItemText
+              primary={
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: goal.completed ? '#2E7D32' : '#B388FF',
+                    textDecoration: goal.completed ? 'line-through' : 'none',
+                  }}
                 >
-                    <MdAdd size={28} />
-                </Fab>
-            </Box>
-        </Box>
-    );
+                  {goal.title}
+                </Typography>
+              }
+              secondary={
+                goal.completed && (
+                  <Chip
+                    label="Completed"
+                    color="success"
+                    icon={<FaRegCheckCircle />}
+                    sx={{
+                      fontWeight: 'bold',
+                      background: '#C3F6C7',
+                      color: '#2E7D32',
+                      fontSize: '1rem',
+                      mt: 1,
+                    }}
+                  />
+                )
+              }
+            />
+          </ListItem>
+        ))}
+      </List>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
 };
 
 export default Goals;
