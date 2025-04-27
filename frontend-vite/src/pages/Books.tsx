@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import LoadingSpinner from '../components/LoadingSpinner';
-import booksApi from '../api/booksApi';
+import { booksApi } from '../services/api';
 
 interface Book {
   id: number;
