@@ -106,7 +106,8 @@ const Profile: React.FC = () => {
     }
     setLoading(false);
   };
-  
+
+  // Render the avatar preview using the CustomAvatar component
   const renderAvatarPreview = () => {
     // Create a temporary avatar data object based on current selections
     const previewAvatarData = {
@@ -195,7 +196,7 @@ const Profile: React.FC = () => {
             {showAvatarCreator ? 'Hide Avatar Creator' : 'Customize Avatar'}
           </Button>
         </Paper>
-      
+        
         {/* Avatar Creator */}
         {showAvatarCreator && (
           <Box sx={{ width: '100%', mb: 4 }}>
@@ -306,136 +307,6 @@ const Profile: React.FC = () => {
           </Box>
         )}
         
-        <form onSubmit={handleProfileUpdate}>
-          <TextField
-            label="Display Name"
-            value={displayName}
-            onChange={e => setDisplayName(e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Email"
-            value={user.email}
-            fullWidth
-            disabled
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Couple Code"
-            value={user.couple_code || ''}
-            fullWidth
-            disabled
-            sx={{ mb: 2 }}
-          />
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            disabled={loading}
-            sx={{ borderRadius: 8, fontWeight: 700, fontSize: '1.1rem', mb: 1 }}
-          >
-            {loading ? <CircularProgress size={24} /> : 'Save Changes'}
-          </Button>
-        </form>
-      </Box>
-    </Box>
-  );
-};
-
-export default Profile;
-                    width: 30, 
-                    height: 30, 
-                    borderRadius: '50%', 
-                    backgroundColor: color,
-                    border: faceColor === color ? '3px solid #FF7EB9' : '2px solid #FFF',
-                    cursor: 'pointer',
-                    boxShadow: faceColor === color ? '0 0 8px #FF7EB9' : 'none'
-                  }}
-                />
-              ))}
-            </Box>
-
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Hair Style</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
-              {hairStyles.map((style) => (
-                <Button
-                  key={style}
-                  variant={hairStyle === style ? 'contained' : 'outlined'}
-                  color="secondary"
-                  onClick={() => setHairStyle(style)}
-                  sx={{ borderRadius: 4, minWidth: 'auto', px: 2 }}
-                >
-                  {style.charAt(0).toUpperCase() + style.slice(1)}
-                </Button>
-              ))}
-            </Box>
-
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Hair Color</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
-              {hairColors.map((color) => (
-                <Box 
-                  key={color}
-                  onClick={() => setHairColor(color)}
-                  sx={{
-                    width: 30, 
-                    height: 30, 
-                    borderRadius: '50%', 
-                    backgroundColor: color,
-                    border: hairColor === color ? '3px solid #FF7EB9' : '2px solid #FFF',
-                    cursor: 'pointer',
-                    boxShadow: hairColor === color ? '0 0 8px #FF7EB9' : 'none'
-                  }}
-                />
-              ))}
-            </Box>
-
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Expression</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
-              {expressions.map((expr) => (
-                <Button
-                  key={expr}
-                  variant={expression === expr ? 'contained' : 'outlined'}
-                  color="secondary"
-                  onClick={() => setExpression(expr)}
-                  sx={{ borderRadius: 4, minWidth: 'auto', px: 2 }}
-                >
-                  {expr.charAt(0).toUpperCase() + expr.slice(1)}
-                </Button>
-              ))}
-            </Box>
-
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#FF7EB9', mb: 1, mt: 2 }}>Accessories</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 2 }}>
-              {accessories.map((acc) => (
-                <Button
-                  key={acc}
-                  variant={accessory === acc ? 'contained' : 'outlined'}
-                  color="secondary"
-                  onClick={() => setAccessory(acc)}
-                  sx={{ borderRadius: 4, minWidth: 'auto', px: 2 }}
-                >
-                  {acc.charAt(0).toUpperCase() + acc.slice(1)}
-                </Button>
-              ))}
-            </Box>
-
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveAvatar}
-                sx={{ borderRadius: 8, fontWeight: 700, px: 4, py: 1.2 }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Save Avatar'}
-              </Button>
-            </Box>
-          </Box>
-        )}
         <form onSubmit={handleProfileUpdate}>
           <TextField
             label="Display Name"
