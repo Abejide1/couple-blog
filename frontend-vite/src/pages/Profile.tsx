@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress, Alert, Paper } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import SimpleAvatar from '../components/SimpleAvatar';
-import AvatarCreator, { AvatarData } from '../components/AvatarCreator';
+import AvatarDisplay from '../components/AvatarDisplay';
+import AdvancedAvatarCreator, { AvataaarsOptions } from '../components/AdvancedAvatarCreator';
 
-// Default avatar data structure will be handled by AvatarCreator component
+// Advanced avatar options handled by AdvancedAvatarCreator component
 
 const Profile: React.FC = () => {
   const { user, token, updateProfile } = useAuth();
@@ -36,8 +36,8 @@ const Profile: React.FC = () => {
     setLoading(false);
   };
 
-  // Handle avatar save from the AvatarCreator component
-  const handleSaveAvatar = async (_avatarData: AvatarData) => {
+  // Handle avatar save from the AdvancedAvatarCreator component
+  const handleSaveAvatar = async (_avatarOptions: AvataaarsOptions) => {
     setLoading(true);
     setError('');
     setSuccess('');
@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
                 }
               }}
             >
-              <SimpleAvatar size={100} displayText={user?.display_name?.charAt(0) || 'U'} />
+              <AvatarDisplay size={100} displayText={user?.display_name?.charAt(0) || 'U'} />
             </Box>
           </Box>
           <Button 
@@ -134,12 +134,13 @@ const Profile: React.FC = () => {
           </Button>
         </Paper>
         
-        {/* New Avatar Creator */}
+        {/* Advanced Avatar Creator */}
         {showAvatarCreator && (
           <Box sx={{ width: '100%', mb: 4 }}>
-            <AvatarCreator 
+            <AdvancedAvatarCreator
               onSave={handleSaveAvatar} 
               onCancel={() => setShowAvatarCreator(false)}
+              size={200}
             />
           </Box>
         )}
