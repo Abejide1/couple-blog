@@ -41,7 +41,7 @@ const defaultAppBarColor = '#FF7EB9';
 
 const menuItems = [
   { text: 'Dashboard', path: '/dashboard', icon: <span style={{ fontSize: 34, color: '#DC0073', filter: 'drop-shadow(0 0 8px #FFD6E8)' }}>🎉</span>, gradient: 'linear-gradient(90deg,#FF7EB9 0%,#B388FF 100%)' },
-  { text: 'Compatibility', path: '/compatibility', icon: <span role="img" aria-label="compatibility">💞</span> },
+  { text: 'Timeline', path: '/timeline', icon: <span role="img" aria-label="timeline" style={{ fontSize: 28, filter: 'drop-shadow(0 0 4px rgba(179, 136, 255, 0.5))' }}>✨</span>, gradient: 'linear-gradient(90deg,#B388FF 0%,#7AF5FF 100%)' },
   { text: 'Activities', icon: <FaRegSmileBeam size={36} color="#FF7EB9" />, path: '/activities' },
   { text: 'Books', icon: <BsFillBookmarkHeartFill size={34} color="#7AF5FF" />, path: '/books' },
   { text: 'Movies', icon: <FaFilm size={34} color="#FFD36E" />, path: '/movies' },

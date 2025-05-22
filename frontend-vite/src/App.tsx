@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CustomThemeProvider } from './contexts/ThemeContext';
-import ThemeToggle from './components/ThemeToggle';
 import Layout from './components/Layout';
 import Activities from './pages/Activities';
 import Books from './pages/Books';
 import Movies from './pages/Movies';
 import Blog from './pages/Blog';
-import Compatibility from './pages/Compatibility';
+import Timeline from './pages/Timeline';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -46,7 +45,7 @@ function App() {
                         <Route path="/calendar" element={<Calendar />} />
                         <Route path="/challenges" element={<Challenges />} />
                         <Route path="/goals" element={<Goals />} />
-                        <Route path="/compatibility" element={<Compatibility />} />
+                        <Route path="/timeline" element={<Timeline />} />
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       </Routes>
                     </Layout>
