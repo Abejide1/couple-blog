@@ -82,25 +82,25 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
     );
   }
 
-  // Get scaling factors based on avatar size with simplified values for better rendering
-  // Adjust hair position based on size to ensure it looks good at any scale
+  // Improved and more reliable hair styling system
+  // Calculate more precise values to keep hair contained within the avatar circle
   const hairTopOffset = {
-    'short': -size * 0.25,
-    'medium': -size * 0.3,
-    'long': -size * 0.4,
-    'curly': -size * 0.3,
-    'wavy': -size * 0.35,
-    'bald': 0
-  }[hairStyle] || -size * 0.3;
+    'short': -size * 0.15,      // Less negative to stay more inside the circle
+    'medium': -size * 0.18,     // More contained
+    'long': -size * 0.2,        // Reduced negative value
+    'curly': -size * 0.16,      // More contained
+    'wavy': -size * 0.17,       // More contained
+    'bald': 0                   // No hair, no offset
+  }[hairStyle] || -size * 0.15; // Safer default
 
   const hairHeight = {
-    'long': size * 0.9,
-    'medium': size * 0.7,
-    'short': size * 0.5,
-    'curly': size * 0.6,
-    'wavy': size * 0.7,
-    'bald': 0
-  }[hairStyle] || size * 0.5;
+    'short': size * 0.35,       // Shorter hair
+    'medium': size * 0.5,       // Medium height
+    'long': size * 0.65,        // Long but more contained
+    'curly': size * 0.45,       // Slightly shorter than before
+    'wavy': size * 0.5,         // Medium height
+    'bald': 0                   // No hair
+  }[hairStyle] || size * 0.4;   // Safer default
 
   return (
     <Box
@@ -124,53 +124,132 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
         </Typography>
       )}
 
-      {/* Hair - with simplified, more reliable styling */}
+      {/* Improved hair styling system with better containment */}
       {hairStyle !== 'bald' && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: hairTopOffset,
-            left: 0,
-            right: 0,
-            height: hairHeight,
-            backgroundColor: hairColor,
-            borderTopLeftRadius: '50%',
-            borderTopRightRadius: '50%',
-            ...(hairStyle === 'curly' && {
-              transform: 'scaleX(1.2)',
-              borderTopLeftRadius: '60%',
-              borderTopRightRadius: '60%',
-              boxShadow: `0 -${size*0.03}px ${size*0.05}px ${hairColor}`
-            }),
-            ...(hairStyle === 'wavy' && {
-              borderTopLeftRadius: '40%',
-              borderTopRightRadius: '40%',
-              boxShadow: `0 -${size*0.03}px ${size*0.05}px ${hairColor}`
-            }),
-            ...(hairStyle === 'long' && {
+        <>
+          {/* Base hair layer */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: hairTopOffset,
+              left: -size * 0.05,  // Extend slightly outside for better blending
+              right: -size * 0.05, // Extend slightly outside for better blending
+              width: size * 1.1,   // Slightly wider than head
               height: hairHeight,
-              boxShadow: `0 -${size*0.03}px ${size*0.05}px ${hairColor}`
-            }),
-            ...(hairStyle === 'medium' && {
-              borderTopLeftRadius: '45%',
-              borderTopRightRadius: '45%',
-            }),
-            ...(hairStyle === 'short' && {
-              borderTopLeftRadius: '40%',
-              borderTopRightRadius: '40%',
-            })
-          }}
-        />
+              backgroundColor: hairColor,
+              borderRadius: '50% 50% 0 0', // Rounded top, flat bottom
+              zIndex: 1,
+              // Ensure the hair sits properly within the circle
+              clipPath: hairStyle === 'bald' ? 'none' : 'ellipse(50% 80% at 50% 0%)'
+            }}
+          />
+          
+          {/* Hair style-specific overlays */}
+          {hairStyle === 'curly' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: hairTopOffset, 
+                left: -size * 0.02,
+                right: -size * 0.02,
+                height: hairHeight * 0.7,
+                background: `radial-gradient(circle at center, ${hairColor} 30%, transparent 70%)`,
+                borderRadius: '50% 50% 45% 45%',
+                zIndex: 2,
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: size * 0.1,
+                  right: size * 0.1,
+                  height: size * 0.15,
+                  background: hairColor,
+                  borderRadius: '40% 40% 45% 45%'
+                }
+              }}
+            />
+          )}
+          
+          {hairStyle === 'wavy' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: hairTopOffset,
+                left: 0,
+                right: 0,
+                height: hairHeight * 0.8,
+                background: `linear-gradient(to bottom, ${hairColor} 60%, transparent 100%)`,
+                borderRadius: '30% 30% 60% 60%',
+                zIndex: 2,
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: -size * 0.05,
+                  left: size * 0.15,
+                  right: size * 0.15,
+                  height: size * 0.1,
+                  background: `linear-gradient(to bottom, ${hairColor}, transparent)`,
+                  borderRadius: '0 0 40% 40%'
+                }
+              }}
+            />
+          )}
+          
+          {hairStyle === 'long' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: hairTopOffset,
+                left: 0,
+                right: 0,
+                height: hairHeight,
+                background: `linear-gradient(to bottom, ${hairColor} 70%, ${hairColor}BB 85%, ${hairColor}99 100%)`,
+                borderRadius: '40% 40% 30% 30%',
+                zIndex: 2
+              }}
+            />
+          )}
+          
+          {hairStyle === 'medium' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: hairTopOffset,
+                left: size * 0.05,
+                right: size * 0.05,
+                height: hairHeight * 0.8,
+                backgroundColor: hairColor,
+                borderRadius: '45% 45% 40% 40%',
+                zIndex: 2
+              }}
+            />
+          )}
+          
+          {hairStyle === 'short' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: hairTopOffset,
+                left: size * 0.1,
+                right: size * 0.1,
+                height: hairHeight,
+                backgroundColor: hairColor,
+                borderRadius: '40% 40% 50% 50%',
+                zIndex: 2
+              }}
+            />
+          )}
+        </>
       )}
       
-      {/* Face/Expression - adjusted positioning */}
+      {/* Face/Expression - better positioned relative to hair */}
       <Box sx={{ 
-        marginTop: hairStyle === 'bald' ? 0 : size * 0.1,
+        marginTop: hairStyle === 'bald' ? 0 : size * 0.12,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        zIndex: 5 /* Ensure expressions show on top */
+        zIndex: 10 /* Higher z-index to ensure it appears on top of all hair styles */
       }}>
         {getExpressionIcon()}
       </Box>
@@ -188,7 +267,7 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             border: `${size * 0.03}px solid #333`,
             borderRadius: '50%',
             opacity: 0.85,
-            zIndex: 10
+            zIndex: 15 /* Increased to ensure visibility */
           }} />
           {/* Right Lens */}
           <Box sx={{ 
@@ -200,7 +279,7 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             border: `${size * 0.03}px solid #333`,
             borderRadius: '50%',
             opacity: 0.85,
-            zIndex: 10
+            zIndex: 15 /* Increased to ensure visibility */
           }} />
           {/* Bridge */}
           <Box sx={{ 
@@ -211,62 +290,80 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             height: size * 0.03, 
             backgroundColor: '#333',
             opacity: 0.85,
-            zIndex: 10
+            zIndex: 15 /* Increased to ensure visibility */
           }} />
         </>
       )}
       {accessory === 'hat' && (
-        <Box sx={{ 
-          position: 'absolute', 
-          top: -size * 0.15, 
-          left: -size * 0.05, 
-          right: -size * 0.05, 
-          height: size * 0.25, 
-          backgroundColor: '#ff5722', 
-          borderTopLeftRadius: size * 0.1, 
-          borderTopRightRadius: size * 0.1,
-          boxShadow: `0 -${size*0.03}px ${size*0.05}px rgba(0,0,0,0.1)`,
-          zIndex: 15
-        }} />
+        <>
+          {/* Hat base */}
+          <Box sx={{ 
+            position: 'absolute', 
+            top: -size * 0.12, 
+            left: -size * 0.05, 
+            right: -size * 0.05, 
+            height: size * 0.25, 
+            backgroundColor: '#ff5722', 
+            borderTopLeftRadius: size * 0.2, 
+            borderTopRightRadius: size * 0.2,
+            boxShadow: `0 -${size*0.03}px ${size*0.05}px rgba(0,0,0,0.1)`,
+            zIndex: 20 /* Higher z-index to appear above hair */
+          }} />
+          {/* Hat brim */}
+          <Box sx={{ 
+            position: 'absolute', 
+            top: size * 0.1, 
+            left: -size * 0.1, 
+            right: -size * 0.1, 
+            height: size * 0.05, 
+            backgroundColor: '#e64a19', /* Darker shade for the brim */
+            borderRadius: '3px',
+            zIndex: 21 /* Above the hat base */
+          }} />
+        </>
       )}
       {accessory === 'earrings' && (
         <>
+          {/* Left earring */}
           <Box sx={{ 
             position: 'absolute', 
             top: size * 0.45, 
-            left: -size * 0.05,
+            left: -size * 0.08, /* Positioned more outward */
             width: size * 0.15, 
             height: size * 0.15, 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 10
+            zIndex: 15 /* Increased z-index */
           }}>
             <Box sx={{
               width: size * 0.08,
               height: size * 0.08,
               backgroundColor: '#ffeb3b',
               borderRadius: '50%',
-              boxShadow: `0 0 ${size*0.03}px #ffd700`
+              boxShadow: `0 0 ${size*0.04}px #ffd700`,
+              border: '1px solid #ffd700' /* Added border for better definition */
             }} />
           </Box>
+          {/* Right earring */}
           <Box sx={{ 
             position: 'absolute', 
             top: size * 0.45, 
-            right: -size * 0.05,
+            right: -size * 0.08, /* Positioned more outward */
             width: size * 0.15, 
             height: size * 0.15, 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 10
+            zIndex: 15 /* Increased z-index */
           }}>
             <Box sx={{
               width: size * 0.08,
               height: size * 0.08,
               backgroundColor: '#ffeb3b',
               borderRadius: '50%',
-              boxShadow: `0 0 ${size*0.03}px #ffd700`
+              boxShadow: `0 0 ${size*0.04}px #ffd700`,
+              border: '1px solid #ffd700' /* Added border for better definition */
             }} />
           </Box>
         </>
