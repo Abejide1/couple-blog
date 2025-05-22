@@ -28,8 +28,16 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
   // Try to get avatar data from localStorage
   let avatarData = defaultAvatar;
   try {
+    // First check if there's a temporary preview avatar (for the creator)
+    const tempPreview = localStorage.getItem('tempAvatarPreview');
+    // Otherwise use the saved user avatar
     const savedData = localStorage.getItem('userAvatar');
-    if (savedData) {
+    
+    if (tempPreview) {
+      // Use temp preview if it exists (for avatar creator preview)
+      avatarData = { ...defaultAvatar, ...JSON.parse(tempPreview) };
+    } else if (savedData) {
+      // Use saved avatar for normal display
       avatarData = { ...defaultAvatar, ...JSON.parse(savedData) };
     }
   } catch (err) {
@@ -74,17 +82,25 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
     );
   }
 
-  // Get scaling factors based on avatar size
+  // Get scaling factors based on avatar size with simplified values for better rendering
   // Adjust hair position based on size to ensure it looks good at any scale
-  const hairTopOffset = hairStyle === 'short' ? -size*0.25 : -size*0.4;
-  const hairHeight = {
-    'long': size * 0.95,
-    'medium': size * 0.70,
-    'short': size * 0.45,
-    'curly': size * 0.55,
-    'wavy': size * 0.65,
+  const hairTopOffset = {
+    'short': -size * 0.25,
+    'medium': -size * 0.3,
+    'long': -size * 0.4,
+    'curly': -size * 0.3,
+    'wavy': -size * 0.35,
     'bald': 0
-  }[hairStyle] || size * 0.45;
+  }[hairStyle] || -size * 0.3;
+
+  const hairHeight = {
+    'long': size * 0.9,
+    'medium': size * 0.7,
+    'short': size * 0.5,
+    'curly': size * 0.6,
+    'wavy': size * 0.7,
+    'bald': 0
+  }[hairStyle] || size * 0.5;
 
   return (
     <Box
@@ -108,7 +124,7 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
         </Typography>
       )}
 
-      {/* Hair - with improved styling for different hair types */}
+      {/* Hair - with simplified, more reliable styling */}
       {hairStyle !== 'bald' && (
         <Box
           sx={{
@@ -120,36 +136,46 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             backgroundColor: hairColor,
             borderTopLeftRadius: '50%',
             borderTopRightRadius: '50%',
-            // Different styling for different hair types
-            ...(hairStyle === 'curly' ? {
-              transform: 'scaleX(1.3)',
-              boxShadow: `0 -${size*0.05}px ${size*0.1}px ${hairColor}`
-            } : {}),
-            ...(hairStyle === 'wavy' ? {
-              height: hairHeight - size*0.1,
-              borderTop: `${size * 0.08}px wavy ${hairColor}`,
-              borderLeft: `${size * 0.05}px solid ${hairColor}`,
-              borderRight: `${size * 0.05}px solid ${hairColor}`,
-              boxShadow: `0 -${size*0.05}px ${size*0.1}px ${hairColor}`
-            } : {}),
-            ...(hairStyle === 'long' ? {
-              boxShadow: `0 -${size*0.05}px ${size*0.1}px ${hairColor}`
-            } : {})
+            ...(hairStyle === 'curly' && {
+              transform: 'scaleX(1.2)',
+              borderTopLeftRadius: '60%',
+              borderTopRightRadius: '60%',
+              boxShadow: `0 -${size*0.03}px ${size*0.05}px ${hairColor}`
+            }),
+            ...(hairStyle === 'wavy' && {
+              borderTopLeftRadius: '40%',
+              borderTopRightRadius: '40%',
+              boxShadow: `0 -${size*0.03}px ${size*0.05}px ${hairColor}`
+            }),
+            ...(hairStyle === 'long' && {
+              height: hairHeight,
+              boxShadow: `0 -${size*0.03}px ${size*0.05}px ${hairColor}`
+            }),
+            ...(hairStyle === 'medium' && {
+              borderTopLeftRadius: '45%',
+              borderTopRightRadius: '45%',
+            }),
+            ...(hairStyle === 'short' && {
+              borderTopLeftRadius: '40%',
+              borderTopRightRadius: '40%',
+            })
           }}
         />
       )}
       
-      {/* Face/Expression */}
+      {/* Face/Expression - adjusted positioning */}
       <Box sx={{ 
-        marginTop: hairStyle === 'bald' ? 0 : size * 0.12,
+        marginTop: hairStyle === 'bald' ? 0 : size * 0.1,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        position: 'relative',
+        zIndex: 5 /* Ensure expressions show on top */
       }}>
         {getExpressionIcon()}
       </Box>
       
-      {/* Accessories - improved styling */}
+      {/* Accessories - improved styling with better positioning */}
       {accessory === 'glasses' && (
         <>
           {/* Left Lens */}
@@ -161,7 +187,8 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             height: size * 0.25, 
             border: `${size * 0.03}px solid #333`,
             borderRadius: '50%',
-            opacity: 0.85
+            opacity: 0.85,
+            zIndex: 10
           }} />
           {/* Right Lens */}
           <Box sx={{ 
@@ -172,7 +199,8 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             height: size * 0.25, 
             border: `${size * 0.03}px solid #333`,
             borderRadius: '50%',
-            opacity: 0.85
+            opacity: 0.85,
+            zIndex: 10
           }} />
           {/* Bridge */}
           <Box sx={{ 
@@ -182,21 +210,23 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
             right: size * 0.38, 
             height: size * 0.03, 
             backgroundColor: '#333',
-            opacity: 0.85
+            opacity: 0.85,
+            zIndex: 10
           }} />
         </>
       )}
       {accessory === 'hat' && (
         <Box sx={{ 
           position: 'absolute', 
-          top: -size * 0.18, 
-          left: size * 0.05, 
-          right: size * 0.05, 
+          top: -size * 0.15, 
+          left: -size * 0.05, 
+          right: -size * 0.05, 
           height: size * 0.25, 
           backgroundColor: '#ff5722', 
           borderTopLeftRadius: size * 0.1, 
           borderTopRightRadius: size * 0.1,
-          boxShadow: `0 -${size*0.05}px ${size*0.1}px rgba(0,0,0,0.1)`
+          boxShadow: `0 -${size*0.03}px ${size*0.05}px rgba(0,0,0,0.1)`,
+          zIndex: 15
         }} />
       )}
       {accessory === 'earrings' && (
@@ -204,37 +234,39 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ size = 40, displayText }) =
           <Box sx={{ 
             position: 'absolute', 
             top: size * 0.45, 
-            left: 0,
+            left: -size * 0.05,
             width: size * 0.15, 
             height: size * 0.15, 
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            zIndex: 10
           }}>
             <Box sx={{
               width: size * 0.08,
               height: size * 0.08,
               backgroundColor: '#ffeb3b',
               borderRadius: '50%',
-              boxShadow: `0 0 ${size*0.04}px #ffd700`
+              boxShadow: `0 0 ${size*0.03}px #ffd700`
             }} />
           </Box>
           <Box sx={{ 
             position: 'absolute', 
             top: size * 0.45, 
-            right: 0,
+            right: -size * 0.05,
             width: size * 0.15, 
             height: size * 0.15, 
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            zIndex: 10
           }}>
             <Box sx={{
               width: size * 0.08,
               height: size * 0.08,
               backgroundColor: '#ffeb3b',
               borderRadius: '50%',
-              boxShadow: `0 0 ${size*0.04}px #ffd700`
+              boxShadow: `0 0 ${size*0.03}px #ffd700`
             }} />
           </Box>
         </>
