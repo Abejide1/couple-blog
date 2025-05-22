@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress, Alert, Paper } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import AvatarDisplay from '../components/AvatarDisplay';
-import AdvancedAvatarCreator, { AvataaarsOptions } from '../components/AdvancedAvatarCreator';
+import SimpleAvatarDisplay from '../components/SimpleAvatarDisplay';
+import CustomizableAvatar, { AvatarOptions } from '../components/CustomizableAvatar';
 
-// Advanced avatar options handled by AdvancedAvatarCreator component
+// Custom avatar options handled by our own CSS-based avatar components
 
 const Profile: React.FC = () => {
   const { user, token, updateProfile } = useAuth();
@@ -36,8 +36,8 @@ const Profile: React.FC = () => {
     setLoading(false);
   };
 
-  // Handle avatar save from the AdvancedAvatarCreator component
-  const handleSaveAvatar = async (_avatarOptions: AvataaarsOptions) => {
+  // Handle avatar save from the CustomizableAvatar component
+  const handleSaveAvatar = async (_avatarOptions: AvatarOptions) => {
     setLoading(true);
     setError('');
     setSuccess('');
@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
                 }
               }}
             >
-              <AvatarDisplay size={100} displayText={user?.display_name?.charAt(0) || 'U'} />
+              <SimpleAvatarDisplay size={100} displayText={user?.display_name?.charAt(0) || 'U'} />
             </Box>
           </Box>
           <Button 
@@ -134,10 +134,10 @@ const Profile: React.FC = () => {
           </Button>
         </Paper>
         
-        {/* Advanced Avatar Creator */}
+        {/* Custom Avatar Creator */}
         {showAvatarCreator && (
           <Box sx={{ width: '100%', mb: 4 }}>
-            <AdvancedAvatarCreator
+            <CustomizableAvatar
               onSave={handleSaveAvatar} 
               onCancel={() => setShowAvatarCreator(false)}
               size={200}
