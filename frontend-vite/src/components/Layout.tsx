@@ -20,7 +20,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import CustomAvatar from './CustomAvatar';
+import SimpleAvatarDisplay from './SimpleAvatarDisplay';
 import { useAuth } from '../contexts/AuthContext';
 import SettingsMenu from './SettingsMenu';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
@@ -291,7 +291,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   ml: 2,
                 }}
               >
-                <CustomAvatar
+                <SimpleAvatarDisplay
                   size={36}
                   displayText={user.display_name || user.email}
                 />
