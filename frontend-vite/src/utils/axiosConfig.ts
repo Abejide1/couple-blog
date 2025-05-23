@@ -10,17 +10,19 @@ import { isNativeMobile } from './mobileUtils';
 
 // Create a function to get the proper base URL for the current environment
 const getBaseUrl = () => {
-  // For iOS/Android, cannot use localhost as it refers to the device itself
+  // For iOS/Android and production web, use your public backend IP or domain
+  // Replace this with your deployed backend domain if you have one (e.g., https://api.yourdomain.com)
+  const PROD_API = 'http://52.41.36.82:8000'; // <-- Your backend's public IP
+
   if (isNativeMobile()) {
-    // IMPORTANT: You must use your computer's actual local IP address here
-    // Run 'ipconfig' on Windows or 'ifconfig' on Mac/Linux to find your IP
-    // This allows your iOS device to reach your development server
-    return 'http://172.26.127.246'; // REPLACE WITH YOUR ACTUAL LOCAL IP
-    
-    // When deploying to production, use your real API endpoint instead:
-    // return 'https://your-actual-api-endpoint.com';
+    return PROD_API;
   }
-  
+
+  // Optionally, use public API for production web builds as well
+  if (process.env.NODE_ENV === 'production') {
+    return PROD_API;
+  }
+
   // For local development in browser
   return 'http://localhost:8000';
 };
