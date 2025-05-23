@@ -21,6 +21,7 @@ import {
   useTheme,
 } from '@mui/material';
 import SimpleAvatarDisplay from './SimpleAvatarDisplay';
+import MobileNavBar from './MobileNavBar';
 import { useAuth } from '../contexts/AuthContext';
 import SettingsMenu from './SettingsMenu';
 import { BsFillCalendarHeartFill, BsFillBookmarkHeartFill } from 'react-icons/bs';
@@ -35,6 +36,7 @@ import { MdMenu, MdContentCopy } from 'react-icons/md';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useThemeMode } from '../contexts/ThemeContext';
 import { useCouple } from '../contexts/CoupleContext';
+import { isNativeMobile, isIOS } from '../utils/mobileUtils';
 
 const DRAWER_WIDTH = 320;
 const defaultAppBarColor = '#FF7EB9';
@@ -174,16 +176,26 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     </Box>
   );
 
+  // Determine if we should show mobile UI elements
+  const isiOSDevice = isIOS();
+  const usesMobileLayout = isNativeMobile() || isMobile;
+
   return (
-    <Box sx={{ display: 'flex', fontFamily: '"Swanky and Moo Moo", cursive', width: '100%' }}>
-      {/* AppBar */}
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: background }}>
+      {/* App Bar */}
       <AppBar
         position="fixed"
         sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          width: { sm: `calc(100% - ${mobileOpen ? DRAWER_WIDTH : 0}px)` },
+          ml: { sm: `${mobileOpen ? DRAWER_WIDTH : 0}px` },
           background: appBarColor,
-          boxShadow: '0 2px 16px #FFD6E8',
-          transition: 'background 0.3s',
+          boxShadow: 'none',
+          height: isiOSDevice ? 'calc(80px + var(--safe-area-inset-top))' : 80,
+          paddingTop: isiOSDevice ? 'var(--safe-area-inset-top)' : 0,
+          display: 'flex',
+          justifyContent: 'center',
+          transition: 'all 0.3s ease',
+          zIndex: theme.zIndex.drawer + 1,
         }}
       >
         <Toolbar sx={{ minHeight: 80, px: 3, position: 'relative' }}>
@@ -378,6 +390,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           flexDirection: 'column',
           alignItems: 'center',
           background: background,
+          // Add padding for mobile nav bar on iOS devices
+          paddingBottom: isiOSDevice ? 'calc(64px + var(--safe-area-inset-bottom))' : 0,
         }}
       >
         <Toolbar />
@@ -393,6 +407,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {children}
         </Container>
       </Box>
+      
+      {/* Mobile Navigation Bar for iOS */}
+      {isiOSDevice && <MobileNavBar />}
 
       {/* Snackbar */}
       <Snackbar

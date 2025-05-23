@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import './styles/mobile.css'; // Import iOS-optimized styles
 import FloatingShapes from './components/FloatingShapes';
+import { applyIOSUIAdjustments, isNativeMobile } from './utils/mobileUtils';
 
 // Add global gradient background
 const gradientStyle = document.createElement('style');
@@ -11,9 +13,20 @@ gradientStyle.innerHTML = `
     background: linear-gradient(135deg, #FFF6FB 0%, #FFEBF7 40%, #B5EAD7 100%);
     min-height: 100vh;
     overflow-x: hidden;
+    /* iOS viewport height fix */
+    min-height: -webkit-fill-available;
+  }
+  
+  html {
+    height: -webkit-fill-available;
   }
 `;
 document.head.appendChild(gradientStyle);
+
+// Apply iOS-specific adjustments
+document.addEventListener('DOMContentLoaded', () => {
+  applyIOSUIAdjustments();
+});
 
 
 
@@ -81,13 +94,40 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+// Create a wrapper component to handle mobile-specific logic
+const AppWrapper = () => {
+  useEffect(() => {
+    // Initialize mobile-specific features
+    if (isNativeMobile()) {
+      // Add iOS status bar height adjustment
+      document.documentElement.style.setProperty(
+        '--safe-area-inset-top',
+        'env(safe-area-inset-top)'
+      );
+      
+      // Add bottom safe area for iPhone home indicator
+      document.documentElement.style.setProperty(
+        '--safe-area-inset-bottom',
+        'env(safe-area-inset-bottom)'
+      );
+      
+      // Add mobile class to body
+      document.body.classList.add('mobile-device');
+    }
+  }, []);
+  
+  return (
     <>
       <FloatingShapes />
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>
     </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <AppWrapper />
   </React.StrictMode>
 );

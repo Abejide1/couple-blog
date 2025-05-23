@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CustomThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/Layout';
+import { useEffect } from 'react';
+import { initializeCapacitorPlugins, applyIOSVisualAdjustments } from './plugins/capacitor';
 import Activities from './pages/Activities';
 import Books from './pages/Books';
 import Movies from './pages/Movies';
@@ -21,6 +23,15 @@ import RequireCode from './components/RequireCode';
 
 
 function App() {
+  // Initialize iOS capabilities while maintaining avatar-based profiles
+  useEffect(() => {
+    // Apply iOS visual adjustments
+    applyIOSVisualAdjustments();
+    
+    // Initialize Capacitor plugins for iOS
+    initializeCapacitorPlugins();
+  }, []);
+  
   return (
     <BrowserRouter>
       <AuthProvider>

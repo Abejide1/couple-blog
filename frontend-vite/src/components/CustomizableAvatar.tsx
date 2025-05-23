@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Button, Paper, Tabs, Tab, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { isIOS } from '../utils/mobileUtils';
+import { setupIOSTouchHandlers, setupIOSScrolling, optimizeAvatarForIOS, saveAvatarWithIOSMetadata } from '../utils/iOSAvatarUtils';
 
 // Avatar options
 const topTypes = [
@@ -260,22 +262,39 @@ const CustomizableAvatar: React.FC<CustomizableAvatarProps> = ({
   onCancel,
   size = 200
 }) => {
+  // Container ref for iOS-specific optimizations
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   // Initialize with provided data or defaults
   const [avatarOptions, setAvatarOptions] = useState<AvatarOptions>(
     initialOptions || defaultAvatarOptions
   );
+  
+  // Check if running on iOS
+  const isiOSDevice = isIOS();
   
   // Initialize with data from localStorage if available
   useEffect(() => {
     const savedAvatar = localStorage.getItem('userAvatarOptions');
     if (savedAvatar && !initialOptions) {
       try {
-        setAvatarOptions(JSON.parse(savedAvatar));
+        const parsedOptions = JSON.parse(savedAvatar);
+        // Apply any iOS-specific optimizations if needed
+        setAvatarOptions(isiOSDevice ? optimizeAvatarForIOS(parsedOptions) : parsedOptions);
       } catch (err) {
         console.error('Error parsing saved avatar data', err);
       }
     }
-  }, [initialOptions]);
+  }, [initialOptions, isiOSDevice]);
+  
+  // Apply iOS-specific optimizations
+  useEffect(() => {
+    if (isiOSDevice && containerRef.current) {
+      // Set up iOS-specific touch and scrolling optimizations
+      setupIOSTouchHandlers(containerRef.current);
+      setupIOSScrolling(containerRef.current);
+    }
+  }, [isiOSDevice]);
 
   // Tab state for option categories
   const [tabValue, setTabValue] = useState(0);
@@ -295,8 +314,14 @@ const CustomizableAvatar: React.FC<CustomizableAvatarProps> = ({
 
   // Save changes and call the onSave callback
   const handleSave = () => {
-    localStorage.setItem('userAvatarOptions', JSON.stringify(avatarOptions));
-    onSave(avatarOptions);
+    // Use iOS-specific save method if on iOS
+    if (isiOSDevice) {
+      saveAvatarWithIOSMetadata(avatarOptions);
+      onSave(avatarOptions); // Still pass the original options to the callback
+    } else {
+      localStorage.setItem('userAvatarOptions', JSON.stringify(avatarOptions));
+      onSave(avatarOptions);
+    }
   };
 
   // Render a selection dropdown for a particular avatar feature
@@ -513,7 +538,22 @@ const CustomizableAvatar: React.FC<CustomizableAvatarProps> = ({
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3, borderRadius: 4, maxWidth: 550, margin: '0 auto' }}>
+    <Paper 
+      elevation={3} 
+      ref={containerRef}
+      sx={{ 
+        p: 3, 
+        borderRadius: 4, 
+        maxWidth: 550, 
+        margin: '0 auto',
+        // iOS-specific styling
+        ...(isiOSDevice && {
+          overflow: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+        })
+      }}
+    >
       <Typography variant="h6" align="center" sx={{ mb: 3, color: '#FF7EB9', fontWeight: 700 }}>
         Create Your Avatar
       </Typography>

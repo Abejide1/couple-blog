@@ -1,0 +1,100 @@
+/**
+ * Mobile-specific styles for Couple Activities iOS app
+ * Optimized for avatar-based UI system
+ */
+
+/* Base mobile adjustments */
+:root {
+  --safe-area-inset-top: 0px;
+  --safe-area-inset-bottom: 0px;
+}
+
+.ios-device {
+  /* Add padding for iOS notch and home indicator */
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+  /* Better touch targets for iOS */
+  --min-touch-target: 44px;
+}
+
+/* Improved touch targets for all interactive elements */
+.ios-device button,
+.ios-device a,
+.ios-device [role="button"] {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+}
+
+/* Optimize avatar display on iOS */
+.ios-device .avatar-container {
+  /* Slightly larger size for better visibility */
+  transform: scale(1.1);
+}
+
+/* Enhanced form elements for iOS */
+.ios-device input,
+.ios-device select,
+.ios-device textarea {
+  font-size: 16px !important; /* Prevents iOS zoom on focus */
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* iOS-specific navigation adjustments */
+.ios-device .MuiAppBar-root {
+  padding-top: var(--safe-area-inset-top);
+  height: calc(64px + var(--safe-area-inset-top));
+}
+
+.ios-device .MuiToolbar-root {
+  height: 64px;
+}
+
+.ios-device .MuiDrawer-paper {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+/* Adjustments for avatar creator in iOS */
+.ios-device .avatar-customization-container {
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Enhanced scrolling for iOS */
+.ios-device {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Full-width containers on mobile */
+.ios-device .MuiContainer-root {
+  padding-left: 16px;
+  padding-right: 16px;
+  max-width: 100% !important;
+}
+
+/* Relationship Timeline optimizations for mobile */
+.ios-device .timeline-container::before {
+  left: 30px !important; /* Force timeline to left side on mobile */
+}
+
+.ios-device .timeline-item {
+  width: calc(100% - 80px) !important;
+  margin-left: 70px !important;
+  margin-right: 0 !important;
+  float: none !important;
+}
+
+/* Improve text legibility on iOS */
+.ios-device {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Better modal positioning for iOS */
+.ios-device .MuiDialog-paper {
+  margin: 24px;
+  max-height: calc(100% - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 48px);
+}
