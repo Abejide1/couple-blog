@@ -1,7 +1,7 @@
 /**
  * Axios configuration for iOS app
  * Ensures API requests work correctly on both web and iOS environments
- * while maintaining avatar-based profile approach
+ * while maintaining avatar-based profile approach (no photo uploads)
  */
 
 import axios from 'axios';
@@ -9,30 +9,32 @@ import { Preferences } from '@capacitor/preferences';
 import { isNativeMobile } from './mobileUtils';
 
 // Create a function to get the proper base URL for the current environment
-const getBaseURL = () => {
+const getBaseUrl = () => {
+  // For iOS/Android, cannot use localhost as it refers to the device itself
   if (isNativeMobile()) {
-    // When running on iOS, we need to use your actual API server address
-    // not localhost (which refers to the device itself on iOS)
+    // IMPORTANT: You must use your computer's actual local IP address here
+    // Run 'ipconfig' on Windows or 'ifconfig' on Mac/Linux to find your IP
+    // This allows your iOS device to reach your development server
+    return 'http://172.26.127.246'; // REPLACE WITH YOUR ACTUAL LOCAL IP
     
-    // For production:
-    return 'https://couple-activities-api.herokuapp.com';
-    
-    // For testing with your local network:
-    // return 'http://YOUR_COMPUTER_LOCAL_IP:8000';
-    // Example: 'http://192.168.1.100:8000'
+    // When deploying to production, use your real API endpoint instead:
+    // return 'https://your-actual-api-endpoint.com';
   }
   
-  // For web development
+  // For local development in browser
   return 'http://localhost:8000';
 };
 
-// Create a configured axios instance
+// Create axios instance with our base URL
 const api = axios.create({
-  baseURL: getBaseURL(),
-  timeout: 10000,
+  baseURL: getBaseUrl(),
+  timeout: 15000,  // 15 second timeout for mobile networks
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json'
   },
+  // Important for iOS network requests
+  withCredentials: false
 });
 
 // Add request interceptor for authentication
@@ -64,30 +66,69 @@ api.interceptors.request.use(
   }
 );
 
+// Cache successful GET responses
+api.interceptors.response.use((response) => {
+  // Only cache GET requests
+  if (response.config.method === 'get') {
+    try {
+      // Store in localStorage for offline access
+      const cacheKey = `cache_${response.config.url}`;
+      localStorage.setItem(cacheKey, JSON.stringify(response.data));
+      
+      // Also store in Preferences for iOS if available
+      if (isNativeMobile()) {
+        // Use async IIFE to handle the Promise
+        (async () => {
+          try {
+            await Preferences.set({
+              key: cacheKey,
+              value: JSON.stringify(response.data)
+            });
+          } catch (err) {
+            console.error('Error saving cache to Preferences:', err);
+            // Not critical, we still have localStorage cache
+          }
+        })();
+      }
+    } catch (error) {
+      console.error('Error caching response:', error);
+    }
+  }
+  return response;
+});
+
 // Add response interceptor for error handling
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    // Handle network errors with fallback to local data
-    if (error.code === 'ERR_NETWORK') {
-      console.log('Network error detected, using local data fallback');
+    // Check if we have an internet connection issue
+    const isNetworkError = !navigator.onLine || 
+                          (error.message && (
+                            error.message.includes('Network Error') || 
+                            error.code === 'ERR_NETWORK' || 
+                            error.code === 'ECONNABORTED'
+                          ));
+    
+    if (isNetworkError) {
+      console.warn('Network error detected.');
       
-      // Return mock data to prevent app from crashing
-      // This maintains the avatar-based approach by not relying on server images
-      const url = error.config?.url || '';
-      
-      if (url.includes('/activities')) {
-        return { data: getMockActivities() };
-      }
-      
-      if (url.includes('/movies')) {
-        return { data: getMockMovies() };
-      }
-      
-      if (url.includes('/blog-entries')) {
-        return { data: getMockBlogEntries() };
+      // Try to get cached data from localStorage
+      try {
+        const cacheKey = `cache_${error.config?.url || ''}`;
+        const cachedData = localStorage.getItem(cacheKey);
+        
+        if (cachedData) {
+          console.log('Using cached data from previous successful requests');
+          return { 
+            data: JSON.parse(cachedData),
+            status: 200,
+            statusText: 'OK (From Cache)',
+            config: error.config,
+            cached: true
+          };
+        }
+      } catch (cacheError) {
+        console.error('Error retrieving cached data:', cacheError);
       }
     }
     
@@ -95,28 +136,6 @@ api.interceptors.response.use(
   }
 );
 
-// Mock data for offline mode
-const getMockActivities = () => {
-  return [
-    { id: 1, title: 'Picnic in the Park', description: 'Enjoy a relaxing day outdoors', category: 'outdoors' },
-    { id: 2, title: 'Movie Night', description: 'Watch your favorite film together', category: 'indoors' },
-    { id: 3, title: 'Cooking Class', description: 'Learn to make a new dish together', category: 'indoors' }
-  ];
-};
-
-const getMockMovies = () => {
-  return [
-    { id: 1, title: 'The Notebook', genre: 'Romance' },
-    { id: 2, title: 'When Harry Met Sally', genre: 'Romance/Comedy' },
-    { id: 3, title: 'La La Land', genre: 'Musical/Romance' }
-  ];
-};
-
-const getMockBlogEntries = () => {
-  return [
-    { id: 1, title: 'Our First Vacation', content: 'It was amazing!', createdAt: '2023-05-15' },
-    { id: 2, title: 'Anniversary Celebration', content: 'One year together!', createdAt: '2023-06-22' }
-  ];
-};
+// No mock data as per user's request
 
 export default api;
