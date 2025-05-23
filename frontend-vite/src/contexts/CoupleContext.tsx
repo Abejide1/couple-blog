@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Preferences } from '@capacitor/preferences';
 import { getCoupleData, saveCoupleData } from '../utils/storageManager';
 import { isNativeMobile } from '../utils/mobileUtils';
 
@@ -64,13 +65,10 @@ export const CoupleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             // For iOS, clear from Capacitor Storage too
             if (isNativeMobile()) {
                 try {
-                    // @ts-ignore - Capacitor specific API
-                    const { Storage } = window.Capacitor.Plugins;
-                    if (Storage) {
-                        await Storage.remove({ key: 'coupleCode' });
-                    }
-                } catch (capacitorError) {
-                    console.error('Error clearing Capacitor storage:', capacitorError);
+                    // Use the new Preferences API
+                    await Preferences.remove({ key: 'coupleCode' });
+                } catch (error) {
+                    console.error('Error clearing coupleCode from Capacitor preferences:', error);
                 }
             }
         } catch (error) {

@@ -6,6 +6,7 @@
 
 import { isNativeMobile } from './mobileUtils';
 import { AvatarOptions } from '../components/CustomizableAvatar';
+import { Preferences } from '@capacitor/preferences';
 
 // Save avatar configuration data (maintains avatar-based approach)
 export const saveAvatarData = async (avatarOptions: AvatarOptions) => {
@@ -13,19 +14,16 @@ export const saveAvatarData = async (avatarOptions: AvatarOptions) => {
     // Always save to localStorage first
     localStorage.setItem('userAvatarOptions', JSON.stringify(avatarOptions));
     
-    // If on iOS, also store in Capacitor Storage for redundancy
+    // If on iOS, also store in Capacitor Preferences for redundancy
     if (isNativeMobile()) {
       try {
-        // @ts-ignore - Capacitor specific API
-        const { Storage } = window.Capacitor.Plugins;
-        if (Storage) {
-          await Storage.set({
-            key: 'userAvatarOptions',
-            value: JSON.stringify(avatarOptions)
-          });
-        }
+        // Use the new Preferences API
+        await Preferences.set({
+          key: 'userAvatarOptions',
+          value: JSON.stringify(avatarOptions)
+        });
       } catch (capacitorError) {
-        console.error('Capacitor storage error:', capacitorError);
+        console.error('Capacitor preferences error:', capacitorError);
         // Still succeeded with localStorage
         return true;
       }
@@ -47,19 +45,16 @@ export const getAvatarData = async (): Promise<AvatarOptions | null> => {
       return JSON.parse(localData) as AvatarOptions;
     }
     
-    // If on iOS and no localStorage, try Capacitor Storage
+    // If on iOS and no localStorage, try Capacitor Preferences
     if (isNativeMobile()) {
       try {
-        // @ts-ignore - Capacitor specific API
-        const { Storage } = window.Capacitor.Plugins;
-        if (Storage) {
-          const result = await Storage.get({ key: 'userAvatarOptions' });
-          if (result && result.value) {
-            return JSON.parse(result.value) as AvatarOptions;
-          }
+        // Use the new Preferences API
+        const result = await Preferences.get({ key: 'userAvatarOptions' });
+        if (result && result.value) {
+          return JSON.parse(result.value) as AvatarOptions;
         }
       } catch (capacitorError) {
-        console.error('Capacitor storage retrieval error:', capacitorError);
+        console.error('Capacitor preferences retrieval error:', capacitorError);
       }
     }
     
@@ -76,16 +71,13 @@ export const clearAvatarData = async (): Promise<boolean> => {
     // Clear from localStorage
     localStorage.removeItem('userAvatarOptions');
     
-    // If on iOS, also clear from Capacitor Storage
+    // If on iOS, also clear from Capacitor Preferences
     if (isNativeMobile()) {
       try {
-        // @ts-ignore - Capacitor specific API
-        const { Storage } = window.Capacitor.Plugins;
-        if (Storage) {
-          await Storage.remove({ key: 'userAvatarOptions' });
-        }
+        // Use the new Preferences API
+        await Preferences.remove({ key: 'userAvatarOptions' });
       } catch (capacitorError) {
-        console.error('Error clearing Capacitor storage:', capacitorError);
+        console.error('Error clearing Capacitor preferences:', capacitorError);
       }
     }
     
@@ -102,19 +94,16 @@ export const saveCoupleData = async (coupleCode: string): Promise<boolean> => {
     // Save in localStorage
     localStorage.setItem('coupleCode', coupleCode);
     
-    // If on iOS, also save in Capacitor Storage
+    // If on iOS, also save in Capacitor Preferences
     if (isNativeMobile()) {
       try {
-        // @ts-ignore - Capacitor specific API
-        const { Storage } = window.Capacitor.Plugins;
-        if (Storage) {
-          await Storage.set({
-            key: 'coupleCode',
-            value: coupleCode
-          });
-        }
+        // Use the new Preferences API
+        await Preferences.set({
+          key: 'coupleCode',
+          value: coupleCode
+        });
       } catch (capacitorError) {
-        console.error('Capacitor storage error for couple data:', capacitorError);
+        console.error('Capacitor preferences error for couple data:', capacitorError);
       }
     }
     
@@ -132,15 +121,12 @@ export const getCoupleData = async (): Promise<string | null> => {
     const localData = localStorage.getItem('coupleCode');
     if (localData) return localData;
     
-    // If on iOS and no localStorage, try Capacitor Storage
+    // If on iOS and no localStorage, try Capacitor Preferences
     if (isNativeMobile()) {
       try {
-        // @ts-ignore - Capacitor specific API
-        const { Storage } = window.Capacitor.Plugins;
-        if (Storage) {
-          const result = await Storage.get({ key: 'coupleCode' });
-          if (result && result.value) return result.value;
-        }
+        // Use the new Preferences API
+        const result = await Preferences.get({ key: 'coupleCode' });
+        if (result && result.value) return result.value;
       } catch (capacitorError) {
         console.error('Error retrieving couple data from Capacitor:', capacitorError);
       }

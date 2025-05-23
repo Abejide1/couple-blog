@@ -5,6 +5,7 @@
  */
 
 import axios from 'axios';
+import { Preferences } from '@capacitor/preferences';
 import { isNativeMobile } from './mobileUtils';
 
 // Create a function to get the proper base URL for the current environment
@@ -36,15 +37,26 @@ const api = axios.create({
 
 // Add request interceptor for authentication
 api.interceptors.request.use(
-  (config) => {
-    // Get couple code from local storage
-    const coupleCode = localStorage.getItem('coupleCode');
-    
+  async (config) => {
+    // Get couple code from storage using Preferences plugin
+    const getFromStorage = async (key: string) => {
+      try {
+        const { value } = await Preferences.get({ key });
+        return value ? JSON.parse(value) : null;
+      } catch (error) {
+        console.error(`Error getting ${key} from storage:`, error);
+        return null;
+      }
+    };
+
+    // Get couple code from storage
+    const coupleCode = await getFromStorage('coupleCode');
+
     // If couple code exists, add it to headers
     if (coupleCode) {
       config.headers['X-Couple-Code'] = coupleCode;
     }
-    
+
     return config;
   },
   (error) => {
