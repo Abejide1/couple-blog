@@ -56,10 +56,10 @@ const ActivitySuggestion: React.FC<ActivitySuggestionProps> = ({ onAccept }) => 
         const fetchOptions = async () => {
             try {
                 const [categories, difficulties, costs, seasons] = await Promise.all([
-                    fetch(`${import.meta.env.VITE_API_URL}/activities/categories`).then(res => res.json()),
-                    fetch(`${import.meta.env.VITE_API_URL}/activities/difficulties`).then(res => res.json()),
-                    fetch(`${import.meta.env.VITE_API_URL}/activities/costs`).then(res => res.json()),
-                    fetch(`${import.meta.env.VITE_API_URL}/activities/seasons`).then(res => res.json()),
+                    api.get('/activities/categories').then(res => res.data),
+                    api.get('/activities/difficulties').then(res => res.data),
+                    api.get('/activities/costs').then(res => res.data),
+                    api.get('/activities/seasons').then(res => res.data),
                 ]);
 
                 setOptions({
@@ -85,7 +85,7 @@ const ActivitySuggestion: React.FC<ActivitySuggestionProps> = ({ onAccept }) => 
             if (filters.cost) queryParams.append('cost', filters.cost);
             if (filters.season) queryParams.append('season', filters.season);
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/activities/suggest?${queryParams}`);
+            const response = await api.get(`/activities/suggest?${queryParams}`);
             if (!response.ok) {
                 throw new Error('Failed to get suggestion');
             }

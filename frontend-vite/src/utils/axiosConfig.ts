@@ -37,6 +37,12 @@ const api = axios.create({
   withCredentials: false
 });
 
+// Add runtime warning if baseURL is localhost on iOS
+if (isNativeMobile() && getBaseUrl().includes('localhost')) {
+  // eslint-disable-next-line no-console
+  console.warn('[iOS WARNING] You are using localhost as your API base URL. This will not work on iOS devices. Use your computer\'s LAN IP instead.');
+}
+
 // Add request interceptor for authentication
 api.interceptors.request.use(
   async (config) => {

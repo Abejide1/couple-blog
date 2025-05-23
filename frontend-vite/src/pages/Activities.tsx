@@ -100,7 +100,7 @@ const Activities = () => {
                 formData.append('file', photoFile);
                 formData.append('couple_code', coupleCode);
                 formData.append('activity_id', String(res.data.id));
-                await fetch(`${import.meta.env.VITE_API_URL}/photos/`, {
+                await api.get('/photos/', {
                     method: 'POST',
                     body: formData
                 });

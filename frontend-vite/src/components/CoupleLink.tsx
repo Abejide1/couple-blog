@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Link as LinkIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import api from '../utils/axiosConfig'; // Use shared iOS-aware instance
 
 interface CoupleLinkProps {
     onLinkSuccess: () => void;
@@ -32,7 +32,7 @@ const CoupleLink: React.FC<CoupleLinkProps> = ({ onLinkSuccess }) => {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const response = await fetch(`${API_URL}/couple/code`, {
+            const response = await api.get('/couple/code', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -59,7 +59,7 @@ const CoupleLink: React.FC<CoupleLinkProps> = ({ onLinkSuccess }) => {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const response = await fetch(`${API_URL}/couple/link`, {
+            const response = await api.post('/couple/link', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

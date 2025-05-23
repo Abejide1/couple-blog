@@ -4,10 +4,11 @@
  * while maintaining avatar-based profile approach
  */
 
+import api from './axiosConfig';
 import { isNativeMobile } from './mobileUtils';
 
-// API base URL configuration
-export const getApiBaseUrl = () => {
+// Get API base URL for iOS/web
+export function getApiBaseUrl() {
   // For iOS app, we need to use the actual server address, not localhost
   if (isNativeMobile()) {
     // Use your actual API server URL when deployed
@@ -22,31 +23,27 @@ export const getApiBaseUrl = () => {
   return '/api';
 };
 
-// Enhanced fetch function for iOS compatibility
-export const fetchWithConfig = async (endpoint: string, options: RequestInit = {}) => {
-  const baseUrl = getApiBaseUrl();
-  const url = `${baseUrl}${endpoint}`;
-  
-  const defaultOptions: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      // Add any auth tokens here if needed
-      ...((options.headers as Record<string, string>) || {})
-    },
-    // Ensure credentials are included for auth
-    credentials: 'include',
-  };
-  
-  try {
-    const response = await fetch(url, { ...defaultOptions, ...options });
-    return response;
-  } catch (error) {
-    console.error(`API request failed for ${endpoint}:`, error);
-    throw error;
+// Use api instance for all API requests
+export async function fetchWithConfig(url: string, options?: any) {
+  // Only support GET/POST for now
+  if (!options || !options.method || options.method === 'GET') {
+    const response = await api.get(url, options);
+    return response.data;
+  } else if (options.method === 'POST') {
+    const response = await api.post(url, options.body ? JSON.parse(options.body) : undefined, options);
+    return response.data;
+  } else if (options.method === 'PUT') {
+    const response = await api.put(url, options.body ? JSON.parse(options.body) : undefined, options);
+    return response.data;
+  } else if (options.method === 'DELETE') {
+    const response = await api.delete(url, options);
+    return response.data;
   }
+  throw new Error('Unsupported method in fetchWithConfig');
 };
 
 // Simplified API request with timeout for iOS
+export const apiRequest = async <T>(endpoint: string, options: any = {}): Promise<T> => {
 export const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
   try {
     // Add timeout for iOS requests to prevent hanging
