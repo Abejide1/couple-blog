@@ -1,30 +1,10 @@
-import axios from 'axios';
-
-// Utility to get the couple code from localStorage
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getCoupleCode() {
-  return localStorage.getItem('coupleCode');
-}
-
+// Import the preconfigured axios instance that works correctly on iOS
+import api from '../utils/axiosConfig';
+// Import types from our types.ts file (not types.d.ts)
 import { Activity, Book, Movie, BlogEntry } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-const api = axios.create({
-    baseURL: API_URL,
-});
-
-// Add request interceptor to include couple code as a header
-api.interceptors.request.use((config) => {
-    const coupleCode = localStorage.getItem('coupleCode');
-    if (coupleCode) {
-        config.headers = {
-            ...config.headers,
-            'X-Couple-Code': coupleCode
-        };
-    }
-    return config;
-});
+// Note: We no longer need to add couple code handling here as it's
+// already handled in the axiosConfig.ts interceptors
 
 export const activitiesApi = {
     getAll: () => api.get<Activity[]>('/activities/'),

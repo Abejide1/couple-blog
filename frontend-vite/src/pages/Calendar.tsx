@@ -49,8 +49,11 @@ const Calendar = () => {
   // Fetch calendar events
   const fetchEvents = useCallback(async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const response = await calendarApi.getAll();
+      
+      // Handle successful response
       // Transform to FullCalendar format
       const formattedEvents = response.data.map(event => ({
         id: String(event.id),
@@ -72,8 +75,17 @@ const Calendar = () => {
         }
       }));
       setEvents(formattedEvents);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching calendar events:', error);
+      
+      // Display user-friendly error message
+      if (error.offline) {
+        setErrorMsg('Unable to connect to the server. Please check your internet connection.');
+      } else if (error.response) {
+        setErrorMsg(`Server error: ${error.response.status}. Please try again later.`);
+      } else {
+        setErrorMsg('An error occurred while loading calendar events. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -248,23 +260,42 @@ const Calendar = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Box>
-      <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ md: 'center' }} mb={4}>
-        <Typography variant="h4" sx={{ flexGrow: 1 }}>Couple Calendar</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setDialogMode('create');
-            setNewEvent(initialEvent);
-            setOpenDialog(true);
-          }}
-          sx={{ minWidth: 160, fontWeight: 600 }}
-        >
-          Add Event
-        </Button>
-      </Box>
+    <Box sx={{ p: 3, pt: 8, height: '100%' }}>
+      <Typography variant="h5" gutterBottom>
+        Calendar
+      </Typography>
+
+      <Paper elevation={2} sx={{ p: 2, mb: 3, borderRadius: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          {/* Error message display */}
+          {errorMsg && (
+            <Typography color="error" sx={{ alignSelf: 'center' }}>
+              {errorMsg}
+              <Button 
+                size="small" 
+                onClick={fetchEvents} 
+                sx={{ ml: 2 }}
+              >
+                Retry
+              </Button>
+            </Typography>
+          )}
+          
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setDialogMode('create');
+              setNewEvent(initialEvent);
+              setOpenDialog(true);
+            }}
+            sx={{ marginLeft: 'auto' }}
+          >
+            Add Event
+          </Button>
+        </Box>
+      </Paper>
 
       <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
         <FullCalendar
