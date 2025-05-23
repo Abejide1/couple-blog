@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Button, Paper, Tabs, Tab, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { isIOS } from '../utils/mobileUtils';
-import { setupIOSTouchHandlers, setupIOSScrolling, optimizeAvatarForIOS, saveAvatarWithIOSMetadata } from '../utils/iOSAvatarUtils';
+import { setupIOSTouchHandlers, setupIOSScrolling, optimizeAvatarForIOS } from '../utils/iOSAvatarUtils';
 
 // Avatar options
 const topTypes = [
@@ -273,18 +273,30 @@ const CustomizableAvatar: React.FC<CustomizableAvatarProps> = ({
   // Check if running on iOS
   const isiOSDevice = isIOS();
   
-  // Initialize with data from localStorage if available
+  // Initialize with data from our storage system
   useEffect(() => {
-    const savedAvatar = localStorage.getItem('userAvatarOptions');
-    if (savedAvatar && !initialOptions) {
-      try {
-        const parsedOptions = JSON.parse(savedAvatar);
-        // Apply any iOS-specific optimizations if needed
-        setAvatarOptions(isiOSDevice ? optimizeAvatarForIOS(parsedOptions) : parsedOptions);
-      } catch (err) {
-        console.error('Error parsing saved avatar data', err);
+    const loadSavedAvatar = async () => {
+      if (initialOptions) {
+        // Use provided options if available
+        setAvatarOptions(initialOptions);
+        return;
       }
-    }
+      
+      try {
+        // Import dynamically to avoid circular dependencies
+        const { getAvatarData } = await import('../utils/storageManager');
+        const savedAvatar = await getAvatarData();
+        
+        if (savedAvatar) {
+          // Apply any iOS-specific optimizations if needed
+          setAvatarOptions(isiOSDevice ? optimizeAvatarForIOS(savedAvatar) : savedAvatar);
+        }
+      } catch (err) {
+        console.error('Error loading saved avatar data', err);
+      }
+    };
+    
+    loadSavedAvatar();
   }, [initialOptions, isiOSDevice]);
   
   // Apply iOS-specific optimizations
@@ -313,12 +325,19 @@ const CustomizableAvatar: React.FC<CustomizableAvatarProps> = ({
   };
 
   // Save changes and call the onSave callback
-  const handleSave = () => {
-    // Use iOS-specific save method if on iOS
-    if (isiOSDevice) {
-      saveAvatarWithIOSMetadata(avatarOptions);
-      onSave(avatarOptions); // Still pass the original options to the callback
-    } else {
+  const handleSave = async () => {
+    try {
+      // Import dynamically to avoid circular dependencies
+      const { saveAvatarData } = await import('../utils/storageManager');
+      
+      // Save avatar data using our storage system (works on both web and iOS)
+      await saveAvatarData(avatarOptions);
+      
+      // Call the provided onSave callback
+      onSave(avatarOptions);
+    } catch (err) {
+      console.error('Error saving avatar data', err);
+      // Fallback to direct localStorage if our system fails
       localStorage.setItem('userAvatarOptions', JSON.stringify(avatarOptions));
       onSave(avatarOptions);
     }

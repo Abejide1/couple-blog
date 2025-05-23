@@ -44,6 +44,8 @@ interface Milestone {
   createdBy: string;
   createdAt: string;
   private: boolean;
+  synced?: boolean; // Track if milestone is synced with server
+  coupleId?: string; // Reference to couple for server storage
 }
 
 // Styled components
@@ -153,62 +155,121 @@ const Timeline: React.FC = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load milestones from localStorage on component mount
+  // Load milestones using our database service
   useEffect(() => {
-    setLoading(true);
-    try {
-      const savedMilestones = localStorage.getItem(`milestones-${coupleId}`);
-      if (savedMilestones) {
-        setMilestones(JSON.parse(savedMilestones));
-      } else {
-        // Add some sample milestones for new users
-        const sampleMilestones = [
-          {
-            id: '1',
-            title: 'First Met',
-            date: '2023-05-15',
-            description: 'The day we first met at the coffee shop downtown.',
-            type: 'anniversary',
-            createdBy: user?.id?.toString() || '',
-            createdAt: new Date().toISOString(),
-            private: false
-          },
-          {
-            id: '2',
-            title: 'First Date',
-            date: '2023-06-01',
-            description: 'Our first official date at the Italian restaurant.',
-            type: 'date',
-            createdBy: user?.id?.toString() || '',
-            createdAt: new Date().toISOString(),
-            private: false
-          },
-          {
-            id: '3',
-            title: 'Trip to the Beach',
-            date: '2023-08-12',
-            description: 'Our weekend getaway to the coast.',
-            type: 'place',
-            createdBy: user?.id?.toString() || '',
-            createdAt: new Date().toISOString(),
-            private: false
+    const loadMilestones = async () => {
+      setLoading(true);
+      try {
+        // Import the database service dynamically to avoid circular dependencies
+        const { getTimelineMilestones } = await import('../services/databaseService');
+        
+        // Try to get milestones from server/storage
+        const loadedMilestones = await getTimelineMilestones(coupleId);
+        
+        if (loadedMilestones && loadedMilestones.length > 0) {
+          setMilestones(loadedMilestones);
+        } else {
+          // Add some sample milestones for new users
+          const sampleMilestones = [
+            {
+              id: '1',
+              title: 'First Met',
+              date: '2023-05-15',
+              description: 'The day we first met at the coffee shop downtown.',
+              type: 'anniversary',
+              createdBy: user?.id?.toString() || '',
+              createdAt: new Date().toISOString(),
+              private: false,
+              coupleId
+            },
+            {
+              id: '2',
+              title: 'First Date',
+              date: '2023-06-01',
+              description: 'Our first official date at the Italian restaurant.',
+              type: 'date',
+              createdBy: user?.id?.toString() || '',
+              createdAt: new Date().toISOString(),
+              private: false,
+              coupleId
+            },
+            {
+              id: '3',
+              title: 'Trip to the Beach',
+              date: '2023-08-12',
+              description: 'Our weekend getaway to the coast.',
+              type: 'place',
+              createdBy: user?.id?.toString() || '',
+              createdAt: new Date().toISOString(),
+              private: false,
+              coupleId
+            }
+          ];
+          setMilestones(sampleMilestones);
+          
+          // Save sample milestones
+          localStorage.setItem(`milestones-${coupleId}`, JSON.stringify(sampleMilestones));
+          
+          // Try to save to server too
+          for (const milestone of sampleMilestones) {
+            try {
+              const { saveTimelineMilestone } = await import('../services/databaseService');
+              await saveTimelineMilestone(milestone);
+            } catch (error) {
+              console.error('Error saving sample milestone:', error);
+            }
           }
-        ];
-        setMilestones(sampleMilestones);
-        localStorage.setItem(`milestones-${coupleId}`, JSON.stringify(sampleMilestones));
+        }
+      } catch (err) {
+        console.error('Error loading milestones:', err);
+        // Fallback to localStorage
+        try {
+          const savedMilestones = localStorage.getItem(`milestones-${coupleId}`);
+          if (savedMilestones) {
+            setMilestones(JSON.parse(savedMilestones));
+          }
+        } catch (localError) {
+          console.error('Error loading from localStorage:', localError);
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error loading milestones:', err);
-    } finally {
-      setLoading(false);
-    }
+    };
+    
+    loadMilestones();
   }, [coupleId, user?.id]);
 
-  // Save milestones to localStorage whenever they change
+  // Save milestones using our database service whenever they change
   useEffect(() => {
-    if (milestones.length > 0 && !loading) {
-      localStorage.setItem(`milestones-${coupleId}`, JSON.stringify(milestones));
-    }
+    const saveMilestones = async () => {
+      if (milestones.length > 0 && !loading) {
+        // Always save to localStorage for immediate access
+        localStorage.setItem(`milestones-${coupleId}`, JSON.stringify(milestones));
+        
+        // Try to sync with server
+        try {
+          const { saveTimelineMilestone } = await import('../services/databaseService');
+          
+          // Only save the most recently added milestone to avoid excessive API calls
+          const mostRecentMilestone = milestones[milestones.length - 1];
+          if (mostRecentMilestone && !mostRecentMilestone.synced) {
+            await saveTimelineMilestone({...mostRecentMilestone, coupleId});
+            
+            // Mark as synced
+            setMilestones(prev => 
+              prev.map((m, idx) => 
+                idx === prev.length - 1 ? {...m, synced: true} : m
+              )
+            );
+          }
+        } catch (error) {
+          console.error('Error syncing milestones with server:', error);
+          // Data is still in localStorage, so no data loss
+        }
+      }
+    };
+    
+    saveMilestones();
   }, [milestones, coupleId, loading]);
 
   const handleOpenDialog = (milestone?: Milestone) => {
@@ -246,30 +307,57 @@ const Timeline: React.FC = () => {
     setCurrentMilestone(prev => ({ ...prev, private: !prev.private }));
   };
 
-  const handleSaveMilestone = () => {
+  const handleSaveMilestone = async () => {
     if (!currentMilestone.title || !currentMilestone.date) return;
 
     const now = new Date().toISOString();
     
     if (isEditing && currentMilestone.id) {
       // Update existing milestone
+      const updatedMilestone = { ...currentMilestone as Milestone, synced: false };
+      
       setMilestones(prev => 
         prev.map(m => 
-          m.id === currentMilestone.id ? { ...currentMilestone as Milestone } : m
+          m.id === currentMilestone.id ? updatedMilestone : m
         )
       );
+      
+      // Try to sync with server
+      try {
+        const { saveTimelineMilestone } = await import('../services/databaseService');
+        await saveTimelineMilestone({...updatedMilestone, coupleId});
+      } catch (error) {
+        console.error('Error syncing updated milestone:', error);
+      }
     } else {
       // Add new milestone
       const newMilestone: Milestone = {
         ...currentMilestone as any,
         id: Date.now().toString(),
         createdBy: user?.id?.toString() || '',
-        createdAt: now
+        createdAt: now,
+        synced: false,
+        coupleId // Add coupleId for server sync
       };
       
       setMilestones(prev => [...prev, newMilestone].sort((a, b) => 
         new Date(b.date).getTime() - new Date(a.date).getTime()
       ));
+      
+      // Try to sync with server
+      try {
+        const { saveTimelineMilestone } = await import('../services/databaseService');
+        await saveTimelineMilestone(newMilestone);
+        
+        // Mark as synced
+        setMilestones(prev => 
+          prev.map(m => 
+            m.id === newMilestone.id ? {...m, synced: true} : m
+          )
+        );
+      } catch (error) {
+        console.error('Error syncing new milestone:', error);
+      }
     }
     
     handleCloseDialog();
