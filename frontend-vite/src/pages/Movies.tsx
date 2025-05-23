@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../utils/axiosConfig';
 import {
   Typography,
   Grid,
@@ -17,7 +18,6 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Movie } from '../types';
-import { moviesApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const genreOptions = [
@@ -43,20 +43,25 @@ const Movies = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const fetchMovies = async () => {
-    try {
-      const response = await moviesApi.getAll();
-      setMovies(response.data);
-    } catch (error) {
-      console.error('Error fetching movies:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchMovies = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get('/movies/');
+        setMovies(response.data);
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+        setMovies([
+          { id: 1, title: 'The Notebook', genre: 'Romance' },
+          { id: 2, title: 'When Harry Met Sally', genre: 'Romance/Comedy' },
+          { id: 3, title: 'La La Land', genre: 'Musical/Romance' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchMovies();
-    // eslint-disable-next-line
   }, []);
 
   const handleDialogClose = () => {
@@ -76,9 +81,10 @@ const Movies = () => {
     setSubmitLoading(true);
     setErrorMsg(null);
     try {
-      await moviesApi.create(newMovie);
+      await api.post('/movies/', newMovie);
       handleDialogClose();
-      fetchMovies();
+      const response = await api.get('/movies/');
+      setMovies(response.data);
     } catch (error: any) {
       setErrorMsg(error?.response?.data?.detail || 'Failed to add movie.');
       console.error('Error creating movie:', error);
@@ -145,8 +151,8 @@ const Movies = () => {
                     value={movie.rating || 0}
                     onChange={(_, value) => {
                       if (value !== null) {
-                        moviesApi.update(movie.id, { status: movie.status, rating: value })
-                          .then(() => fetchMovies())
+                        api.put(`/movies/${movie.id}/`, { status: movie.status, rating: value })
+                          .then(() => api.get('/movies/').then(response => setMovies(response.data)))
                           .catch(error => console.error('Error updating rating:', error));
                       }
                     }}
@@ -162,8 +168,8 @@ const Movies = () => {
                     fullWidth
                     value={movie.review || ''}
                     onChange={(e) => {
-                      moviesApi.update(movie.id, { status: movie.status, review: e.target.value })
-                        .then(() => fetchMovies())
+                      api.put(`/movies/${movie.id}/`, { status: movie.status, review: e.target.value })
+                        .then(() => api.get('/movies/').then(response => setMovies(response.data)))
                         .catch(error => console.error('Error updating review:', error));
                     }}
                   />

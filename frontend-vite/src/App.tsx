@@ -3,6 +3,7 @@ import { CustomThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/Layout';
 import { useEffect } from 'react';
 import { initializeCapacitorPlugins, applyIOSVisualAdjustments } from './plugins/capacitor';
+import { applyIOSUIAdjustments, fixIOSLayoutIssues } from './utils/mobileUtils';
 import Activities from './pages/Activities';
 import Books from './pages/Books';
 import Movies from './pages/Movies';
@@ -23,6 +24,18 @@ import RequireCode from './components/RequireCode';
 
 
 function App() {
+  // Apply iOS-specific adjustments on app startup
+  useEffect(() => {
+    // Apply iOS UI adjustments for better layout
+    applyIOSUIAdjustments();
+    
+    // Fix iOS-specific layout issues (keyboard, scrolling, etc.)
+    fixIOSLayoutIssues();
+    
+    // Add iOS-specific class to html element for better CSS targeting
+    document.documentElement.classList.add('ios-optimized');
+  }, []);
+  
   // Initialize iOS capabilities while maintaining avatar-based profiles
   useEffect(() => {
     // Apply iOS visual adjustments

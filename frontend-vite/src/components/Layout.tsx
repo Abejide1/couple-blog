@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Box,
+  Drawer,
   AppBar,
   Toolbar,
   Typography,
-  Container,
-  Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Divider,
   IconButton,
   Button,
+  Avatar,
+  MenuItem,
+  Menu,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Tooltip,
   Snackbar,
-  Divider,
-  Menu,
-  MenuItem,
-  useMediaQuery,
-  useTheme,
+  Alert,
+  Container,
+  Collapse,
+  ListSubheader,
 } from '@mui/material';
 import SimpleAvatarDisplay from './SimpleAvatarDisplay';
 import MobileNavBar from './MobileNavBar';
@@ -36,7 +39,7 @@ import { MdMenu, MdContentCopy } from 'react-icons/md';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useThemeMode } from '../contexts/ThemeContext';
 import { useCouple } from '../contexts/CoupleContext';
-import { isNativeMobile, isIOS } from '../utils/mobileUtils';
+import { isIOS } from '../utils/mobileUtils';
 
 const DRAWER_WIDTH = 320;
 const defaultAppBarColor = '#FF7EB9';
@@ -53,8 +56,11 @@ const menuItems = [
 ];
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // We use the isMobile check below for responsive layout decisions
+  // Check for mobile devices - this is used for showing/hiding the drawer
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [appBarColor, setAppBarColor] = useState(() => localStorage.getItem('appBarColor') || defaultAppBarColor);
@@ -176,9 +182,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     </Box>
   );
 
-  // Determine if we should show mobile UI elements
+  // Determine if this is an iOS device
   const isiOSDevice = isIOS();
-  const usesMobileLayout = isNativeMobile() || isMobile;
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', background: background }}>
@@ -189,16 +194,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           width: { sm: `calc(100% - ${mobileOpen ? DRAWER_WIDTH : 0}px)` },
           ml: { sm: `${mobileOpen ? DRAWER_WIDTH : 0}px` },
           background: appBarColor,
-          boxShadow: 'none',
+          boxShadow: '0 2px 8px rgba(255, 126, 185, 0.2)',
           height: isiOSDevice ? 'calc(80px + var(--safe-area-inset-top))' : 80,
           paddingTop: isiOSDevice ? 'var(--safe-area-inset-top)' : 0,
           display: 'flex',
           justifyContent: 'center',
           transition: 'all 0.3s ease',
-          zIndex: theme.zIndex.drawer + 1,
+          zIndex: 1300,
         }}
       >
-        <Toolbar sx={{ minHeight: 80, px: 3, position: 'relative' }}>
+        <Toolbar sx={{ minHeight: isiOSDevice ? 'auto' : 80, px: 3, position: 'relative', height: '100%' }}>
           {/* Mobile menu icon */}
           <IconButton
             color="inherit"
@@ -391,10 +396,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           alignItems: 'center',
           background: background,
           // Add padding for mobile nav bar on iOS devices
+          paddingTop: isiOSDevice ? 'calc(80px + var(--safe-area-inset-top))' : '80px',
           paddingBottom: isiOSDevice ? 'calc(64px + var(--safe-area-inset-bottom))' : 0,
+          marginTop: 0,
         }}
       >
-        <Toolbar />
+        {/* Removed toolbar spacer as we're using padding-top on main content */}
         <Container maxWidth="md" sx={{
           display: 'flex',
           flexDirection: 'column',

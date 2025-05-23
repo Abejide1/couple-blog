@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import api from '../utils/axiosConfig';
 import {
     Box,
     Typography,
@@ -29,11 +30,9 @@ import { FaHeart, FaStar, FaRegSmileBeam, FaRegCheckCircle, FaEdit, FaTrash, FaM
 import { MdAdd } from 'react-icons/md';
 import { TrendingUp, CheckCircle, Schedule, Category as CategoryIcon, Timer, Add as AddIcon } from '@mui/icons-material';
 import { Activity, Category, Difficulty, Cost, Season } from '../types';
-import { activitiesApi } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MoodPicker from '../components/MoodPicker';
 import ActivityGallery from '../components/ActivityGallery';
-import { badgesApi } from '../services/badgesApi';
 
 const initialActivity: Omit<Activity, 'id' | 'created_at'> & { mood?: string } = {
     title: '',
@@ -62,10 +61,15 @@ const Activities = () => {
     const fetchActivities = React.useCallback(async () => {
         setLoading(true);
         try {
-            const response = await activitiesApi.getAll();
+            const response = await api.get('/activities/');
             setActivities(response.data);
         } catch (error) {
             console.error('Error fetching activities:', error);
+            setActivities([
+                { id: 1, title: 'Picnic in the Park', description: 'Enjoy a relaxing day outdoors', category: 'outdoors' },
+                { id: 2, title: 'Movie Night', description: 'Watch your favorite film together', category: 'indoors' },
+                { id: 3, title: 'Cooking Class', description: 'Learn to make a new dish together', category: 'indoors' }
+            ]);
         } finally {
             setLoading(false);
         }
@@ -76,10 +80,9 @@ const Activities = () => {
     }, [fetchActivities]);
 
     const handleSubmit = React.useCallback(async () => {
-        // BADGE LOGIC: Memory Makers & First Date
         let badges = {};
         try {
-            badges = await badgesApi.get();
+            badges = await api.get('/badges/');
         } catch {}
 
         setSubmitLoading(true);

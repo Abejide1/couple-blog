@@ -34,15 +34,16 @@ const MobileNavBar: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 1000,
+        zIndex: 1250,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
         paddingBottom: 'var(--safe-area-inset-bottom)',
         boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.95)',
+        background: 'rgba(255, 255, 255, 0.98)',
         backdropFilter: 'blur(10px)',
+        height: 'calc(64px + var(--safe-area-inset-bottom))',
       }}
     >
       {navItems.map((item) => {
@@ -57,21 +58,27 @@ const MobileNavBar: React.FC = () => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              py: 1,
+              pt: 2,
+              pb: 1,
               color: isActive ? '#FF7EB9' : '#999',
               transition: 'all 0.2s ease',
               cursor: 'pointer',
               '&:hover': {
                 color: '#FF7EB9',
-              }
+              },
+              // Ensure touch target is large enough
+              minHeight: '44px'
+              
             }}
           >
             <IconButton 
               sx={{ 
                 color: 'inherit',
-                transform: isActive ? 'translateY(-8px)' : 'none',
+                transform: isActive ? 'translateY(-12px)' : 'none',
                 background: isActive ? 'linear-gradient(135deg, #FFD6E8 0%, #FFF6FB 100%)' : 'transparent',
                 boxShadow: isActive ? '0 4px 8px rgba(255, 126, 185, 0.25)' : 'none',
+                padding: '8px',
+                borderRadius: '50%',
               }}
             >
               {item.icon}
